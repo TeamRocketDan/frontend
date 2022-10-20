@@ -3,7 +3,8 @@ import { Route, Routes } from "react-router-dom"
 import Header from "./components/Header"
 
 import FeedList from "./pages/FeedList"
-import ChatList from "./pages/ChatList"
+import ChatListPage from "./pages/ChatListPage"
+import ChatRoom from "./pages/ChatRoom"
 
 function App() {
   return (
@@ -11,7 +12,8 @@ function App() {
       <Header />
       <Routes>
         <Route path="/" element={<FeedList />} />
-        <Route path="/chatlist" element={<ChatList />} />
+        <Route path="/chatlist" element={<ChatListPage />} />
+        <Route path="/chatroom/:roomId" element={<ChatRoom />} />
       </Routes>
     </>
   )
