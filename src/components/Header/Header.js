@@ -2,6 +2,7 @@ import { useState } from "react"
 import { faBars } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import HeaderMenu from "./HeaderMenu"
+import Logo from "./Logo"
 
 function Header() {
   const [modalOpen, setModalOpen] = useState(false)
@@ -11,17 +12,14 @@ function Header() {
       <div className="container mx-auto">
         <div className="flex items-center">
           {/* 로고 */}
-          <h1>
-            Logo
-            <span className="visuallyhidden">로켓단의 한국정복</span>
-          </h1>
+          <Logo />
 
           {/* 메뉴 버튼 */}
           <div
             className="ml-auto cursor-pointer p-2 relative"
             onClick={() => setModalOpen(!modalOpen)}
           >
-            <FontAwesomeIcon icon={faBars} />
+            <FontAwesomeIcon icon={faBars} className="text-2xl text-rose-500" />
 
             {/* 메뉴 모달 */}
             {modalOpen ? <HeaderMenu /> : ""}
