@@ -1,6 +1,6 @@
 import { Route, Routes } from "react-router-dom"
 
-import Header from "./components/Header"
+import Header from "./components/Header/Header"
 
 import FeedList from "./pages/FeedList"
 import ChatList from "./pages/ChatList"
