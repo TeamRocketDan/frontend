@@ -3,6 +3,7 @@ import { faBars } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import HeaderMenu from "./HeaderMenu"
 import Logo from "./Logo"
+import SearchForm from "../Search/SearchForm"
 
 function Header() {
   const [modalOpen, setModalOpen] = useState(false)
@@ -13,6 +14,9 @@ function Header() {
         <div className="flex items-center">
           {/* 로고 */}
           <Logo />
+
+          {/* 지역 검색 */}
+          <SearchForm />
 
           {/* 메뉴 버튼 */}
           <div
