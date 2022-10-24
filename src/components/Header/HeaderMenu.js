@@ -12,12 +12,12 @@ const menuList = [
 const menuStyle =
   "flex w-full justify-center items-center py-2 border-l-4 border-white hover:text-rose-400 hover:border-l-4 hover:border-rose-400"
 
-function HeaderMenu() {
+function HeaderMenu({ modalOpen }) {
   // 로그인 상태 확인
   const userValid = false
 
   return (
-    <div className="absolute right-0">
+    <div className={`absolute right-0 ${modalOpen ? "" : "hidden"}`}>
       <ul className="w-40 bg-white shadow-lg overflow-hidden">
         {menuList.map((menu) => (
           <li key={menu.path}>
