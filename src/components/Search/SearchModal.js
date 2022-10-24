@@ -2,7 +2,7 @@ import { useRecoilState } from "recoil"
 
 import { selectedRegion01, selectedRegion02 } from "../../recoil/regionState"
 
-function SearchModal({ searchModalOpen }) {
+function SearchModal({ searchModalOpen, setSearchModalOpen }) {
   // 지역 이름 데이터 받아올 예정
   const REGIONS = [
     { depth01: "서울", depth02: ["강서구", "강남구"] },
@@ -21,6 +21,8 @@ function SearchModal({ searchModalOpen }) {
   function clickDepth02(event) {
     // 클릭한 지역명 저장
     setDepth02(event.target.textContent)
+    // 모달 닫기
+    setSearchModalOpen(false)
   }
 
   return (
