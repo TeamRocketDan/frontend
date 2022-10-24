@@ -1,4 +1,6 @@
-import { useState } from "react"
+import { useRecoilState } from "recoil"
+
+import { selectedRegion01, selectedRegion02 } from "../../recoil/regionState"
 
 function SearchModal({ searchModalOpen }) {
   // 지역 이름 데이터 받아올 예정
@@ -7,12 +9,18 @@ function SearchModal({ searchModalOpen }) {
     { depth01: "인천", depth02: ["남동구", "연수구"] },
   ]
 
-  const [selected01, setSelected01] = useState("서울")
+  const [depth01, setDepth01] = useRecoilState(selectedRegion01)
+  const [depth02, setDepth02] = useRecoilState(selectedRegion02)
 
   function clickDepth01(event) {
     // 클릭한 지역명 저장
-
-    setSelected01(event.target.textContent)
+    setDepth01(event.target.textContent)
+    // depth2 비우기
+    setDepth02("")
+  }
+  function clickDepth02(event) {
+    // 클릭한 지역명 저장
+    setDepth02(event.target.textContent)
   }
 
   return (
@@ -32,11 +40,15 @@ function SearchModal({ searchModalOpen }) {
             {/* depth 02 */}
             <ul
               className={`searchDepth02 absolute left-20 w-20 top-0 flex flex-wrap ${
-                region.depth01 === selected01 ? "" : "hidden"
+                region.depth01 === depth01 ? "" : "hidden"
               }`}
             >
               {region.depth02.map((depth02) => (
-                <li key={depth02} className="py-2 py-2 px-4">
+                <li
+                  key={depth02}
+                  className="py-2 py-2 px-4"
+                  onClick={clickDepth02}
+                >
                   {depth02}
                 </li>
               ))}

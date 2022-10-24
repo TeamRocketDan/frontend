@@ -1,14 +1,15 @@
 import { useRef, useState } from "react"
+import { useRecoilState } from "recoil"
+
 import SearchModal from "./SearchModal"
+import { selectedRegion01, selectedRegion02 } from "../../recoil/regionState"
 
 function SearchForm() {
-  // 선택된 지역
-  const [selectedRegion, setSelectedRegion] = useState()
   const [searchModalOpen, setSearchModalOpen] = useState(false)
   const searchRef = useRef()
 
-  // 인풋에 선택한 지역 표시하기
-  // searchRef.current.value = "선택한 지역"
+  const [depth01, setDepth01] = useRecoilState(selectedRegion01)
+  const [depth02, setDepth02] = useRecoilState(selectedRegion02)
 
   return (
     <div className="ml-4">
@@ -21,6 +22,7 @@ function SearchForm() {
           <input
             type="text"
             placeholder="지역 검색"
+            value={`${depth01} ${depth02}`}
             className="border rounded py-1 px-2 cursor-pointer"
             disabled
             ref={searchRef}
