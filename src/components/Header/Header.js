@@ -26,7 +26,7 @@ function Header() {
             <FontAwesomeIcon icon={faBars} className="text-2xl text-rose-500" />
 
             {/* 메뉴 모달 */}
-            {modalOpen ? <HeaderMenu /> : ""}
+            <HeaderMenu modalOpen={modalOpen} />
           </div>
         </div>
       </div>
