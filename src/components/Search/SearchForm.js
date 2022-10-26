@@ -11,6 +11,7 @@ function SearchForm() {
 
   const [depth01, setDepth01] = useRecoilState(selectedRegion01)
   const [depth02, setDepth02] = useRecoilState(selectedRegion02)
+  const [currentDistricts, setCurrentDistricts] = useState([])
 
   // 지역 선택 리셋
   function clickReset(event) {
@@ -18,6 +19,7 @@ function SearchForm() {
     setDepth01("")
     setDepth02("")
     setSearchModalOpen(false)
+    setCurrentDistricts([])
   }
 
   return (
@@ -50,6 +52,8 @@ function SearchForm() {
         <SearchModal
           searchModalOpen={searchModalOpen}
           setSearchModalOpen={setSearchModalOpen}
+          currentDistricts={currentDistricts}
+          setCurrentDistricts={setCurrentDistricts}
         />
       </form>
     </div>
