@@ -22,6 +22,9 @@ function SearchModal({
       .then((response) => {
         setCityList(response.data.result)
       })
+      .catch(function (error) {
+        console.log(error)
+      })
   }, [])
 
   const [depth01, setDepth01] = useRecoilState(selectedRegion01)
@@ -44,6 +47,9 @@ function SearchModal({
       )
       .then((response) => {
         setCurrentDistricts(response.data.result)
+      })
+      .catch(function (error) {
+        console.log(error)
       })
   }
   function clickDepth02(event) {
