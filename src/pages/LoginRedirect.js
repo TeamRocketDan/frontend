@@ -19,7 +19,7 @@ function LoginRedirect() {
   const token = searchParams.get("token")
 
   // token 저장
-  localStorage.setItem("token", token)
+  localStorage.setItem("token", `Bearer ${token}`)
 
   useEffect(() => {
     // 메세지
