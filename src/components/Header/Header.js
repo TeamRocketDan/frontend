@@ -9,7 +9,7 @@ function Header() {
   const [modalOpen, setModalOpen] = useState(false)
 
   return (
-    <header className="border-b">
+    <header className="border-b z-20 relative">
       <div className="container mx-auto">
         <div className="flex items-center">
           {/* 로고 */}
