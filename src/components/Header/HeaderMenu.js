@@ -14,7 +14,9 @@ const menuStyle =
 
 function HeaderMenu({ modalOpen }) {
   // 로그인 상태 확인
-  const userValid = false
+  let userValid = false
+  if (localStorage.getItem("token") !== null) userValid = true
+  console.log(localStorage.getItem("token"))
 
   return (
     <div className={`absolute right-0 ${modalOpen ? "" : "hidden"}`}>

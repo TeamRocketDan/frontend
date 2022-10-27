@@ -5,10 +5,10 @@ function LoginRedirect() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
 
-  console.log(searchParams.get("error"))
+  // console.log(searchParams.get("error"))
 
   const token = searchParams.get("token")
-  console.log(token)
+  // console.log(token)
 
   // token 저장
   localStorage.setItem("token", token)
