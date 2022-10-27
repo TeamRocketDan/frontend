@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useParams } from "react-router-dom"
 import SockJS from "sockjs-client"
-import { Client } from "@stomp/stompjs"
+import * as StompJs from "@stomp/stompjs"
 
 import ChatContainer from "../components/Chat/ChatContainer"
 import ChatSendForm from "../components/Chat/ChatSendForm"
@@ -12,31 +12,27 @@ let stompClient
 function ChatRoom() {
   // stomp & user
   const { roomId } = useParams()
-  const user = "nick01"
-  const [message, setMessage] = useState([
-    // 테스트 메세지
-    { sender: "nick01", content: "안녕하세요" },
-    { sender: "nick02", content: "안녕하세요" },
-    { sender: "nick01", content: "저녁은 뭐 드실?" },
-    {
-      sender: "nick01",
-      content: "????????????????????????????????????????????????????",
-    },
-  ])
+  const userName = "nick01"
+  const [messageList, setMessageList] = useState([])
+  const textInputRef = useRef()
 
+  // 채팅방 구독
   const subscribe = () => {
     if (stompClient != null) {
-      stompClient.subscribe(`/topic/room.${roomId}`, (data) => {
-        const newMessage = JSON.parse(data.body)
-        setMessage((prevData) => [...prevData, { ...newMessage }])
-      })
+      stompClient.subscribe(
+        `/exchange/chat.exchange/room.${roomId}`,
+        (content) => {
+          const payload = JSON.parse(content.body)
+          setMessageList([...messageList, payload])
+        },
+      )
     }
   }
 
   useEffect(() => {
-    stompClient = new Client({
-      //websocket 주소만 입력 가능 * ws://, wss:// 로 시작
-      // brokerURL: `ws://localhost:3080/sub/chat/room/${roomId}`,
+    // stompClient 생성
+    stompClient = new StompJs.Client({
+      brokerURL: "ws://localhost:15674/stomp/chat",
       connectHeaders: {
         login: "user",
         passcode: "password",
@@ -44,23 +40,23 @@ function ChatRoom() {
       debug: function (str) {
         console.log(str)
       },
+      onConnect: () => {
+        // 연결 됐을 때 구독 시작
+        subscribe()
+      },
+      onStompError: function (frame) {
+        console.log("Broker reported error: " + frame.headers["message"])
+        console.log("Additional details: " + frame.body)
+      },
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
     })
-
-    stompClient.webSocketFactory = () => {
-      return new SockJS(`http://localhost:3080/sub/chat/room/${roomId}`)
+    stompClient.webSocketFactory = function () {
+      return new SockJS("http://localhost:8080/stomp/chat")
     }
 
-    stompClient.onConnect = (frame) => {
-      subscribe()
-    }
-
-    stompClient.onStompError = function (frame) {
-      console.log("Broker reported error: " + frame.headers["message"])
-      console.log("Additional details: " + frame.body)
-    }
+    stompClient.activate()
   }, [])
 
   // 메세지 전송
@@ -70,18 +66,18 @@ function ChatRoom() {
     if (input.value === "") return
 
     const message = {
-      sender: user,
-      content: input.value,
+      senderName: userName,
+      message: input.value,
     }
 
     stompClient.publish({
-      destination: "/topic/general",
+      destination: `/pub/chat.message.${roomId}`,
       body: JSON.stringify(message),
-      headers: { priority: "9" },
+      // headers: { priority: "9" },
     })
 
     input.value = ""
-    // 인풋에 포커스 나중에 추가
+    textInputRef.current.focus()
   }
 
   return (
@@ -90,10 +86,10 @@ function ChatRoom() {
         <h3 className="text-rose-400">roomId: {roomId}</h3>
 
         {/* 채팅 내용 나타나는 부분 */}
-        <ChatContainer message={message} user={user} />
+        <ChatContainer messageList={messageList} userName={userName} />
 
         {/* 채팅 보내는 부분 */}
-        <ChatSendForm handleSubmit={handleSubmit} />
+        <ChatSendForm handleSubmit={handleSubmit} textInputRef={textInputRef} />
       </Container>
     </>
   )

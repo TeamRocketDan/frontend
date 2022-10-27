@@ -1,17 +1,17 @@
 import ChatBubble from "./ChatBubble"
 
-function ChatContainer({ message, user }) {
+function ChatContainer({ messageList, userName }) {
   return (
     <>
       {/* chat bubbles */}
       <ul className="flex flex-col pt-4 overflow-y-scroll relative">
-        {message.map((chat, index) => (
+        {messageList.map((chat, index) => (
           <ChatBubble
             key={index}
-            sender={chat.sender === user ? "me" : "other"}
+            sender={chat.senderName === userName ? "me" : "other"}
             profImage={"https://via.placeholder.com/50"}
           >
-            {chat.content}
+            {chat.message}
           </ChatBubble>
         ))}
       </ul>

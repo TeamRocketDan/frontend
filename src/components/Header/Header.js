@@ -3,6 +3,7 @@ import { faBars } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import HeaderMenu from "./HeaderMenu"
 import Logo from "./Logo"
+import SearchForm from "../Search/SearchForm"
 
 function Header() {
   const [modalOpen, setModalOpen] = useState(false)
@@ -14,6 +15,9 @@ function Header() {
           {/* 로고 */}
           <Logo />
 
+          {/* 지역 검색 */}
+          <SearchForm />
+
           {/* 메뉴 버튼 */}
           <div
             className="ml-auto cursor-pointer p-2 relative"
@@ -22,7 +26,7 @@ function Header() {
             <FontAwesomeIcon icon={faBars} className="text-2xl text-rose-500" />
 
             {/* 메뉴 모달 */}
-            {modalOpen ? <HeaderMenu /> : ""}
+            <HeaderMenu modalOpen={modalOpen} />
           </div>
         </div>
       </div>
