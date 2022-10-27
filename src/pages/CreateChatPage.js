@@ -62,10 +62,7 @@ function CreateChatPage() {
       return false
     }
 
-    if (
-      regionInputRef.current.value === "" ||
-      regionInputRef.current.value === " "
-    ) {
+    if (depth01 === "" || depth02 === "") {
       alert("지역을 선택해주세요.")
       return false
     }
