@@ -52,6 +52,7 @@ function HeaderMenu({ modalOpen }) {
       })
   }
 
+
   return (
     <div className={`absolute right-0 ${modalOpen ? "" : "hidden"}`}>
       <ul className="w-40 bg-white shadow-lg overflow-hidden">
