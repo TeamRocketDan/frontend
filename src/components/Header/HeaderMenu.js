@@ -1,4 +1,9 @@
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
+import { useRecoilState } from "recoil"
+import axios from "axios"
+
+import { isUserLoggedIn } from "../../recoil/userAuth"
+import { DEFAULT_API } from "../../apis"
 
 // 메뉴 리스트
 const menuList = [
@@ -13,10 +18,40 @@ const menuStyle =
   "flex w-full justify-center items-center py-2 border-l-4 border-white hover:text-rose-400 hover:border-l-4 hover:border-rose-400"
 
 function HeaderMenu({ modalOpen }) {
+  const navigate = useNavigate()
+
   // 로그인 상태 확인
-  let userValid = false
-  if (localStorage.getItem("token") !== null) userValid = true
-  console.log(localStorage.getItem("token"))
+  const [userValid, setUserValid] = useRecoilState(isUserLoggedIn)
+
+  // 로그아웃
+  function handleLogout(event) {
+    event.preventDefault()
+    const token = localStorage.getItem("token")
+
+    axios
+      .post(
+        `${DEFAULT_API}/api/v1/auth/logout`,
+        {},
+        {
+          headers: {
+            Authorization: token,
+            "Content-Type": "application/json",
+          },
+        },
+      )
+      .then(function (response) {
+        console.log(response.data)
+        if (response.data.success) {
+          localStorage.removeItem("token")
+          setUserValid(false)
+          navigate("/", { replace: true })
+        }
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
+  }
+
 
   return (
     <div className={`absolute right-0 ${modalOpen ? "" : "hidden"}`}>
@@ -31,9 +66,9 @@ function HeaderMenu({ modalOpen }) {
 
         {userValid ? (
           <li>
-            <Link to="/" className={menuStyle}>
+            <button className={menuStyle} onClick={handleLogout}>
               로그아웃
-            </Link>
+            </button>
           </li>
         ) : (
           <li>
