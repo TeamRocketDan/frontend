@@ -2,8 +2,11 @@ import { useEffect, useState } from "react"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import Container from "../components/Layout/Container"
 import { useRecoilState } from "recoil"
+import axios from "axios"
 
-import { isUserLoggedIn } from "../recoil/userAuth"
+import { DEFAULT_API } from "../apis"
+
+import { isUserLoggedIn, currentUserName } from "../recoil/userAuth"
 
 import { faSpinner } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -13,13 +16,14 @@ function LoginRedirect() {
   const [searchParams] = useSearchParams()
   const [message, setMessage] = useState("")
   const [userValid, setUserValid] = useRecoilState(isUserLoggedIn)
+  const [userName, setUserName] = useRecoilState(currentUserName)
 
   console.log("{{LOGIN ERROR}} " + searchParams.get("error"))
 
-  const token = searchParams.get("token")
+  const token = "Bearer " + searchParams.get("token")
 
   // token 저장
-  localStorage.setItem("token", `Bearer ${token}`)
+  localStorage.setItem("token", token)
 
   useEffect(() => {
     // 메세지
@@ -36,6 +40,25 @@ function LoginRedirect() {
     setTimeout(() => {
       navigate("/", { replace: true })
     }, 1500)
+
+    // 유저 이름 저장
+    axios
+      .get(`${DEFAULT_API}/api/v1/users/mypage`, {
+        headers: {
+          Authorization: token,
+          "Content-Type": "application/json",
+        },
+      })
+      .then((response) => {
+        setUserName(
+          response.data.result.nickname === ""
+            ? response.data.result.username
+            : response.data.result.nickname,
+        )
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
   }, [])
 
   return (
