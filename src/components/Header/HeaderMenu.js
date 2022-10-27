@@ -1,4 +1,7 @@
 import { Link } from "react-router-dom"
+import { useRecoilState } from "recoil"
+
+import { isUserLoggedIn } from "../../recoil/userAuth"
 
 // 메뉴 리스트
 const menuList = [
@@ -14,7 +17,13 @@ const menuStyle =
 
 function HeaderMenu({ modalOpen }) {
   // 로그인 상태 확인
-  const userValid = false
+  const [userValid, setUserValid] = useRecoilState(isUserLoggedIn)
+
+  // 로그아웃
+  function handleLogout(event) {
+    event.preventDefault()
+    console.log("logout")
+  }
 
   return (
     <div className={`absolute right-0 ${modalOpen ? "" : "hidden"}`}>
@@ -29,9 +38,9 @@ function HeaderMenu({ modalOpen }) {
 
         {userValid ? (
           <li>
-            <Link to="/" className={menuStyle}>
+            <button className={menuStyle} onClick={handleLogout}>
               로그아웃
-            </Link>
+            </button>
           </li>
         ) : (
           <li>
