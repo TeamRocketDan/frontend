@@ -1,8 +1,10 @@
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
+import axios from "axios"
 import Container from "../components/Layout/Container"
 
 import { faComments } from "@fortawesome/free-regular-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import FormSearchModal from "../components/Search/FormSearchModal"
 
 function CreateChatPage() {
   // 스타일 클래스
@@ -10,12 +12,23 @@ function CreateChatPage() {
   const forInput = "bg-slate-100 mb-2 py-1 px-2"
 
   const [inputValues, setInputValues] = useState({})
+  const [searchModalOpen, setSearchModalOpen] = useState(false)
+  // 지역 선택
+  const [depth01, setDepth01] = useState("")
+  const [depth02, setDepth02] = useState("")
+  // 지역 인풋
+  const regionInputRef = useRef()
+
+  // 지역 인풋 직접 넣기
+  useEffect(() => {
+    setInputValues({ ...inputValues, areas: regionInputRef.current.value })
+  }, [depth01, depth02])
 
   function handleSubmit(event) {
     event.preventDefault()
 
     if (validate()) {
-      console.log("폼 전송하고 생성한 채팅방으로 이동")
+      console.log(inputValues)
     }
   }
 
@@ -31,6 +44,14 @@ function CreateChatPage() {
     const endDate = new Date(inputValues.endDate)
     if (endDate - startDate < 0) {
       alert("끝 날짜는 시작 날짜 이후에 설정해주세요.")
+      return false
+    }
+
+    if (
+      regionInputRef.current.value === "" ||
+      regionInputRef.current.value === " "
+    ) {
+      alert("지역을 선택해주세요.")
       return false
     }
 
@@ -124,13 +145,32 @@ function CreateChatPage() {
           <label htmlFor="chatRegion" className={forLabel}>
             지역 선택
           </label>
-          <input
-            type="text"
-            id="chatRegion"
-            className={forInput}
-            disabled
-            required
-          />
+          <span
+            className="cursor-pointer inline-flex"
+            onClick={() => setSearchModalOpen(!searchModalOpen)}
+          >
+            <input
+              type="text"
+              id="chatRegion"
+              name="areas"
+              className={`pointer-events-none ${forInput}`}
+              value={`${depth01} ${depth02}`}
+              onChange={onChange}
+              required
+              ref={regionInputRef}
+            />
+          </span>
+          {/* 지역 선택 */}
+          <div className="relative left-40">
+            <FormSearchModal
+              searchModalOpen={searchModalOpen}
+              setSearchModalOpen={setSearchModalOpen}
+              depth01={depth01}
+              depth02={depth02}
+              setDepth01={setDepth01}
+              setDepth02={setDepth02}
+            />
+          </div>
         </div>
 
         {/* 제출 버튼 */}
