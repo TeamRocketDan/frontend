@@ -32,7 +32,10 @@ function FormSearchModal({
         console.log(error)
       })
 
+    // 클릭한 지역명 저장
     setDepth01(event.target.textContent)
+    // depth2 비우기
+    setDepth02("")
   }
   function clickDepth02(event) {
     // 클릭한 지역명 저장
