@@ -14,8 +14,8 @@ function ChatListPage() {
     // 채팅방 리스트 가져오기
     setMyRoomList([{ roomId: "m01", title: "m-title-01" }])
     setRecentRoomList([
-      { roomId: "r01", title: "r-title-01" },
-      { roomId: "r02", title: "r-title-02" },
+      { roomId: "635a9c1df13f3d593f8346fc", title: "r-title-01" },
+      { roomId: "63565e52865f8171b69e80b0#20221024", title: "r-title-02" },
     ])
   }, [])
 

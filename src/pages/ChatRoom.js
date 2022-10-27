@@ -2,10 +2,14 @@ import { useEffect, useRef, useState } from "react"
 import { useParams } from "react-router-dom"
 import SockJS from "sockjs-client"
 import * as StompJs from "@stomp/stompjs"
+import { useRecoilState } from "recoil"
+
+import { currentUserName } from "../recoil/userAuth"
 
 import ChatContainer from "../components/Chat/ChatContainer"
 import ChatSendForm from "../components/Chat/ChatSendForm"
 import Container from "../components/Layout/Container"
+import ChatBubble from "../components/Chat/ChatBubble"
 
 let stompClient
 let subscription
@@ -13,10 +17,11 @@ let subscription
 function ChatRoom() {
   // stomp & user
   const { roomId } = useParams()
-  const userName = "nick01"
+  const [userName, setUserName] = useRecoilState(currentUserName)
   const [messageList, setMessageList] = useState([])
   const textInputRef = useRef()
   const messageListRef = useRef()
+  const token = localStorage.getItem("token")
 
   // 채팅방 구독
   const subscribe = () => {
@@ -25,10 +30,58 @@ function ChatRoom() {
         `/exchange/chat.exchange/room.${roomId}`,
         (content) => {
           const payload = JSON.parse(content.body)
-          // setMessageList([...messageList, payload])
+          console.log(payload)
           const bubble = document.createElement("li")
+          if (payload.senderName === userName) {
+            bubble.classList.add(
+              "bg-rose-200",
+              "self-end",
+              "mb-4",
+              "p-2",
+              "w-fit",
+              "rounded-lg",
+              "mr-12",
+            )
+          } else {
+            bubble.classList.add(
+              "border",
+              "border-rose-300",
+              "self-start",
+              "mb-4",
+              "p-2",
+              "w-fit",
+              "rounded-lg",
+              "ml-12",
+            )
+          }
           bubble.textContent = payload.message
+          const prof = document.createElement("span")
+          prof.classList.add(
+            "w-10",
+            "h-10",
+            "rounded-full",
+            "absolute",
+            "overflow-hidden",
+            "bg-cover",
+            "-mt-2",
+          )
+          if (payload.senderName === userName) {
+            prof.classList.add("right-0")
+          } else {
+            prof.classList.add("left-0")
+          }
+          prof.style.backgroundImage = `url(${
+            payload.senderImgSrc
+              ? payload.senderImgSrc
+              : "https://via.placeholder.com/50"
+          })`
+          bubble.appendChild(prof)
           messageListRef.current.appendChild(bubble)
+          console.log(
+            payload.senderName,
+            userName,
+            payload.senderName === userName,
+          )
         },
       )
     }
@@ -105,8 +158,11 @@ function ChatRoom() {
         <h3 className="text-rose-400">roomId: {roomId}</h3>
 
         {/* 채팅 내용 나타나는 부분 */}
-        {/* <ChatContainer messageList={messageList} userName={userName} /> */}
-        <ul ref={messageListRef}></ul>
+        <ChatContainer
+          messageList={messageList}
+          userName={userName}
+          messageListRef={messageListRef}
+        />
 
         {/* 채팅 보내는 부분 */}
         <ChatSendForm handleSubmit={handleSubmit} textInputRef={textInputRef} />

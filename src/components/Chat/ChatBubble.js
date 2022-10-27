@@ -1,4 +1,4 @@
-function ChatBubble({ profImage, sender, children }) {
+function ChatBubble({ profImage, sender, value }) {
   return (
     <li
       className={
@@ -7,7 +7,7 @@ function ChatBubble({ profImage, sender, children }) {
           : "border border-rose-300 self-start mb-4 p-2 w-fit rounded-lg ml-12"
       }
     >
-      {children}
+      {value}
       {/* 프로필 사진 */}
       <span
         className={`w-10 h-10 rounded-full absolute overflow-hidden bg-cover -mt-2 ${
