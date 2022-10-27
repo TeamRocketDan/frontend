@@ -6,6 +6,7 @@ import FeedList from "./pages/FeedList"
 import Login from "./pages/Login"
 import MyPage from "./pages/MyPage"
 import ChatListPage from "./pages/ChatListPage"
+import CreateChatPage from "./pages/CreateChatPage"
 import ChatRoom from "./pages/ChatRoom"
 import LoginRedirect from "./pages/LoginRedirect"
 
@@ -18,6 +19,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/chatlist" element={<ChatListPage />} />
+        <Route path="/createchat" element={<CreateChatPage />} />
         <Route path="/chatroom/:roomId" element={<ChatRoom />} />
 
         {/* login redirect */}
