@@ -9,7 +9,6 @@ import { currentUserName } from "../recoil/userAuth"
 import ChatContainer from "../components/Chat/ChatContainer"
 import ChatSendForm from "../components/Chat/ChatSendForm"
 import Container from "../components/Layout/Container"
-import ChatBubble from "../components/Chat/ChatBubble"
 
 let stompClient
 let subscription
@@ -21,7 +20,6 @@ function ChatRoom() {
   const [messageList, setMessageList] = useState([])
   const textInputRef = useRef()
   const messageListRef = useRef()
-  const token = localStorage.getItem("token")
 
   // 채팅방 구독
   const subscribe = () => {
@@ -77,11 +75,6 @@ function ChatRoom() {
           })`
           bubble.appendChild(prof)
           messageListRef.current.appendChild(bubble)
-          console.log(
-            payload.senderName,
-            userName,
-            payload.senderName === userName,
-          )
         },
       )
     }
