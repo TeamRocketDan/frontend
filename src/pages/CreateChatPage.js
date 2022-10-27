@@ -24,11 +24,26 @@ function CreateChatPage() {
     setInputValues({ ...inputValues, areas: regionInputRef.current.value })
   }, [depth01, depth02])
 
+  // 폼 제출
   function handleSubmit(event) {
     event.preventDefault()
 
     if (validate()) {
       console.log(inputValues)
+      axios
+        .post("/", inputValues, {
+          headers: {
+            Authorization: "Bearertoken", // 유저 정보 저장 후 수정 예정
+            "Content-Type": "application/json",
+          },
+        })
+        .then(function (response) {
+          console.log(response)
+          // 채팅방 아이디 받으면 해당 채팅방으로 이동하기
+        })
+        .catch(function (error) {
+          console.log(error)
+        })
     }
   }
 
