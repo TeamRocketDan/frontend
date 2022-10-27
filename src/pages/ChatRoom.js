@@ -8,6 +8,7 @@ import ChatSendForm from "../components/Chat/ChatSendForm"
 import Container from "../components/Layout/Container"
 
 let stompClient
+let subscription
 
 function ChatRoom() {
   // stomp & user
@@ -15,15 +16,19 @@ function ChatRoom() {
   const userName = "nick01"
   const [messageList, setMessageList] = useState([])
   const textInputRef = useRef()
+  const messageListRef = useRef()
 
   // 채팅방 구독
   const subscribe = () => {
     if (stompClient != null) {
-      stompClient.subscribe(
+      subscription = stompClient.subscribe(
         `/exchange/chat.exchange/room.${roomId}`,
         (content) => {
           const payload = JSON.parse(content.body)
-          setMessageList([...messageList, payload])
+          // setMessageList([...messageList, payload])
+          const bubble = document.createElement("li")
+          bubble.textContent = payload.message
+          messageListRef.current.appendChild(bubble)
         },
       )
     }
@@ -32,7 +37,7 @@ function ChatRoom() {
   useEffect(() => {
     // stompClient 생성
     stompClient = new StompJs.Client({
-      brokerURL: "ws://localhost:15674/stomp/chat",
+      brokerURL: "ws://52.78.188.101:61613/stomp/chat",
       connectHeaders: {
         login: "user",
         passcode: "password",
@@ -48,16 +53,30 @@ function ChatRoom() {
         console.log("Broker reported error: " + frame.headers["message"])
         console.log("Additional details: " + frame.body)
       },
+      onDisconnect: () => {
+        disConnect()
+      },
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
     })
     stompClient.webSocketFactory = function () {
-      return new SockJS("http://localhost:8080/stomp/chat")
+      return new SockJS("http://52.78.188.101:8080/stomp/chat")
     }
 
     stompClient.activate()
+
+    // 컴포넌트 언마운트 될 때 웹소켓 연결을 끊기
+    return () => {
+      disConnect()
+    }
   }, [])
+
+  function disConnect() {
+    stompClient.deactivate()
+    subscription.unsubscribe()
+    console.log("연결 끊어짐")
+  }
 
   // 메세지 전송
   function handleSubmit(event) {
@@ -86,7 +105,8 @@ function ChatRoom() {
         <h3 className="text-rose-400">roomId: {roomId}</h3>
 
         {/* 채팅 내용 나타나는 부분 */}
-        <ChatContainer messageList={messageList} userName={userName} />
+        {/* <ChatContainer messageList={messageList} userName={userName} /> */}
+        <ul ref={messageListRef}></ul>
 
         {/* 채팅 보내는 부분 */}
         <ChatSendForm handleSubmit={handleSubmit} textInputRef={textInputRef} />
