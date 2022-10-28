@@ -6,7 +6,6 @@ import { useRecoilState } from "recoil"
 
 import { currentUserName } from "../recoil/userAuth"
 
-import ChatContainer from "../components/Chat/ChatContainer"
 import ChatSendForm from "../components/Chat/ChatSendForm"
 import Container from "../components/Layout/Container"
 
@@ -17,7 +16,6 @@ function ChatRoom() {
   // stomp & user
   const { roomId } = useParams()
   const [userName, setUserName] = useRecoilState(currentUserName)
-  const [messageList, setMessageList] = useState([])
   const textInputRef = useRef()
   const messageListRef = useRef()
 
@@ -30,28 +28,25 @@ function ChatRoom() {
           const payload = JSON.parse(content.body)
           console.log(payload)
           const bubble = document.createElement("li")
+          bubble.classList.add(
+            "first:mt-auto",
+            "rounded-lg",
+            "w-fit",
+            "mb-4",
+            "py-2",
+            "px-3",
+          )
           if (payload.senderName === userName) {
-            bubble.classList.add(
-              "bg-rose-200",
-              "self-end",
-              "mb-4",
-              "p-2",
-              "w-fit",
-              "rounded-lg",
-              "mr-12",
-            )
+            bubble.classList.add("bg-rose-200", "self-end", "mr-12")
           } else {
             bubble.classList.add(
               "border",
               "border-rose-300",
               "self-start",
-              "mb-4",
-              "p-2",
-              "w-fit",
-              "rounded-lg",
               "ml-12",
             )
           }
+          bubble.style.maxWidth = "70%"
           bubble.textContent = payload.message
           const prof = document.createElement("span")
           prof.classList.add(
@@ -64,7 +59,7 @@ function ChatRoom() {
             "-mt-2",
           )
           if (payload.senderName === userName) {
-            prof.classList.add("right-0")
+            prof.classList.add("right-0.5")
           } else {
             prof.classList.add("left-0")
           }
@@ -75,6 +70,8 @@ function ChatRoom() {
           })`
           bubble.appendChild(prof)
           messageListRef.current.appendChild(bubble)
+
+          messageListRef.current.scrollTop = messageListRef.current.scrollHeight
         },
       )
     }
@@ -111,6 +108,7 @@ function ChatRoom() {
     }
 
     stompClient.activate()
+    textInputRef.current.focus()
 
     // 컴포넌트 언마운트 될 때 웹소켓 연결을 끊기
     return () => {
@@ -148,14 +146,21 @@ function ChatRoom() {
   return (
     <>
       <Container>
-        <h3 className="text-rose-400">roomId: {roomId}</h3>
-
         {/* 채팅 내용 나타나는 부분 */}
-        <ChatContainer
-          messageList={messageList}
-          userName={userName}
-          messageListRef={messageListRef}
-        />
+        <div
+          className="w-full overflow-hidden relative"
+          style={{
+            height: "calc(100vh - 111px)",
+          }}
+        >
+          <ul
+            className="flex flex-col pt-4 overflow-y-scroll absolute top-0 left-0 bottom-0"
+            style={{
+              right: "-15px",
+            }}
+            ref={messageListRef}
+          ></ul>
+        </div>
 
         {/* 채팅 보내는 부분 */}
         <ChatSendForm handleSubmit={handleSubmit} textInputRef={textInputRef} />
