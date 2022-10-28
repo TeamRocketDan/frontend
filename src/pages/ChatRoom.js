@@ -4,7 +4,7 @@ import SockJS from "sockjs-client"
 import * as StompJs from "@stomp/stompjs"
 import { useRecoilState } from "recoil"
 
-import { currentUserName } from "../recoil/userAuth"
+import { currentUserName, currentUserProf } from "../recoil/userAuth"
 
 import ChatSendForm from "../components/Chat/ChatSendForm"
 import Container from "../components/Layout/Container"
@@ -16,6 +16,7 @@ function ChatRoom() {
   // stomp & user
   const { roomId } = useParams()
   const [userName, setUserName] = useRecoilState(currentUserName)
+  const [userProf, setUserProf] = useRecoilState(currentUserProf)
   const textInputRef = useRef()
   const messageListRef = useRef()
 
@@ -131,6 +132,7 @@ function ChatRoom() {
     const message = {
       senderName: userName,
       message: input.value,
+      senderImgSrc: userProf,
     }
 
     stompClient.publish({

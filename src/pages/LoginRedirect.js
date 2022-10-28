@@ -6,7 +6,11 @@ import axios from "axios"
 
 import { DEFAULT_API } from "../apis"
 
-import { isUserLoggedIn, currentUserName } from "../recoil/userAuth"
+import {
+  isUserLoggedIn,
+  currentUserName,
+  currentUserProf,
+} from "../recoil/userAuth"
 
 import { faSpinner } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -17,6 +21,7 @@ function LoginRedirect() {
   const [message, setMessage] = useState("")
   const [userValid, setUserValid] = useRecoilState(isUserLoggedIn)
   const [userName, setUserName] = useRecoilState(currentUserName)
+  const [userProf, setUserProf] = useRecoilState(currentUserProf)
 
   console.log("{{LOGIN ERROR}} " + searchParams.get("error"))
 
@@ -39,7 +44,7 @@ function LoginRedirect() {
     // 페이지 이동
     setTimeout(() => {
       navigate("/", { replace: true })
-    }, 1500)
+    }, 1000)
 
     // 유저 이름 저장
     axios
@@ -55,6 +60,7 @@ function LoginRedirect() {
             ? response.data.result.username
             : response.data.result.nickname,
         )
+        setUserProf(response.data.result.profileImagePath)
       })
       .catch(function (error) {
         console.log(error)

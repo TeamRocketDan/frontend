@@ -9,3 +9,8 @@ export const currentUserName = atom({
   key: "currentUserName",
   default: "",
 })
+
+export const currentUserProf = atom({
+  key: "currentUserProf",
+  default: "",
+})
