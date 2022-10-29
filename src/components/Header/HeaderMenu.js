@@ -2,8 +2,13 @@ import { Link, useNavigate } from "react-router-dom"
 import { useRecoilState } from "recoil"
 import axios from "axios"
 
-import { isUserLoggedIn } from "../../recoil/userAuth"
+import {
+  isUserLoggedIn,
+  currentUserName,
+  currentUserProf,
+} from "../../recoil/userAuth"
 import { DEFAULT_API } from "../../apis"
+import { getUserToken } from "../../utils/getUserToken"
 
 // 메뉴 리스트
 const menuList = [
@@ -22,14 +27,15 @@ function HeaderMenu({ modalOpen }) {
 
   // 로그인 상태 확인
   const [userValid, setUserValid] = useRecoilState(isUserLoggedIn)
+  const [userName, setUserName] = useRecoilState(currentUserName)
+  const [userProf, setUserProf] = useRecoilState(currentUserProf)
 
   // 로그아웃
-  function handleLogout(event) {
+  async function handleLogout(event) {
     event.preventDefault()
-    const token = localStorage.getItem("token")
-
-    axios
-      .post(
+    const token = await getUserToken()
+    try {
+      const response = await axios.post(
         `${DEFAULT_API}/api/v1/auth/logout`,
         {},
         {
@@ -39,19 +45,18 @@ function HeaderMenu({ modalOpen }) {
           },
         },
       )
-      .then(function (response) {
-        console.log(response.data)
-        if (response.data.success) {
-          localStorage.removeItem("token")
-          setUserValid(false)
-          navigate("/", { replace: true })
-        }
-      })
-      .catch(function (error) {
-        console.log(error)
-      })
+      console.log(response.data)
+      if (response.data.success) {
+        localStorage.removeItem("token")
+        setUserValid(false)
+        setUserName(null)
+        setUserProf(null)
+        navigate("/", { replace: true })
+      }
+    } catch (error) {
+      console.log(error)
+    }
   }
-
 
   return (
     <div className={`absolute right-0 ${modalOpen ? "" : "hidden"}`}>
