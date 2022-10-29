@@ -7,6 +7,7 @@ import Pagination from "react-js-pagination"
 import axios from "axios"
 
 import { DEFAULT_API } from "../apis"
+import { getUserToken } from "../utils/getUserToken"
 import { data } from "autoprefixer"
 
 function MyPage() {
@@ -21,11 +22,13 @@ function MyPage() {
     setPage(page)
   }
 
+  const token = getUserToken()
+
   useEffect(() => {
     axios
       .get(`${DEFAULT_API}/api/v1/users/mypage`, {
         headers: {
-          Authorization: localStorage.getItem("token"),
+          Authorization: token,
           "Content-Type": "application/json",
         },
       })
@@ -37,7 +40,7 @@ function MyPage() {
     axios
       .get(`${DEFAULT_API}/api/v1/users/following`, {
         headers: {
-          Authorization: localStorage.getItem("token"),
+          Authorization: token,
           "Content-Type": "application/json",
         },
       })
@@ -49,7 +52,7 @@ function MyPage() {
     axios
       .get(`${DEFAULT_API}/api/v1/users/follower`, {
         headers: {
-          Authorization: localStorage.getItem("token"),
+          Authorization: token,
           "Content-Type": "application/json",
         },
       })
@@ -61,7 +64,7 @@ function MyPage() {
     axios
       .get(`${DEFAULT_API}/api/v1/users/following`, {
         headers: {
-          Authorization: localStorage.getItem("token"),
+          Authorization: token,
           "Content-Type": "application/json",
         },
       })
@@ -73,7 +76,7 @@ function MyPage() {
     axios
       .get(`${DEFAULT_API}/api/v1/users/follower`, {
         headers: {
-          Authorization: localStorage.getItem("token"),
+          Authorization: token,
           "Content-Type": "application/json",
         },
       })
@@ -82,24 +85,6 @@ function MyPage() {
       })
       .catch((err) => console.log(err))
   }, [])
-
-  // For Test
-  const [data, setData] = useState([])
-  const getClick = () => {
-    axios
-      .get("https://jsonplaceholder.typicode.com/posts")
-      .then((res) => setData(res.data))
-  }
-  const postClick = () => {
-    axios
-      .post("https://jsonplaceholder.typicode.com/posts", {
-        userId: 11,
-        id: 101,
-        body: "test body",
-        title: "test title",
-      })
-      .then((res) => console.log(res.data))
-  }
 
   return (
     <>
