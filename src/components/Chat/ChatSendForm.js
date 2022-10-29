@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 function ChatSendForm({ handleSubmit, textInputRef }) {
   return (
-    <div className="fixed bottom-0 container py-2 border-t bg-white">
+    <div className="fixed bottom-0 left-0 right-0 container mx-auto py-2 px-4 border-t bg-white">
       <form onSubmit={handleSubmit}>
         <div className="flex justify-between">
           <input
