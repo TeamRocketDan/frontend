@@ -3,6 +3,7 @@ import { useRecoilState } from "recoil"
 import axios from "axios"
 
 import { cityData } from "../../recoil/areaData"
+import { DEFAULT_API } from "../../apis"
 
 function FormSearchModal({
   searchModalOpen,
@@ -22,9 +23,7 @@ function FormSearchModal({
     })[0]
 
     axios
-      .get(
-        `http://Teamrocket-1780545001.ap-northeast-2.elb.amazonaws.com/api/v1/areas/${city.id}/district`,
-      )
+      .get(`${DEFAULT_API}/api/v1/areas/${city.id}/district`)
       .then((response) => {
         setCurrentDistricts(response.data.result)
       })
