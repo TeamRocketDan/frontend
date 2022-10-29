@@ -4,6 +4,7 @@ import axios from "axios"
 
 import { selectedRegion01, selectedRegion02 } from "../../recoil/regionState"
 import { cityData } from "../../recoil/areaData"
+import { DEFAULT_API } from "../../apis"
 
 function SearchModal({
   searchModalOpen,
@@ -16,9 +17,7 @@ function SearchModal({
   useEffect(() => {
     // 지역 이름 데이터 받아서 저장
     axios
-      .get(
-        "http://Teamrocket-1780545001.ap-northeast-2.elb.amazonaws.com/api/v1/areas/city",
-      )
+      .get(`${DEFAULT_API}/api/v1/areas/city`)
       .then((response) => {
         setCityList(response.data.result)
       })
@@ -42,9 +41,7 @@ function SearchModal({
     })[0]
 
     axios
-      .get(
-        `http://Teamrocket-1780545001.ap-northeast-2.elb.amazonaws.com/api/v1/areas/${city.id}/district`,
-      )
+      .get(`${DEFAULT_API}/api/v1/areas/${city.id}/district`)
       .then((response) => {
         setCurrentDistricts(response.data.result)
       })
