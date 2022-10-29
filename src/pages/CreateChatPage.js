@@ -6,7 +6,7 @@ import { faComments } from "@fortawesome/free-regular-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import FormSearchModal from "../components/Search/FormSearchModal"
 
-import { getUserToken } from "../../utils/getUserToken"
+import { getUserToken } from "../utils/getUserToken"
 
 function CreateChatPage() {
   // 스타일 클래스
