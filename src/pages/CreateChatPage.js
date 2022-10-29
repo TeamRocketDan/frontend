@@ -6,6 +6,8 @@ import { faComments } from "@fortawesome/free-regular-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import FormSearchModal from "../components/Search/FormSearchModal"
 
+import { getUserToken } from "../../utils/getUserToken"
+
 function CreateChatPage() {
   // 스타일 클래스
   const forLabel = "w-40 font-bold mb-2 inline-block"
@@ -25,25 +27,22 @@ function CreateChatPage() {
   }, [depth01, depth02])
 
   // 폼 제출
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault()
+    const token = await getUserToken()
 
-    if (validate()) {
-      console.log(inputValues)
-      axios
-        .post("/", inputValues, {
+    if (validate() && token) {
+      try {
+        const response = await axios.post(`/api/v1/chat/room`, inputValues, {
           headers: {
-            Authorization: "Bearertoken", // 유저 정보 저장 후 수정 예정
+            Authorization: token,
             "Content-Type": "application/json",
           },
         })
-        .then(function (response) {
-          console.log(response)
-          // 채팅방 아이디 받으면 해당 채팅방으로 이동하기
-        })
-        .catch(function (error) {
-          console.log(error)
-        })
+        console.log(response) // roomId 확인하고 채팅방으로 이동
+      } catch (error) {
+        console.log(error)
+      }
     }
   }
 
