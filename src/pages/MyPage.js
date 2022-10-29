@@ -46,29 +46,6 @@ function MyPage() {
       })
       .then((res) => {
         setFollowing(res.data.result.content)
-      })
-      .catch((err) => console.log(err))
-
-    axios
-      .get(`${DEFAULT_API}/api/v1/users/follower`, {
-        headers: {
-          Authorization: token,
-          "Content-Type": "application/json",
-        },
-      })
-      .then((res) => {
-        setFollower(res.data.result.content)
-      })
-      .catch((err) => console.log(err))
-
-    axios
-      .get(`${DEFAULT_API}/api/v1/users/following`, {
-        headers: {
-          Authorization: token,
-          "Content-Type": "application/json",
-        },
-      })
-      .then((res) => {
         setFollowingCount(res.data.result.totalElements)
       })
       .catch((err) => console.log(err))
@@ -81,6 +58,7 @@ function MyPage() {
         },
       })
       .then((res) => {
+        setFollower(res.data.result.content)
         setFollowerCount(res.data.result.totalElements)
       })
       .catch((err) => console.log(err))
