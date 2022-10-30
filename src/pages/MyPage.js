@@ -22,46 +22,46 @@ function MyPage() {
     setPage(page)
   }
 
-  const token = getUserToken()
-
   useEffect(() => {
-    axios
-      .get(`${DEFAULT_API}/api/v1/users/mypage`, {
-        headers: {
-          Authorization: token,
-          "Content-Type": "application/json",
-        },
-      })
-      .then((res) => {
-        setInfo(res.data.result)
-      })
-      .catch((err) => console.log(err))
+    const token = getUserToken().then((token) => {
+      axios
+        .get(`${DEFAULT_API}/api/v1/users/mypage`, {
+          headers: {
+            Authorization: token,
+            "Content-Type": "application/json",
+          },
+        })
+        .then((res) => {
+          setInfo(res.data.result)
+        })
+        .catch((err) => console.log(err))
 
-    axios
-      .get(`${DEFAULT_API}/api/v1/users/following`, {
-        headers: {
-          Authorization: token,
-          "Content-Type": "application/json",
-        },
-      })
-      .then((res) => {
-        setFollowing(res.data.result.content)
-        setFollowingCount(res.data.result.totalElements)
-      })
-      .catch((err) => console.log(err))
+      axios
+        .get(`${DEFAULT_API}/api/v1/users/following`, {
+          headers: {
+            Authorization: token,
+            "Content-Type": "application/json",
+          },
+        })
+        .then((res) => {
+          setFollowing(res.data.result.content)
+          setFollowingCount(res.data.result.totalElements)
+        })
+        .catch((err) => console.log(err))
 
-    axios
-      .get(`${DEFAULT_API}/api/v1/users/follower`, {
-        headers: {
-          Authorization: token,
-          "Content-Type": "application/json",
-        },
-      })
-      .then((res) => {
-        setFollower(res.data.result.content)
-        setFollowerCount(res.data.result.totalElements)
-      })
-      .catch((err) => console.log(err))
+      axios
+        .get(`${DEFAULT_API}/api/v1/users/follower`, {
+          headers: {
+            Authorization: token,
+            "Content-Type": "application/json",
+          },
+        })
+        .then((res) => {
+          setFollower(res.data.result.content)
+          setFollowerCount(res.data.result.totalElements)
+        })
+        .catch((err) => console.log(err))
+    })
   }, [])
 
   return (
@@ -112,11 +112,10 @@ function MyPage() {
         </div>
 
         <div className="flex flex-wrap m-4">
-          <div className="w-1/4 ml-auto mr-auto">
+          {/* <div className="w-1/4 ml-auto mr-auto">
             <h3 className="text-lg font-semibold text-left text-blue-800 mt-1">
               나의 관심 지역
             </h3>
-
             <form className="login-form grid place-items-center my-4">
               <PaginationBox>
                 <Pagination
@@ -128,7 +127,8 @@ function MyPage() {
                 />
               </PaginationBox>
             </form>
-          </div>
+          </div> */}
+
           <div className="w-1/4 ml-auto mr-auto">
             <h3 className="text-lg font-semibold text-left text-blue-800 mt-1 inline-block">
               FOLLOWER
