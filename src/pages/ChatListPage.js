@@ -25,15 +25,17 @@ function ChatListPage() {
 
   // 페이지네이션 관련
   const [searchParams, setSearchParams] = useSearchParams()
-  const [currentParams, setCurrentParams] = useState({})
   const [myListMaxPage, setMyListMaxPage] = useState(1)
   const [regionListMaxPage, setRegionListMaxPage] = useState(1)
   const myListPage = parseInt(searchParams.get("mylistpage") ?? "1", 10)
   const regionListPage = parseInt(searchParams.get("regionlistpage") ?? "1", 10)
 
   function updateParams(updates) {
-    setSearchParams({ ...currentParams, ...updates })
-    setCurrentParams({ ...currentParams, ...updates })
+    setSearchParams({
+      mylistpage: searchParams.get("mylistpage"),
+      regionlistpage: searchParams.get("regionlistpage"),
+      ...updates,
+    })
   }
 
   // 헤더에서 선택한 지역 정보
@@ -66,13 +68,8 @@ function ChatListPage() {
 
   useEffect(() => {
     // 채팅방 리스트 가져오기
-    const myChatList = getChatRooms(currentParams.mylistpage, "", "", "date")
-    const regionChatList = getChatRooms(
-      currentParams.regionlistpage,
-      rcate1,
-      rcate2,
-      "date",
-    )
+    const myChatList = getChatRooms(myListPage, "", "", "date")
+    const regionChatList = getChatRooms(regionListPage, rcate1, rcate2, "date")
 
     // 임시 데이터
     setMyListMaxPage(5)
@@ -128,7 +125,7 @@ function ChatListPage() {
         maxParticipants: 2,
       },
     ])
-  }, [currentParams.mylistpage, currentParams.regionlistpage, rcate1, rcate2])
+  }, [myListPage, regionListPage, rcate1, rcate2])
 
   // 지도 표시 리스트
   useEffect(() => {
