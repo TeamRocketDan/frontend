@@ -1,10 +1,17 @@
 import { useEffect, useState } from "react"
+import { useSearchParams } from "react-router-dom"
+import axios from "axios"
+import { useRecoilState } from "recoil"
 import Container from "../components/Layout/Container"
 import ChatListContainer from "../components/Chat/ChatListContainer"
 import ChatListMap from "../components/Map/ChatListMap"
+import ChatListPagination from "../components/Chat/ChatListPagination"
 
 import { faCommentDots, faMap } from "@fortawesome/free-regular-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+
+import { getUserToken } from "../utils/getUserToken"
+import { selectedRegion01, selectedRegion02 } from "../recoil/regionState"
 
 function ChatListPage() {
   // class names
@@ -16,8 +23,61 @@ function ChatListPage() {
   const [recentRoomList, setRecentRoomList] = useState([])
   const [positionData, setPositionData] = useState([])
 
+  // 페이지네이션 관련
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [currentParams, setCurrentParams] = useState({})
+  const [myListMaxPage, setMyListMaxPage] = useState(1)
+  const [regionListMaxPage, setRegionListMaxPage] = useState(1)
+  const myListPage = parseInt(searchParams.get("mylistpage") ?? "1", 10)
+  const regionListPage = parseInt(searchParams.get("regionlistpage") ?? "1", 10)
+
+  function updateParams(updates) {
+    setSearchParams({ ...currentParams, ...updates })
+    setCurrentParams({ ...currentParams, ...updates })
+  }
+
+  // 헤더에서 선택한 지역 정보
+  const [rcate1, setRcate1] = useRecoilState(selectedRegion01)
+  const [rcate2, setRcate2] = useRecoilState(selectedRegion02)
+
+  // 채팅 리스트 받아오기
+  async function getChatRooms(page, rcate1, rcate2, sort) {
+    const token = await getUserToken()
+
+    try {
+      const response = await axios.get(`/api/v1/chat/room-list`, {
+        params: {
+          page,
+          rcate1,
+          rcate2,
+          sort,
+        },
+        headers: {
+          Authorization: token,
+          "Content-Type": "application/json",
+        },
+      })
+      console.log(response.data)
+      return response.data.result
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   useEffect(() => {
     // 채팅방 리스트 가져오기
+    const myChatList = getChatRooms(currentParams.mylistpage, "", "", "date")
+    const regionChatList = getChatRooms(
+      currentParams.regionlistpage,
+      rcate1,
+      rcate2,
+      "date",
+    )
+
+    // 임시 데이터
+    setMyListMaxPage(5)
+    setRegionListMaxPage(10)
+
     setMyRoomList([
       {
         roomId: "635a9c1df13f3d593f8346fc",
@@ -68,8 +128,9 @@ function ChatListPage() {
         maxParticipants: 2,
       },
     ])
-  }, [])
+  }, [currentParams.mylistpage, currentParams.regionlistpage, rcate1, rcate2])
 
+  // 지도 표시 리스트
   useEffect(() => {
     const newPositions = []
     myRoomList.forEach((room) =>
@@ -181,11 +242,25 @@ function ChatListPage() {
         내 채팅 리스트 <FontAwesomeIcon icon={faCommentDots} />
       </h3>
       <ChatListContainer roomList={myRoomList} isMyList={true} />
+      <ChatListPagination
+        maxPage={myListMaxPage}
+        currentPage={myListPage}
+        onClickPageButton={(pageNumber) =>
+          updateParams({ mylistpage: pageNumber })
+        }
+      />
 
       <h3 className={titleClass}>
         지역 채팅 리스트 <FontAwesomeIcon icon={faMap} />
       </h3>
       <ChatListContainer roomList={recentRoomList} />
+      <ChatListPagination
+        maxPage={regionListMaxPage}
+        currentPage={regionListPage}
+        onClickPageButton={(pageNumber) =>
+          updateParams({ regionlistpage: pageNumber })
+        }
+      />
     </Container>
   )
 }
