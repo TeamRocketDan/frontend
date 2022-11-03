@@ -1,12 +1,16 @@
 import { useEffect, useRef, useState } from "react"
+import { useNavigate } from "react-router-dom"
 import axios from "axios"
 import Container from "../components/Layout/Container"
+import { useRecoilState } from "recoil"
 
 import { faComments } from "@fortawesome/free-regular-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import FormSearchModal from "../components/Search/FormSearchModal"
 
 import { getUserToken } from "../utils/getUserToken"
+import { CHAT_API, DEFAULT_API } from "../apis"
+import { cityData } from "../recoil/areaData"
 
 function CreateChatPage() {
   // 스타일 클래스
@@ -21,9 +25,37 @@ function CreateChatPage() {
   // 지역 인풋
   const regionInputRef = useRef()
 
+  // 지역 선택
+  const [depth01Data, setDepth01Data] = useRecoilState(cityData)
+
+  const navigate = useNavigate()
+
   // 지역 인풋 직접 넣기
   useEffect(() => {
-    setInputValues({ ...inputValues, areas: regionInputRef.current.value })
+    async function getPositions() {
+      try {
+        const cityId = depth01Data.filter(
+          (city) => city.cityName === depth01,
+        )[0].id
+        const response = await axios.get(
+          `${DEFAULT_API}/api/v1/areas/${cityId}/district`,
+        )
+        const district = response.data.result.filter(
+          (city) => city.districtName === depth02,
+        )[0]
+        setInputValues({
+          ...inputValues,
+          latitude: district.latitude,
+          longitude: district.longitude,
+          rcate1: depth01,
+          rcate2: depth02,
+        })
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    getPositions()
   }, [depth01, depth02])
 
   // 폼 제출
@@ -33,13 +65,18 @@ function CreateChatPage() {
 
     if (validate() && token) {
       try {
-        const response = await axios.post(`/api/v1/chat/room`, inputValues, {
-          headers: {
-            Authorization: token,
-            "Content-Type": "application/json",
+        const response = await axios.post(
+          `${CHAT_API}/api/v1/chat/room`,
+          inputValues,
+          {
+            headers: {
+              Authorization: token,
+              "Content-Type": "application/json",
+            },
           },
-        })
-        console.log(response) // roomId 확인하고 채팅방으로 이동
+        )
+        const roomId = response.data.result.id
+        navigate(`/chatroom/${roomId}`, { replace: true })
       } catch (error) {
         console.log(error)
       }
@@ -47,8 +84,18 @@ function CreateChatPage() {
   }
 
   function onChange(event) {
-    const { name, value } = event.target
-    setInputValues({ ...inputValues, [name]: value })
+    if (event.target.name === "privateRoom") {
+      const name = "privateRoom"
+      const value = event.target.value === "true" ? true : false
+      setInputValues({ ...inputValues, [name]: value, password: "" })
+    } else if (event.target.name === "maxParticipant") {
+      const name = "maxParticipant"
+      const value = parseInt(event.target.value)
+      setInputValues({ ...inputValues, [name]: value })
+    } else {
+      const { name, value } = event.target
+      setInputValues({ ...inputValues, [name]: value })
+    }
   }
 
   // 인풋 값 확인
@@ -71,7 +118,7 @@ function CreateChatPage() {
 
   return (
     <Container>
-      <h3 className="my-4 px-2 font-bold text-3xl inline-block relative before:block before:absolute before:left-0 before:bottom-0 before:bg-rose-400 before:h-3 before:w-full before:opacity-30">
+      <h3 className="my-4 px-2 font-semibold text-2xl inline-block relative before:block before:absolute before:left-0 before:bottom-0 before:bg-rose-400 before:h-3 before:w-full before:opacity-30">
         채팅 생성
         <FontAwesomeIcon icon={faComments} className="ml-1" />
       </h3>
@@ -107,10 +154,11 @@ function CreateChatPage() {
           <input
             type="radio"
             id="isPrivateT"
-            name="isPrivate"
+            name="privateRoom"
             value="true"
             className={forInput}
             onChange={onChange}
+            disabled
           />
           <label htmlFor="isPrivateT" className="px-2">
             비밀 채팅방
@@ -118,11 +166,10 @@ function CreateChatPage() {
           <input
             type="radio"
             id="isPrivateF"
-            name="isPrivate"
+            name="privateRoom"
             value="false"
             className={forInput}
             onChange={onChange}
-            defaultChecked
           />
           <label htmlFor="isPrivateF" className="px-2">
             공개 채팅방
