@@ -56,7 +56,7 @@ function CreateChatPage() {
     }
 
     getPositions()
-  }, [depth01, depth02])
+  }, [depth02])
 
   // 폼 제출
   async function handleSubmit(event) {
