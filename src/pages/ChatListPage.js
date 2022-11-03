@@ -12,6 +12,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 import { getUserToken } from "../utils/getUserToken"
 import { selectedRegion01, selectedRegion02 } from "../recoil/regionState"
+import { CHAT_API } from "../apis"
 
 function ChatListPage() {
   // class names
@@ -43,24 +44,23 @@ function ChatListPage() {
   const [rcate2, setRcate2] = useRecoilState(selectedRegion02)
 
   // 채팅 리스트 받아오기
-  async function getChatRooms(page, rcate1, rcate2, sort) {
+  async function getChatRooms(page, size, rcate1, rcate2) {
     const token = await getUserToken()
 
     try {
-      const response = await axios.get(`/api/v1/chat/room-list`, {
+      const response = await axios.get(`${CHAT_API}/api/v1/chat/room-list`, {
         params: {
           page,
+          size,
           rcate1,
           rcate2,
-          sort,
         },
         headers: {
           Authorization: token,
           "Content-Type": "application/json",
         },
       })
-      console.log(response.data)
-      return response.data.result
+      return response
     } catch (error) {
       console.log(error)
     }
@@ -68,8 +68,20 @@ function ChatListPage() {
 
   useEffect(() => {
     // 채팅방 리스트 가져오기
-    const myChatList = getChatRooms(myListPage, "", "", "date")
-    const regionChatList = getChatRooms(regionListPage, rcate1, rcate2, "date")
+    // const myChatList = getChatRooms(myListPage - 1, 10, "", "")
+    async function getRegionList() {
+      const regionChatList = await getChatRooms(
+        regionListPage - 1,
+        10,
+        rcate1,
+        rcate2,
+      )
+      const result = regionChatList.data.result
+      console.log(result)
+      setRecentRoomList(result.content)
+      setRegionListMaxPage(result.totalPage)
+    }
+    getRegionList()
 
     // 임시 데이터
     setMyListMaxPage(5)
@@ -90,41 +102,41 @@ function ChatListPage() {
         latitude: "37.34",
       },
     ])
-    setRecentRoomList([
-      {
-        roomId: "11",
-        title: "채팅방 제목이 아주 길다면 말줄임 표시를 할 거임",
-        isPrivate: false,
-        startDate: "2022-10-29",
-        endDate: "2022-11-11",
-        rcate1: "충북",
-        rcate2: "청주시 상당구",
-        curParticipants: 2,
-        maxParticipants: 3,
-      },
-      {
-        roomId: "22",
-        title: "채팅방 제목",
-        isPrivate: false,
-        startDate: "2022-10-29",
-        endDate: "2022-11-11",
-        rcate1: "세종특별자치시",
-        rcate2: "세종시",
-        curParticipants: 1,
-        maxParticipants: 2,
-      },
-      {
-        roomId: "33",
-        title: "채팅방 제목",
-        isPrivate: false,
-        startDate: "2022-10-29",
-        endDate: "2022-11-11",
-        rcate1: "경기",
-        rcate2: "고양시 일산동구",
-        curParticipants: 1,
-        maxParticipants: 2,
-      },
-    ])
+    // setRecentRoomList([
+    //   {
+    //     roomId: "11",
+    //     title: "채팅방 제목이 아주 길다면 말줄임 표시를 할 거임",
+    //     isPrivate: false,
+    //     startDate: "2022-10-29",
+    //     endDate: "2022-11-11",
+    //     rcate1: "충북",
+    //     rcate2: "청주시 상당구",
+    //     curParticipants: 2,
+    //     maxParticipants: 3,
+    //   },
+    //   {
+    //     roomId: "22",
+    //     title: "채팅방 제목",
+    //     isPrivate: false,
+    //     startDate: "2022-10-29",
+    //     endDate: "2022-11-11",
+    //     rcate1: "세종특별자치시",
+    //     rcate2: "세종시",
+    //     curParticipants: 1,
+    //     maxParticipants: 2,
+    //   },
+    //   {
+    //     roomId: "33",
+    //     title: "채팅방 제목",
+    //     isPrivate: false,
+    //     startDate: "2022-10-29",
+    //     endDate: "2022-11-11",
+    //     rcate1: "경기",
+    //     rcate2: "고양시 일산동구",
+    //     curParticipants: 1,
+    //     maxParticipants: 2,
+    //   },
+    // ])
   }, [myListPage, regionListPage, rcate1, rcate2])
 
   // 지도 표시 리스트
@@ -141,90 +153,6 @@ function ChatListPage() {
         lat: room.latitude,
         lng: room.longitude,
       }),
-    )
-
-    // 임시 대량 데이터
-    newPositions.push(
-      {
-        lat: 37.27943075229118,
-        lng: 127.01763998406159,
-      },
-      {
-        lat: 37.55915668706214,
-        lng: 126.92536526611102,
-      },
-      {
-        lat: 35.13854258261161,
-        lng: 129.1014781294671,
-      },
-      {
-        lat: 37.55518388656961,
-        lng: 126.92926237742505,
-      },
-      {
-        lat: 35.20618517638034,
-        lng: 129.07944301057026,
-      },
-      {
-        lat: 37.561110808242056,
-        lng: 126.9831268386891,
-      },
-      {
-        lat: 37.86187129655063,
-        lng: 127.7410250820423,
-      },
-      {
-        lat: 37.47160156778542,
-        lng: 126.62818064142286,
-      },
-      {
-        lat: 35.10233410927457,
-        lng: 129.02611815856181,
-      },
-      {
-        lat: 35.10215562270429,
-        lng: 129.02579793018205,
-      },
-      {
-        lat: 35.475423012251106,
-        lng: 128.76666923366042,
-      },
-      {
-        lat: 35.93282824693927,
-        lng: 126.95307628834287,
-      },
-      {
-        lat: 36.33884892276137,
-        lng: 127.393666019664,
-      },
-      {
-        lat: 37.520412849636,
-        lng: 126.9742764161581,
-      },
-      {
-        lat: 35.155139675209675,
-        lng: 129.06154773758374,
-      },
-      {
-        lat: 35.816041994696576,
-        lng: 127.11046706211324,
-      },
-      {
-        lat: 38.20441110638504,
-        lng: 128.59038671285234,
-      },
-      {
-        lat: 37.586112739308916,
-        lng: 127.02949148517999,
-      },
-      {
-        lat: 37.50380641844987,
-        lng: 127.02130716617751,
-      },
-      {
-        lat: 37.55155704387368,
-        lng: 126.92161115892036,
-      },
     )
 
     setPositionData(newPositions)
