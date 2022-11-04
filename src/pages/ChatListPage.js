@@ -43,8 +43,8 @@ function ChatListPage() {
   const [rcate1, setRcate1] = useRecoilState(selectedRegion01)
   const [rcate2, setRcate2] = useRecoilState(selectedRegion02)
 
-  // 채팅 리스트 받아오기
-  async function getChatRooms(page, size, rcate1, rcate2) {
+  // 지역 채팅 리스트 받아오기
+  async function getChatRooms({ page, size, rcate1, rcate2 }) {
     const token = await getUserToken()
 
     try {
@@ -65,17 +65,36 @@ function ChatListPage() {
       console.log(error)
     }
   }
+  // 내 채팅 리스트 받아오기
+  async function getMyChatRooms({ page, size }) {
+    const token = await getUserToken()
+
+    try {
+      const response = await axios.get(`${CHAT_API}/api/v1/chat/my-room-list`, {
+        params: {
+          page,
+          size,
+        },
+        headers: {
+          Authorization: token,
+          "Content-Type": "application/json",
+        },
+      })
+      return response
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   useEffect(() => {
     // 채팅방 리스트 가져오기
-    // const myChatList = getChatRooms(myListPage - 1, 10, "", "")
     async function getRegionList() {
-      const regionChatList = await getChatRooms(
-        regionListPage - 1,
-        10,
+      const regionChatList = await getChatRooms({
+        page: regionListPage - 1,
+        size: 10,
         rcate1,
         rcate2,
-      )
+      })
       const result = regionChatList.data.result
       console.log(result)
       setRecentRoomList(result.content)
@@ -85,27 +104,18 @@ function ChatListPage() {
       getRegionList()
     }
 
-    // 임시 데이터
-    setMyListMaxPage(5)
-    setRegionListMaxPage(10)
-
-    setMyRoomList([
-      {
-        id: "635a9c1df13f3d593f8346fc",
-        title: "채팅 테스트용 방",
-        isPrivate: true,
-        startDate: "2022-10-29",
-        endDate: "2022-11-11",
-        rcate1: "서울",
-        rcate2: "종로구",
-        curParticipants: 1,
-        maxParticipants: 2,
-        longitude: "126.58",
-        latitude: "37.34",
-      },
-    ])
-
-  }, [myListPage, regionListPage, rcate1, rcate2])
+    async function getMyList() {
+      const myChatList = await getMyChatRooms({
+        page: myListPage - 1,
+        size: 10,
+      })
+      const result = myChatList.data.result
+      console.log(result)
+      setMyRoomList(result.content)
+      setMyListMaxPage(result.totalPage)
+    }
+    getMyList()
+  }, [myListPage, regionListPage, rcate2])
 
   // 지도 표시 리스트
   useEffect(() => {
