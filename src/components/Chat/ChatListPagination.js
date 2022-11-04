@@ -13,7 +13,7 @@ function ChatListPagination({ currentPage, maxPage, onClickPageButton }) {
     <div className="flex justify-center py-1 text-slate-400">
       {/* 이전 버튼 */}
       <button
-        disabled={currentPage === 1}
+        disabled={currentPage === 1 || maxPage === 0}
         onClick={() => {
           onClickPageButton(currentPage - 1)
         }}
@@ -42,7 +42,7 @@ function ChatListPagination({ currentPage, maxPage, onClickPageButton }) {
 
       {/* 다음 버튼 */}
       <button
-        disabled={currentPage === maxPage}
+        disabled={currentPage === maxPage || maxPage === 0}
         onClick={() => {
           onClickPageButton(currentPage + 1)
         }}
