@@ -81,7 +81,9 @@ function ChatListPage() {
       setRecentRoomList(result.content)
       setRegionListMaxPage(result.totalPage)
     }
-    getRegionList()
+    if (rcate2 !== "") {
+      getRegionList()
+    }
 
     // 임시 데이터
     setMyListMaxPage(5)
@@ -89,7 +91,7 @@ function ChatListPage() {
 
     setMyRoomList([
       {
-        roomId: "635a9c1df13f3d593f8346fc",
+        id: "635a9c1df13f3d593f8346fc",
         title: "채팅 테스트용 방",
         isPrivate: true,
         startDate: "2022-10-29",
@@ -102,41 +104,7 @@ function ChatListPage() {
         latitude: "37.34",
       },
     ])
-    // setRecentRoomList([
-    //   {
-    //     roomId: "11",
-    //     title: "채팅방 제목이 아주 길다면 말줄임 표시를 할 거임",
-    //     isPrivate: false,
-    //     startDate: "2022-10-29",
-    //     endDate: "2022-11-11",
-    //     rcate1: "충북",
-    //     rcate2: "청주시 상당구",
-    //     curParticipants: 2,
-    //     maxParticipants: 3,
-    //   },
-    //   {
-    //     roomId: "22",
-    //     title: "채팅방 제목",
-    //     isPrivate: false,
-    //     startDate: "2022-10-29",
-    //     endDate: "2022-11-11",
-    //     rcate1: "세종특별자치시",
-    //     rcate2: "세종시",
-    //     curParticipants: 1,
-    //     maxParticipants: 2,
-    //   },
-    //   {
-    //     roomId: "33",
-    //     title: "채팅방 제목",
-    //     isPrivate: false,
-    //     startDate: "2022-10-29",
-    //     endDate: "2022-11-11",
-    //     rcate1: "경기",
-    //     rcate2: "고양시 일산동구",
-    //     curParticipants: 1,
-    //     maxParticipants: 2,
-    //   },
-    // ])
+
   }, [myListPage, regionListPage, rcate1, rcate2])
 
   // 지도 표시 리스트

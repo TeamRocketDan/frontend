@@ -29,7 +29,7 @@ function ChatListContainer({ roomList, isMyList }) {
 
       {/* 채탕방 */}
       {roomList.length === 0 ? (
-        <div className="text-rose-600 text-xl">( ˃̣̣̥᷄⌓˂̣̣̥᷅ ) 채팅방이 없다냥!</div>
+        <li className="text-rose-600 text-xl">( ˃̣̣̥᷄⌓˂̣̣̥᷅ ) 채팅방이 없다냥!</li>
       ) : (
         roomList.map((room) => (
           <li key={room.id} className={listItemClass}>

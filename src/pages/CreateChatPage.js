@@ -55,7 +55,9 @@ function CreateChatPage() {
       }
     }
 
-    getPositions()
+    if (depth02 !== "") {
+      getPositions()
+    }
   }, [depth02])
 
   // 폼 제출
