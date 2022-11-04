@@ -7,7 +7,7 @@ export const getUserToken = async () => {
   let token = localStorage.getItem("token")
   const decoded = jwt_decode(token.split("Bearer ")[1])
 
-  if (decoded.exp < parseInt(Date.now() / 1000)) {
+  if (decoded.exp + 5 * 60 < parseInt(Date.now() / 1000)) {
     try {
       const response = await axios.get(`${DEFAULT_API}/api/v1/auth/refresh`, {
         headers: {
