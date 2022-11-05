@@ -16,6 +16,8 @@ function CreateFeed() {
   const navigate = useNavigate()
 
   // 스타일 클래스
+  const titleClass =
+    "my-4 px-2 font-semibold text-2xl inline-block relative before:block before:absolute before:left-0 before:bottom-0 before:bg-rose-400 before:h-3 before:w-full before:opacity-30"
   const forLabel = "w-40 font-bold mb-2 inline-block"
   const forInput = "bg-slate-100 mb-2 py-1 px-2"
 
@@ -132,100 +134,154 @@ function CreateFeed() {
       })
       .catch((err) => console.log(err))
   }
+
   return (
     <>
-      <h3 className="my-4 px-2 font-bold text-3xl inline-block relative before:block before:absolute before:left-0 before:bottom-0 before:bg-rose-400 before:h-3 before:w-full before:opacity-30">
-        피드 생성
-        <FontAwesomeIcon icon={faMessage} className="ml-1" />
-      </h3>
-      <form
-        className="w-full max-w-sm ml-32 mt-20 bg-teal-400"
-        onSubmit={postFeed}
-      >
-        <div className="w-4/5 h-3/6 bg-teal-600 mx-auto mt-12 py-56">
-          <div className="md:w-2/3">
-            <input
-              type="file"
-              accept="image/*"
-              onChange={onChangeImage}
-              className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
-              id="profile-upload"
-            />
-          </div>
-        </div>
-        <div className="md:flex md:items-center mb-6 mt-10">
-          <label htmlFor="chatRegion" className={forLabel}>
-            지역 선택
-          </label>
-          <span
-            className="cursor-pointer inline-flex"
-            onClick={() => setSearchModalOpen(!searchModalOpen)}
-          >
-            <input
-              type="text"
-              id="chatRegion"
-              name="areas"
-              className={`pointer-events-none ${forInput}`}
-              value={`${depth01} ${depth02}`}
-              onChange={onChange}
-              required
-              ref={regionInputRef}
-            />
-          </span>
-          {/* 지역 선택 */}
-          <div className="relative left-40">
-            <FormSearchModal
-              searchModalOpen={searchModalOpen}
-              setSearchModalOpen={setSearchModalOpen}
-              depth01={depth01}
-              depth02={depth02}
-              setDepth01={setDepth01}
-              setDepth02={setDepth02}
-            />
-          </div>
-        </div>
-        <div className="md:flex md:items-center mb-6">
-          <div className="md:w-1/3">
-            <label className={forLabel} htmlFor="nickname">
-              제목
-            </label>
-          </div>
-          <div className="md:w-2/3">
-            <input
-              className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
-              id="nickname"
-              onChange={onChangeTitle}
-            />
-          </div>
-        </div>
+      {/* <!-- Container --> */}
+      <div className="container mx-auto">
+        <h3 className={titleClass}>
+          피드 생성
+          <FontAwesomeIcon icon={faMessage} className="ml-1" />
+        </h3>
+        <div className="flex justify-center px-6 my-12">
+          {/* <!-- Row --> */}
+          <div className="w-full xl:w-3/4 lg:w-11/12 flex">
+            {/* <!-- Col --> */}
+            <div>
+              {/* image input https://flowbite.com/docs/forms/file-input/ */}
+              <div className="flex justify-center items-center w-full mt-16">
+                <label
+                  htmlFor="dropzone-file"
+                  className="flex flex-col justify-center items-center w-full h-64 bg-gray-50 rounded-lg border-2 border-gray-300 border-dashed cursor-pointer dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
+                >
+                  <div className="flex flex-col justify-center items-center pt-5 pb-6">
+                    <svg
+                      aria-hidden="true"
+                      className="mb-3 w-10 h-10 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                      ></path>
+                    </svg>
+                    <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                      <span className="font-semibold">Click to upload</span> or
+                      drag and drop
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      SVG, PNG, JPG or GIF (MAX. 800x400px)
+                    </p>
+                  </div>
+                  <input
+                    id="dropzone-file"
+                    type="file"
+                    className="hidden"
+                    accept="image/"
+                    onChange={onChangeImage}
+                  />
+                </label>
+              </div>
+              {/* 기존 */}
+              {/* <input
+                type="file"
+                accept="image/*"
+                onChange={onChangeImage}
+                className="w-3/6 h-3/6"
+                // className="w-full h-auto bg-gray-400 hidden lg:block lg:w-5/12 bg-cover rounded-l-lg"
+                id="profile-upload"
+              /> */}
+            </div>
+            {/* <!-- Col --> */}
+            <div className="w-full lg:w-7/12 bg-white p-5 rounded-lg lg:rounded-l-none">
+              <form
+                className="px-8 pt-6 pb-8 mb-4 bg-white rounded"
+                onSubmit={postFeed}
+              >
+                <div className="mb-4 md:flex md:justify-between">
+                  <div className="mb-4 md:mr-2 md:mb-0">
+                    <label
+                      className="block mb-2 text-sm font-bold text-gray-700"
+                      htmlFor="feedTitle"
+                    >
+                      Feed Title
+                    </label>
+                    <input
+                      className="w-full px-3 py-2 text-sm leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+                      id="feedTitle"
+                      type="text"
+                      placeholder="Title"
+                      onChange={onChangeTitle}
+                    />
+                  </div>
+                </div>
+                <div className="mb-4">
+                  <label
+                    className="block mb-2 text-sm font-bold text-gray-700"
+                    htmlFor="feedContent"
+                  >
+                    Content
+                  </label>
+                  <textarea
+                    className="w-full px-3 py-2 mb-3 text-sm leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+                    id="feedContent"
+                    placeholder="Content"
+                    onChange={onChangeContent}
+                  />
+                </div>
+                <div className="mb-4">
+                  <label
+                    className="block mb-2 text-sm font-bold text-gray-700"
+                    htmlFor="selectRegion"
+                  >
+                    지역 선택
+                  </label>
+                  <span
+                    className="cursor-pointer inline-flex"
+                    onClick={() => setSearchModalOpen(!searchModalOpen)}
+                  >
+                    <input
+                      type="text"
+                      id="selectRegion"
+                      name="areas"
+                      className="w-full px-3 py-2 mb-3 text-sm leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+                      value={`${depth01} ${depth02}`}
+                      onChange={onChange}
+                      required
+                      ref={regionInputRef}
+                    />
+                  </span>
+                  {/* 지역 선택 */}
+                  <div className="relative left-40">
+                    <FormSearchModal
+                      searchModalOpen={searchModalOpen}
+                      setSearchModalOpen={setSearchModalOpen}
+                      depth01={depth01}
+                      depth02={depth02}
+                      setDepth01={setDepth01}
+                      setDepth02={setDepth02}
+                    />
+                  </div>
+                </div>
 
-        <div className="md:flex md:items-center mb-6">
-          <div className="md:w-1/3">
-            <label className={forLabel} htmlFor="nickname">
-              내용
-            </label>
-          </div>
-          <div className="md:w-2/3">
-            <input
-              className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
-              id="nickname"
-              onChange={onChangeContent}
-            />
+                <div className="mb-6 text-center">
+                  <button
+                    className="w-full px-4 py-2 font-bold text-white bg-rose-300 rounded-full hover:bg-rose-500 focus:outline-none focus:shadow-outline"
+                    type="submit"
+                  >
+                    피드 생성!
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
-
-        <div className="md:flex md:items-center">
-          <div className="md:w-1/3"></div>
-          <div className="md:w-2/3">
-            <button
-              className="bg-rose-500 px-3 py-1 rounded-lg text-rose-50"
-              type="submit"
-            >
-              피드 생성!
-            </button>
-          </div>
-        </div>
-      </form>
+      </div>
     </>
   )
 }
