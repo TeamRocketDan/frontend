@@ -4,10 +4,12 @@ import styled from "styled-components"
 import Pagination from "react-js-pagination"
 import Modal from "react-modal"
 import axios from "axios"
+import { useRecoilState } from "recoil"
 
 import { DEFAULT_API } from "../apis"
 import { getUserToken } from "../utils/getUserToken"
 import { data } from "autoprefixer"
+import { currentUserName, currentUserProf } from "../recoil/userAuth"
 
 function MyPage() {
   const [userInfo, setInfo] = useState([])
@@ -30,6 +32,10 @@ function MyPage() {
   const modalOff = () => {
     setModal(false)
   }
+
+  // 유저 정보 수정하면 로컬스토리지에도 적용
+  const [userName, setUserName] = useRecoilState(currentUserName)
+  const [userProf, setUserProf] = useRecoilState(currentUserProf)
 
   useEffect(() => {
     const token = getUserToken().then((token) => {
@@ -72,7 +78,7 @@ function MyPage() {
         })
         .catch((err) => console.log(err))
     })
-  }, [])
+  }, [userName, userProf])
 
   // 개인정보 수정
   const edit = async () => {
@@ -83,29 +89,37 @@ function MyPage() {
       formData.append("multipartFiles", file)
     })
 
-    axios
-      .patch(`${DEFAULT_API}/api/v1/users/profileImage`, formData, {
-        headers: {
-          Authorization: token,
-          "Content-Type": "multipart/form-data",
-        },
-      })
-      .then((res) => {
-        console.log("Profile Image Changed successfully")
-      })
-      .catch((err) => console.log(err))
+    if (multipartFiles.length !== 0) {
+      axios
+        .patch(`${DEFAULT_API}/api/v1/users/profileImage`, formData, {
+          headers: {
+            Authorization: token,
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then((res) => {
+          console.log("Profile Image Changed successfully")
+          setUserProf(res.data.result.profileImagePath)
+          setMultipartFiles([])
+        })
+        .catch((err) => console.log(err))
+    }
 
-    axios
-      .patch(`${DEFAULT_API}/api/v1/users/nickname`, nickname, {
-        headers: {
-          Authorization: token,
-          "Content-Type": "application/json",
-        },
-      })
-      .then((res) => {
-        console.log("Nickname Changed successfully")
-      })
-      .catch((err) => console.log(err))
+    if (nickname !== "") {
+      axios
+        .patch(`${DEFAULT_API}/api/v1/users/nickname`, nickname, {
+          headers: {
+            Authorization: token,
+            "Content-Type": "application/json",
+          },
+        })
+        .then((res) => {
+          console.log("Nickname Changed successfully")
+          setUserName(res.data.result.nickname)
+          setNickname("")
+        })
+        .catch((err) => console.log(err))
+    }
   }
 
   // 이미지 경로 삽입
