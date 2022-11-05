@@ -28,47 +28,53 @@ function ChatListContainer({ roomList, isMyList }) {
       )}
 
       {/* 채탕방 */}
-      {roomList.map((room) => (
-        <li key={room.roomId} className={listItemClass}>
-          <Link to={`/chatroom/${room.roomId}`} className={listLinkClass}>
-            {/* 채팅방 제목 */}
-            <h4 className="text-lg font-semibold mt-2 mb-1 truncate w-full">
-              {room.title}
-            </h4>
+      {roomList.length === 0 ? (
+        <li className="text-rose-600 text-xl">( ˃̣̣̥᷄⌓˂̣̣̥᷅ ) 채팅방이 없다냥!</li>
+      ) : (
+        roomList.map((room) => (
+          <li key={room.id} className={listItemClass}>
+            <Link to={`/chatroom/${room.id}`} className={listLinkClass}>
+              {/* 채팅방 제목 */}
+              <h4 className="text-lg font-semibold mt-2 mb-1 truncate w-full">
+                {room.title}
+              </h4>
 
-            {/* 시작 날짜 끝 날짜 */}
-            <span className="text-xs">
-              {room.startDate} ~ {room.endDate}
-            </span>
-
-            {/* 비밀방 여부 */}
-            {room.isPrivate && (
-              <span className="absolute top-3 right-3">
-                <FontAwesomeIcon icon={faLock} />
-                <span className="visuallyhidden">비밀방</span>
+              {/* 시작 날짜 끝 날짜 */}
+              <span className="text-xs">
+                {room.startDate} ~ {room.endDate}
               </span>
-            )}
 
-            {/* 지역 */}
-            <div className="border-t-2 border-b-2 border-rose-200 my-2 px-1.5">
-              {room.rcate1} {room.rcate2}
-            </div>
+              {/* 비밀방 여부 */}
+              {room.isPrivate && (
+                <span className="absolute top-3 right-3">
+                  <FontAwesomeIcon icon={faLock} />
+                  <span className="visuallyhidden">비밀방</span>
+                </span>
+              )}
 
-            {/* 참가자 */}
-            <span>
-              {room.curParticipants} /{" "}
-              <span className="font-semibold">{room.maxParticipants}</span>
-              <FontAwesomeIcon icon={faUser} className="ml-1 text-sm" />
-            </span>
+              {/* 지역 */}
+              <div className="border-t-2 border-b-2 border-rose-200 my-2 px-1.5">
+                {room.rcate1} {room.rcate2}
+              </div>
 
-            {/* 방장 이미지 */}
-            <span
-              className="order-first bg-rose-200 w-20 h-20 rounded-full overflow-hidden bg-cover bg-center bg-no-repeat"
-              style={{ backgroundImage: `url(https://placebear.com/100/100)` }}
-            ></span>
-          </Link>
-        </li>
-      ))}
+              {/* 참가자 */}
+              <span>
+                {room.curParticipant} /{" "}
+                <span className="font-semibold">{room.maxParticipant}</span>
+                <FontAwesomeIcon icon={faUser} className="ml-1 text-sm" />
+              </span>
+
+              {/* 방장 이미지 */}
+              <span
+                className="order-first bg-rose-200 w-20 h-20 rounded-full overflow-hidden bg-cover bg-center bg-no-repeat"
+                style={{
+                  backgroundImage: `url(${room.ownerProfileImage})`,
+                }}
+              ></span>
+            </Link>
+          </li>
+        ))
+      )}
     </ul>
   )
 }
