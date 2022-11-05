@@ -163,13 +163,15 @@ function MyPage() {
                   right: 0,
                   bottom: 0,
                   backgroundColor: "rgba(15, 15, 15, 0.79)",
+                  zIndex: 30,
                 },
                 content: {
                   position: "absolute",
-                  top: "20%",
-                  left: "35%",
-                  width: "30%",
-                  height: "30%",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                  width: "fit-content",
+                  height: "fit-content",
                   border: "1px solid #ccc",
                   background: "#fff",
                   overflow: "auto",
@@ -183,7 +185,7 @@ function MyPage() {
               <h3 className="text-lg text-blue-300 font-semibold mb-2">
                 개인정보 수정
               </h3>
-              <form className="w-full max-w-sm ml-32 mt-20">
+              <form className="w-full max-w-sm mt-20">
                 <div className="md:flex md:items-center mb-6 mt-10">
                   <div className="md:w-1/3">
                     <label
