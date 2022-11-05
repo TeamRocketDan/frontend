@@ -9,6 +9,10 @@ import ChatListPage from "./pages/ChatListPage"
 import CreateChatPage from "./pages/CreateChatPage"
 import ChatRoom from "./pages/ChatRoom"
 import LoginRedirect from "./pages/LoginRedirect"
+import CreateFeed from "./pages/CreateFeed"
+
+// import MyFeedListPage from "./pages/MyFeedListPage"
+// import DetailedFeed from "./pages/DetailedFeed"
 
 function App() {
   return (
@@ -21,6 +25,9 @@ function App() {
         <Route path="/chatlist" element={<ChatListPage />} />
         <Route path="/createchat" element={<CreateChatPage />} />
         <Route path="/chatroom/:roomId" element={<ChatRoom />} />
+        <Route path="/createfeed" element={<CreateFeed />} />
+        {/* <Route path="/myfeedlist" element={<MyFeedListPage />} /> */}
+        {/* <Route path="/detailedfeed" element={<DetailedFeed />} /> */}
 
         {/* login redirect */}
         <Route path="/oauth2/redirect" element={<LoginRedirect />}></Route>
