@@ -4,10 +4,12 @@ import styled from "styled-components"
 import Pagination from "react-js-pagination"
 import Modal from "react-modal"
 import axios from "axios"
+import { useRecoilState } from "recoil"
 
 import { DEFAULT_API } from "../apis"
 import { getUserToken } from "../utils/getUserToken"
 import { data } from "autoprefixer"
+import { currentUserName, currentUserProf } from "../recoil/userAuth"
 
 function MyPage() {
   const [userInfo, setInfo] = useState([])
@@ -30,6 +32,10 @@ function MyPage() {
   const modalOff = () => {
     setModal(false)
   }
+
+  // 유저 정보 수정하면 로컬스토리지에도 적용
+  const [userName, setUserName] = useRecoilState(currentUserName)
+  const [userProf, setUserProf] = useRecoilState(currentUserProf)
 
   useEffect(() => {
     const token = getUserToken().then((token) => {
@@ -72,7 +78,7 @@ function MyPage() {
         })
         .catch((err) => console.log(err))
     })
-  }, [])
+  }, [userName, userProf])
 
   // 개인정보 수정
   const edit = async () => {
@@ -83,29 +89,37 @@ function MyPage() {
       formData.append("multipartFiles", file)
     })
 
-    axios
-      .patch(`${DEFAULT_API}/api/v1/users/profileImage`, formData, {
-        headers: {
-          Authorization: token,
-          "Content-Type": "multipart/form-data",
-        },
-      })
-      .then((res) => {
-        console.log("Profile Image Changed successfully")
-      })
-      .catch((err) => console.log(err))
+    if (multipartFiles.length !== 0) {
+      axios
+        .patch(`${DEFAULT_API}/api/v1/users/profileImage`, formData, {
+          headers: {
+            Authorization: token,
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then((res) => {
+          console.log("Profile Image Changed successfully")
+          setUserProf(res.data.result.profileImagePath)
+          setMultipartFiles([])
+        })
+        .catch((err) => console.log(err))
+    }
 
-    axios
-      .patch(`${DEFAULT_API}/api/v1/users/nickname`, nickname, {
-        headers: {
-          Authorization: token,
-          "Content-Type": "application/json",
-        },
-      })
-      .then((res) => {
-        console.log("Nickname Changed successfully")
-      })
-      .catch((err) => console.log(err))
+    if (nickname !== "") {
+      axios
+        .patch(`${DEFAULT_API}/api/v1/users/nickname`, nickname, {
+          headers: {
+            Authorization: token,
+            "Content-Type": "application/json",
+          },
+        })
+        .then((res) => {
+          console.log("Nickname Changed successfully")
+          setUserName(res.data.result.nickname)
+          setNickname("")
+        })
+        .catch((err) => console.log(err))
+    }
   }
 
   // 이미지 경로 삽입
@@ -163,13 +177,15 @@ function MyPage() {
                   right: 0,
                   bottom: 0,
                   backgroundColor: "rgba(15, 15, 15, 0.79)",
+                  zIndex: 30,
                 },
                 content: {
                   position: "absolute",
-                  top: "20%",
-                  left: "35%",
-                  width: "30%",
-                  height: "30%",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                  width: "fit-content",
+                  height: "fit-content",
                   border: "1px solid #ccc",
                   background: "#fff",
                   overflow: "auto",
@@ -183,7 +199,7 @@ function MyPage() {
               <h3 className="text-lg text-blue-300 font-semibold mb-2">
                 개인정보 수정
               </h3>
-              <form className="w-full max-w-sm ml-32 mt-20">
+              <form className="w-full max-w-sm mt-20">
                 <div className="md:flex md:items-center mb-6 mt-10">
                   <div className="md:w-1/3">
                     <label
@@ -293,9 +309,9 @@ function MyPage() {
             /> */}
             <form className="login-form grid place-items-center my-4">
               <ul className="h-1/2">
-                {userFollower.map((follow) => {
-                  ;<li key={follow.userId}>{follow.nickname}</li>
-                })}
+                {userFollower.map((follow) => (
+                  <li key={follow.userId}>{follow.nickname}</li>
+                ))}
               </ul>
               <PaginationBox>
                 <Pagination
@@ -318,9 +334,9 @@ function MyPage() {
             /> */}
             <form className="login-form grid place-items-center my-4">
               <ul className="h-1/2">
-                {userFollowing.map((follow) => {
-                  ;<li key={follow.userId}>{follow.nickname}</li>
-                })}
+                {userFollowing.map((follow) => (
+                  <li key={follow.userId}>{follow.nickname}</li>
+                ))}
               </ul>
               <PaginationBox>
                 <Pagination
