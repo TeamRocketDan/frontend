@@ -86,11 +86,7 @@ function CreateChatPage() {
   }
 
   function onChange(event) {
-    if (event.target.name === "privateRoom") {
-      const name = "privateRoom"
-      const value = event.target.value === "true" ? true : false
-      setInputValues({ ...inputValues, [name]: value, password: "" })
-    } else if (event.target.name === "maxParticipant") {
+    if (event.target.name === "maxParticipant") {
       const name = "maxParticipant"
       const value = parseInt(event.target.value)
       setInputValues({ ...inputValues, [name]: value })
@@ -151,32 +147,6 @@ function CreateChatPage() {
             onChange={onChange}
             required
           />
-          <br />
-          <span className={forLabel}>비밀 채팅방</span>
-          <input
-            type="radio"
-            id="isPrivateT"
-            name="privateRoom"
-            value="true"
-            className={forInput}
-            onChange={onChange}
-            disabled
-          />
-          <label htmlFor="isPrivateT" className="px-2">
-            비밀 채팅방
-          </label>
-          <input
-            type="radio"
-            id="isPrivateF"
-            name="privateRoom"
-            value="false"
-            className={forInput}
-            onChange={onChange}
-          />
-          <label htmlFor="isPrivateF" className="px-2">
-            공개 채팅방
-          </label>
-
           <br />
           <label htmlFor="startDate" className={forLabel}>
             여행 시작 날짜
