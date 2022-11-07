@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom"
 import SockJS from "sockjs-client"
 import * as StompJs from "@stomp/stompjs"
 import { useRecoilState } from "recoil"
+import dayjs from "dayjs"
 
 import { currentUserName, currentUserProf } from "../recoil/userAuth"
 
@@ -10,6 +11,9 @@ import ChatSendForm from "../components/Chat/ChatSendForm"
 import Container from "../components/Layout/Container"
 
 import { getUserToken } from "../utils/getUserToken"
+import { createChatBubble } from "../utils/createChatBubble"
+import axios from "axios"
+import { CHAT_API } from "../apis"
 
 let stompClient
 let subscription
@@ -31,48 +35,7 @@ function ChatRoom() {
         (content) => {
           const payload = JSON.parse(content.body)
           console.log(payload)
-          const bubble = document.createElement("li")
-          bubble.classList.add(
-            "first:mt-auto",
-            "rounded-lg",
-            "w-fit",
-            "mb-4",
-            "py-2",
-            "px-3",
-          )
-          if (payload.senderName === userName) {
-            bubble.classList.add("bg-rose-200", "self-end", "mr-12")
-          } else {
-            bubble.classList.add(
-              "border",
-              "border-rose-300",
-              "self-start",
-              "ml-12",
-            )
-          }
-          bubble.style.maxWidth = "70%"
-          bubble.textContent = payload.message
-          const prof = document.createElement("span")
-          prof.classList.add(
-            "w-10",
-            "h-10",
-            "rounded-full",
-            "absolute",
-            "overflow-hidden",
-            "bg-cover",
-            "-mt-2",
-          )
-          if (payload.senderName === userName) {
-            prof.classList.add("right-0.5")
-          } else {
-            prof.classList.add("left-0")
-          }
-          prof.style.backgroundImage = `url(${
-            payload.senderImgSrc
-              ? payload.senderImgSrc
-              : "https://via.placeholder.com/50"
-          })`
-          bubble.appendChild(prof)
+          const bubble = createChatBubble(payload, userName)
           messageListRef.current.appendChild(bubble)
 
           messageListRef.current.scrollTop = messageListRef.current.scrollHeight
@@ -160,7 +123,6 @@ function ChatRoom() {
         Authorization: token,
       },
     })
-    console.log(message)
 
     input.value = ""
     textInputRef.current.focus()
