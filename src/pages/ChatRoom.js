@@ -4,15 +4,16 @@ import SockJS from "sockjs-client"
 import * as StompJs from "@stomp/stompjs"
 import { useRecoilState } from "recoil"
 import dayjs from "dayjs"
+import axios from "axios"
 
 import { currentUserName, currentUserProf } from "../recoil/userAuth"
 
 import ChatSendForm from "../components/Chat/ChatSendForm"
 import Container from "../components/Layout/Container"
+import ChatRoomHeader from "../components/Chat/ChatRoomHeader"
 
 import { getUserToken } from "../utils/getUserToken"
 import { createChatBubble } from "../utils/createChatBubble"
-import axios from "axios"
 import { CHAT_API } from "../apis"
 
 let stompClient
@@ -26,6 +27,15 @@ function ChatRoom() {
   const textInputRef = useRef()
   const messageListRef = useRef()
   const [token, setToken] = useState("")
+
+  // 메세지 가져오기
+  const [messagePage, setMessagePage] = useState(0)
+  const [requestDate, setRequestDate] = useState(0)
+  const scrollObserver = useRef()
+  const [isMessageEnd, setIsMessageEnd] = useState(false)
+
+  // room enter
+  const [isEnterSuccess, setIsEnterSuccess] = useState(false)
 
   // 채팅방 구독
   const subscribe = () => {
@@ -43,6 +53,28 @@ function ChatRoom() {
       )
     }
   }
+
+  // room enter 방 입장
+  const roomEnter = async () => {
+    const token = await getUserToken()
+    const response = await axios.patch(
+      `${CHAT_API}/api/v1/chat/room-enter/${roomId}`,
+      null,
+      {
+        headers: {
+          Authorization: token,
+          "Content-Type": "application/json",
+        },
+      },
+    )
+    console.log("[ROOM ENTER] : ", response)
+    if (response) {
+      setIsEnterSuccess(true)
+    }
+  }
+  useEffect(() => {
+    roomEnter()
+  }, [])
 
   useEffect(() => {
     async function getToken() {
@@ -63,11 +95,13 @@ function ChatRoom() {
           Authorization: token,
         },
         debug: function (str) {
-          console.log(str)
+          // 채팅 테스트중에 잠시 핑퐁 꺼둘게요.
+          // console.log(str)
         },
         onConnect: () => {
           // 연결 됐을 때 구독 시작
           subscribe()
+          // 새 유저일 때 입장 메세지 요청
         },
         onStompError: function (frame) {
           console.log("Broker reported error: " + frame.headers["message"])
@@ -98,7 +132,7 @@ function ChatRoom() {
     if (stompClient) {
       stompClient.deactivate()
       subscription.unsubscribe()
-      console.log("연결 끊어짐")
+      console.log("채팅 연결 끊어짐")
     }
   }
 
@@ -128,23 +162,96 @@ function ChatRoom() {
     textInputRef.current.focus()
   }
 
+  // 이전 메세지 가져오기
+  async function getMessage() {
+    const date = dayjs(new Date())
+      .subtract(requestDate, "day")
+      .format("YYYY-MM-DD")
+    const token = await getUserToken()
+    console.log("requestDate >= 2 : ", requestDate >= 2)
+    const response = await axios.get(
+      requestDate >= 2
+        ? `${CHAT_API}/api/v1/chat/message/mongo/${roomId}?page=${messagePage}&size=20`
+        : `${CHAT_API}/api/v1/chat/message/${roomId}?date=${date}&page=${messagePage}&size=20`,
+      {
+        headers: {
+          Authorization: token,
+          "Content-Type": "application/json",
+        },
+      },
+    )
+
+    const prevList = response.data.result.content
+
+    console.log("[GET MESSAGE] : ", response)
+
+    prevList.forEach((data) => {
+      const bubble = createChatBubble(data, userName)
+      scrollObserver.current.after(bubble)
+    })
+
+    // 채팅창 스크롤 이동 (메세지 로딩중 요소 안보일 정도만)
+    messageListRef.current.scrollTo(0, 60)
+
+    // 마지막 날, 마지막 페이지일 때 => 메세지 끝(더 이상 불러오지 않음)
+    if (response.data.result.lastDay && response.data.result.lastPage) {
+      console.log("메세지 끝")
+      setIsMessageEnd(true)
+      scrollObserver.current.classList.add("hidden")
+    }
+
+    // 마지막 페이지일 때 => 날짜가 넘어감
+    if (response.data.result.lastPage) {
+      setMessagePage(0)
+      setRequestDate(requestDate + 1)
+    }
+  }
+
+  useEffect(() => {
+    // 메세지가 끝이 아닐 때만 불러옴
+    if (!isMessageEnd && isEnterSuccess) {
+      getMessage()
+    }
+  }, [messagePage, isEnterSuccess])
+
+  useEffect(() => {
+    if (isEnterSuccess) {
+      const io = new IntersectionObserver((entries, observer) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setMessagePage(messagePage + 1)
+            console.log("detected!!!!")
+          }
+        })
+      }, {})
+      io.observe(scrollObserver.current)
+    }
+  }, [isEnterSuccess])
+
   return (
     <>
       <Container>
+        {/* 채팅방 나가기 버튼 */}
+        <ChatRoomHeader roomId={roomId} />
+
         {/* 채팅 내용 나타나는 부분 */}
         <div
           className="w-full overflow-hidden relative"
           style={{
-            height: "calc(100vh - 111px)",
+            height: "calc(100vh - 159px)",
           }}
         >
           <ul
-            className="flex flex-col pt-4 overflow-y-scroll absolute top-0 left-0 bottom-0"
-            style={{
-              right: "-15px",
-            }}
+            className="scrollhide flex flex-col pt-4 overflow-y-scroll absolute top-0 left-0 bottom-0 right-0"
             ref={messageListRef}
-          ></ul>
+          >
+            <li
+              ref={scrollObserver}
+              className="h-20 flex mb-10 mt-auto text-rose-300 items-center justify-center"
+            >
+              ...메세지 로딩중...
+            </li>
+          </ul>
         </div>
 
         {/* 채팅 보내는 부분 */}
