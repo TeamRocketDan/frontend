@@ -16,24 +16,26 @@ import { selectedRegion01, selectedRegion02 } from "../recoil/regionState"
 
 import { DEFAULT_API } from "../apis"
 
-function FeedList() {
+function MyFeedListPage() {
   // class names
   const titleClass =
     "my-4 px-2 font-semibold text-2xl inline-block relative before:block before:absolute before:left-0 before:bottom-0 before:bg-rose-400 before:h-3 before:w-full before:opacity-30"
 
+  // 피드 리스트
+  const [myFeedList, setMyFeedList] = useState([])
+
   const [positionData, setPositionData] = useState([])
-  const [feedList, setFeedList] = useState([])
 
   // 페이지네이션 관련
   const [searchParams, setSearchParams] = useSearchParams()
-  const [listMaxPage, setListMaxPage] = useState(1)
+  const [myListMaxPage, setMyListMaxPage] = useState(1)
   const [regionListMaxPage, setRegionListMaxPage] = useState(1)
-  const listPage = parseInt(searchParams.get("listPage") ?? "1", 10)
+  const myListPage = parseInt(searchParams.get("mylistpage") ?? "1", 10)
   const regionListPage = parseInt(searchParams.get("regionlistpage") ?? "1", 10)
 
   function updateParams(updates) {
     setSearchParams({
-      listPage: searchParams.get("listPage"),
+      mylistpage: searchParams.get("mylistpage"),
       regionlistpage: searchParams.get("regionlistpage"),
       ...updates,
     })
@@ -45,13 +47,10 @@ function FeedList() {
 
   // 피드 리스트 받아오기
   async function getFeeds({ page, size }) {
-    console.log(`page: ${page}`)
-    console.log(`size: ${size}`)
-    console.log(`rcate1: ${rcate1}`)
-    console.log(`rcate2: ${rcate2}`)
+    const token = await getUserToken()
 
     try {
-      const response = await axios.get(`${DEFAULT_API}/api/v1/feeds`, {
+      const response = await axios.get(`${DEFAULT_API}/api/v1/feeds/feedList`, {
         params: {
           page,
           size,
@@ -59,6 +58,7 @@ function FeedList() {
           rcate2,
         },
         headers: {
+          Authorization: token,
           "Content-Type": "application/json",
         },
       })
@@ -86,25 +86,25 @@ function FeedList() {
       getRegionList()
     }
 
-    async function getList() {
-      const feedList = await getFeeds({
-        page: listPage - 1,
+    async function getMyList() {
+      const myFeedList = await getFeeds({
+        page: myListPage - 1,
         size: 10,
         rcate1,
         rcate2,
       })
-      const result = feedList.data.result
+      const result = myFeedList.data.result
       console.log(result)
-      setFeedList(result.content)
+      setMyFeedList(result.content)
     }
 
-    getList()
-  }, [listPage, regionListPage, rcate2])
+    getMyList()
+  }, [myListPage, regionListPage, rcate2])
 
   // 지도 표시 리스트
   useEffect(() => {
     const newPositions = []
-    feedList.forEach((feed) =>
+    myFeedList.forEach((feed) =>
       newPositions.push({
         lat: feed.latitude,
         lng: feed.longitude,
@@ -112,7 +112,7 @@ function FeedList() {
     )
 
     setPositionData(newPositions)
-  }, [feedList])
+  }, [myFeedList])
 
   return (
     <Container>
@@ -120,14 +120,13 @@ function FeedList() {
       <FeedListMap positionData={positionData} />
 
       <h3 className={titleClass}>
-        피드 리스트 <FontAwesomeIcon icon={faMap} />
+        나의 여행 <FontAwesomeIcon icon={faMap} />
       </h3>
 
-      {feedList.map((index) => (
+      {myFeedList.map((index) => (
         <div className="flex flex-wrap -m-4">
           <Card
             feedId={index.feedId}
-            profile={index.profileImagePath}
             imageSrc={index.feedImages}
             location={index.rcate1}
             title={index.title}
@@ -139,8 +138,8 @@ function FeedList() {
       ))}
 
       <ChatListPagination
-        maxPage={listMaxPage}
-        currentPage={listPage}
+        maxPage={myListMaxPage}
+        currentPage={myListPage}
         onClickPageButton={(pageNumber) =>
           updateParams({ regionlistpage: pageNumber })
         }
@@ -149,4 +148,4 @@ function FeedList() {
   )
 }
 
-export default FeedList
+export default MyFeedListPage
