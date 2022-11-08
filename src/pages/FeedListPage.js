@@ -16,7 +16,7 @@ import { selectedRegion01, selectedRegion02 } from "../recoil/regionState"
 
 import { DEFAULT_API } from "../apis"
 
-function FeedList() {
+function FeedListPage() {
   // class names
   const titleClass =
     "my-4 px-2 font-semibold text-2xl inline-block relative before:block before:absolute before:left-0 before:bottom-0 before:bg-rose-400 before:h-3 before:w-full before:opacity-30"
@@ -149,4 +149,4 @@ function FeedList() {
   )
 }
 
-export default FeedList
+export default FeedListPage
