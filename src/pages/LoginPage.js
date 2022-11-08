@@ -4,7 +4,7 @@ import KakaoLoginButton from "../components/Login/KaKaoLoginButton"
 import NaverLoginButton from "../components/Login/NaverLoginButton"
 import GoogleLoginButton from "../components/Login/GoogleLoginButton"
 
-function Login() {
+function LoginPage() {
   return (
     <>
       <div className="relative flex flex-col justify-center min-h-screen overflow-hidden">
@@ -29,4 +29,4 @@ function Login() {
   )
 }
 
-export default Login
+export default LoginPage
