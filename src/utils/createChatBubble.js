@@ -1,4 +1,22 @@
-export const createChatBubble = (payload, userName) => {
+export const createChatBubble = (payload, userName, roomId) => {
+  // 입장 퇴장 메세지
+  if (payload.senderName === `system${roomId}`) {
+    const bubble = document.createElement("li")
+    bubble.classList.add(
+      "w-full",
+      "text-slate-500",
+      "text-center",
+      "py-1",
+      "my-2",
+      "border-y",
+      "border-dashed",
+      "bg-slate-100",
+    )
+    bubble.textContent = payload.message
+
+    return bubble
+  }
+
   const bubble = document.createElement("li")
   bubble.classList.add(
     "first:mt-auto",
