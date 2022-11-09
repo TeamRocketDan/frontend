@@ -96,7 +96,7 @@ function ChatListPage() {
         rcate2,
       })
       const result = regionChatList.data.result
-      console.log(result)
+      console.log("[GET REGION CHAT LIST] : ", result)
       setRecentRoomList(result.content)
       setRegionListMaxPage(result.totalPage)
     }
@@ -110,7 +110,7 @@ function ChatListPage() {
         size: 10,
       })
       const result = myChatList.data.result
-      console.log(result)
+      console.log("[GET MY CHAT LIST] : ", result)
       setMyRoomList(result.content)
       setMyListMaxPage(result.totalPage)
     }
