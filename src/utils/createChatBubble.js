@@ -59,7 +59,12 @@ export const createChatBubble = (payload, userName, roomId) => {
     "px-2",
     "bottom-0",
   )
-  timeStamp.textContent = `${payload.createdAt[3]}시 ${payload.createdAt[4]}분`
+  timeStamp.textContent =
+    typeof payload.createdAt === "string"
+      ? `${payload.createdAt.split("T")[1].split(":")[0]}시 ${
+          payload.createdAt.split("T")[1].split(":")[1]
+        }분`
+      : `${payload.createdAt[3]}시 ${payload.createdAt[4]}분`
 
   if (payload.senderName === userName) {
     prof.classList.add("-right-12")
