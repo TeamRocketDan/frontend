@@ -25,6 +25,7 @@ export const createChatBubble = (payload, userName, roomId) => {
     "mb-4",
     "py-2",
     "px-3",
+    "relative",
   )
   if (payload.senderName === userName) {
     bubble.classList.add("bg-rose-200", "self-end", "mr-12")
@@ -43,17 +44,32 @@ export const createChatBubble = (payload, userName, roomId) => {
     "bg-cover",
     "-mt-2",
   )
-  if (payload.senderName === userName) {
-    prof.classList.add("right-0.5")
-  } else {
-    prof.classList.add("left-0")
-  }
+
   prof.style.backgroundImage = `url(${
     payload.senderImgSrc
       ? payload.senderImgSrc
       : "https://via.placeholder.com/50"
   })`
+  const timeStamp = document.createElement("span")
+  timeStamp.classList.add(
+    "text-slate-400",
+    "text-sm",
+    "absolute",
+    "w-20",
+    "px-2",
+    "bottom-0",
+  )
+  timeStamp.textContent = `${payload.createdAt[3]}시 ${payload.createdAt[4]}분`
+
+  if (payload.senderName === userName) {
+    prof.classList.add("-right-12")
+    timeStamp.classList.add("-left-20", "text-right")
+  } else {
+    prof.classList.add("-left-12")
+    timeStamp.classList.add("-right-20", "text-left")
+  }
   bubble.appendChild(prof)
+  bubble.appendChild(timeStamp)
 
   return bubble
 }
