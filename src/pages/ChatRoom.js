@@ -287,7 +287,7 @@ function ChatRoom() {
         <div
           className="w-full overflow-hidden relative"
           style={{
-            height: "calc(100vh - 159px)",
+            height: "calc(100vh - 92px)",
           }}
         >
           <ul
