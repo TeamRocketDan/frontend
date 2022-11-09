@@ -38,14 +38,14 @@ function ChatRoom() {
   const [isEnterSuccess, setIsEnterSuccess] = useState(false)
 
   // 채팅방 구독
-  const subscribe = () => {
+  function subscribe() {
     if (stompClient != null) {
       subscription = stompClient.subscribe(
         `/exchange/chat.exchange/room.${roomId}`,
         (content) => {
           const payload = JSON.parse(content.body)
           console.log(payload)
-          const bubble = createChatBubble(payload, userName)
+          const bubble = createChatBubble(payload, userName, roomId)
           messageListRef.current.appendChild(bubble)
 
           messageListRef.current.scrollTop = messageListRef.current.scrollHeight
@@ -55,7 +55,7 @@ function ChatRoom() {
   }
 
   // room enter 방 입장
-  const roomEnter = async () => {
+  async function roomEnter() {
     const token = await getUserToken()
     const response = await axios.patch(
       `${CHAT_API}/api/v1/chat/room-enter/${roomId}`,
@@ -71,10 +71,34 @@ function ChatRoom() {
     if (response) {
       setIsEnterSuccess(true)
     }
+
+    // 신규 유저일 경우 입장 메세지 stomp 연결 후에 보내야 한다
+    if (response.data.result.newUser) {
+      sendEnterMessage()
+    }
   }
   useEffect(() => {
     roomEnter()
   }, [])
+
+  // 입장 메세지 보내기
+  async function sendEnterMessage() {
+    if (stompClient) {
+      const token = await getUserToken()
+      const message = {
+        senderName: userName,
+      }
+
+      stompClient.publish({
+        destination: `/pub/chat.enter.${roomId}.${userName}`,
+        body: JSON.stringify(message),
+        headers: {
+          Authorization: token,
+        },
+      })
+      console.log("입장 메세지 보냄")
+    }
+  }
 
   useEffect(() => {
     async function getToken() {
@@ -84,8 +108,8 @@ function ChatRoom() {
     getToken()
   }, [])
 
+  // stompClient 생성
   useEffect(() => {
-    // stompClient 생성
     if (token !== "") {
       stompClient = new StompJs.Client({
         brokerURL: "ws://52.78.188.101:61613/stomp/chat",
@@ -95,20 +119,18 @@ function ChatRoom() {
           Authorization: token,
         },
         debug: function (str) {
-          // 채팅 테스트중에 잠시 핑퐁 꺼둘게요.
-          // console.log(str)
+          console.log(str)
         },
         onConnect: () => {
           // 연결 됐을 때 구독 시작
           subscribe()
-          // 새 유저일 때 입장 메세지 요청
         },
         onStompError: function (frame) {
           console.log("Broker reported error: " + frame.headers["message"])
           console.log("Additional details: " + frame.body)
         },
         onDisconnect: () => {
-          disConnect()
+          // disConnect()
         },
         reconnectDelay: 5000,
         heartbeatIncoming: 4000,
@@ -124,15 +146,35 @@ function ChatRoom() {
 
     // 컴포넌트 언마운트 될 때 웹소켓 연결을 끊기
     return () => {
-      disConnect()
+      if (stompClient && subscription) {
+        stompClient.deactivate()
+        subscription.unsubscribe()
+      }
     }
   }, [token])
 
-  function disConnect() {
-    if (stompClient) {
+  // 채팅 연결 끊어질 때
+  async function disConnect() {
+    if (stompClient && subscription) {
       stompClient.deactivate()
       subscription.unsubscribe()
       console.log("채팅 연결 끊어짐")
+
+      try {
+        const response = await axios.patch(
+          `${CHAT_API}/api/v1/chat/chat-end/${roomId}`,
+          null,
+          {
+            headers: {
+              Authorization: token,
+              "Content-Type": "application/json",
+            },
+          },
+        )
+        console.log("[CHAT END] : ", response)
+      } catch (error) {
+        console.log(error)
+      }
     }
   }
 
@@ -168,7 +210,7 @@ function ChatRoom() {
       .subtract(requestDate, "day")
       .format("YYYY-MM-DD")
     const token = await getUserToken()
-    console.log("requestDate >= 2 : ", requestDate >= 2)
+    console.log("2일 이전의 요청인가요? : ", requestDate >= 2)
     const response = await axios.get(
       requestDate >= 2
         ? `${CHAT_API}/api/v1/chat/message/mongo/${roomId}?page=${messagePage}&size=20`
@@ -207,13 +249,14 @@ function ChatRoom() {
     }
   }
 
+  // 메세지가 끝이 아닐 때만 불러옴
   useEffect(() => {
-    // 메세지가 끝이 아닐 때만 불러옴
     if (!isMessageEnd && isEnterSuccess) {
       getMessage()
     }
   }, [messagePage, isEnterSuccess])
 
+  // IntersectionObserver 생성
   useEffect(() => {
     if (isEnterSuccess) {
       const io = new IntersectionObserver((entries, observer) => {
@@ -232,7 +275,13 @@ function ChatRoom() {
     <>
       <Container>
         {/* 채팅방 나가기 버튼 */}
-        <ChatRoomHeader roomId={roomId} />
+        <ChatRoomHeader
+          roomId={roomId}
+          stompClient={stompClient}
+          userName={userName}
+          isEnterSuccess={isEnterSuccess}
+          disConnect={disConnect}
+        />
 
         {/* 채팅 내용 나타나는 부분 */}
         <div
