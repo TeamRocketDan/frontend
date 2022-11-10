@@ -79,8 +79,21 @@ function ChatRoomHeader({
       // 채팅방 나가는 메세지 요청 보내기
       if (sendLeaveMessage()) {
         try {
-          const responseEnd = await axios.patch(
-            `${CHAT_API}/api/v1/chat/chat-end/${roomId}`,
+          // const responseEnd = await axios.patch(
+          //   `${CHAT_API}/api/v1/chat/chat-end/${roomId}`,
+          //   null,
+          //   {
+          //     headers: {
+          //       Authorization: token,
+          //       "Content-Type": "application/json",
+          //     },
+          //   },
+          // )
+          // console.log("[CHAT END] : ", responseEnd)
+
+          // if (responseEnd.data.success) {
+          const response = await axios.patch(
+            `${CHAT_API}/api/v1/chat/room-leave/${roomId}`,
             null,
             {
               headers: {
@@ -89,21 +102,8 @@ function ChatRoomHeader({
               },
             },
           )
-          console.log("[CHAT END] : ", responseEnd)
-
-          if (responseEnd.data.success) {
-            const response = await axios.patch(
-              `${CHAT_API}/api/v1/chat/room-leave/${roomId}`,
-              null,
-              {
-                headers: {
-                  Authorization: token,
-                  "Content-Type": "application/json",
-                },
-              },
-            )
-            console.log("[ROOM LEAVE] : ", response)
-          }
+          console.log("[ROOM LEAVE] : ", response)
+          // }
 
           navigate("/chatlist")
         } catch (error) {

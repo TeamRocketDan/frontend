@@ -130,7 +130,7 @@ function ChatRoom() {
           console.log("Additional details: " + frame.body)
         },
         onDisconnect: () => {
-          // disConnect()
+          disConnect()
         },
         reconnectDelay: 5000,
         heartbeatIncoming: 4000,
@@ -146,35 +146,32 @@ function ChatRoom() {
 
     // 컴포넌트 언마운트 될 때 웹소켓 연결을 끊기
     return () => {
-      if (stompClient && subscription) {
-        stompClient.deactivate()
-        subscription.unsubscribe()
-      }
+      disConnect()
     }
   }, [token])
 
-  // 채팅 연결 끊어질 때
-  async function disConnect() {
+  // 채팅 연결 끊어질 때 chat-end 요청까지
+  function disConnect() {
     if (stompClient && subscription) {
       stompClient.deactivate()
       subscription.unsubscribe()
       console.log("채팅 연결 끊어짐")
 
-      try {
-        const response = await axios.patch(
-          `${CHAT_API}/api/v1/chat/chat-end/${roomId}`,
-          null,
-          {
-            headers: {
-              Authorization: token,
-              "Content-Type": "application/json",
-            },
-          },
-        )
-        console.log("[CHAT END] : ", response)
-      } catch (error) {
-        console.log(error)
-      }
+      // try {
+      //   const response = await axios.patch(
+      //     `${CHAT_API}/api/v1/chat/chat-end/${roomId}`,
+      //     null,
+      //     {
+      //       headers: {
+      //         Authorization: token,
+      //         "Content-Type": "application/json",
+      //       },
+      //     },
+      //   )
+      //   console.log("[CHAT END] : ", response)
+      // } catch (error) {
+      //   console.log(error)
+      // }
     }
   }
 
@@ -228,7 +225,7 @@ function ChatRoom() {
     console.log("[GET MESSAGE] : ", response)
 
     prevList.forEach((data) => {
-      const bubble = createChatBubble(data, userName)
+      const bubble = createChatBubble(data, userName, roomId)
       scrollObserver.current.after(bubble)
     })
 
