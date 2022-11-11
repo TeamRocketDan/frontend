@@ -17,7 +17,7 @@ function SearchModal({
   useEffect(() => {
     // 지역 이름 데이터 받아서 저장
     axios
-      .get(`${DEFAULT_API}/api/v1/areas/city`)
+      .get(`/mainapi/v1/areas/city`)
       .then((response) => {
         setCityList(response.data.result)
       })
@@ -41,7 +41,7 @@ function SearchModal({
     })[0]
 
     axios
-      .get(`${DEFAULT_API}/api/v1/areas/${city.id}/district`)
+      .get(`/mainapi/v1/areas/${city.id}/district`)
       .then((response) => {
         setCurrentDistricts(response.data.result)
       })
