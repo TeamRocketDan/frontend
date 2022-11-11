@@ -11,9 +11,6 @@ import ChatRoom from "./pages/ChatRoom"
 import LoginRedirect from "./pages/LoginRedirect"
 import CreateFeedPage from "./pages/CreateFeedPage"
 
-import MyFeedListPage from "./pages/MyFeedListPage"
-import DetailedFeed from "./pages/DetailedFeedPage"
-import EditFeedPage from "./pages/EditFeedPage"
 
 function App() {
   return (
@@ -26,10 +23,6 @@ function App() {
         <Route path="/chatlist" element={<ChatListPage />} />
         <Route path="/createchat" element={<CreateChatPage />} />
         <Route path="/chatroom/:roomId" element={<ChatRoom />} />
-        <Route path="/createfeed" element={<CreateFeedPage />} />
-        <Route path="/myfeedlist" element={<MyFeedListPage />} />
-        <Route path="/detailedfeed/:feedId" element={<DetailedFeed />} />
-        <Route path="/editfeed/:feedId" element={<EditFeedPage />} />
 
         {/* login redirect */}
         <Route path="/oauth2/redirect" element={<LoginRedirect />}></Route>

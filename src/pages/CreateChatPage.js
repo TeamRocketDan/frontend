@@ -142,7 +142,7 @@ function CreateChatPage() {
             id="chatMax"
             name="maxParticipant"
             className={forInput}
-            min="0"
+            min="2"
             max="10"
             onChange={onChange}
             required
