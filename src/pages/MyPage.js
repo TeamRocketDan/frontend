@@ -335,7 +335,7 @@ function MyPage() {
             <form className="login-form grid place-items-center my-4">
               <ul className="h-1/2">
                 {userFollowing.map((follow) => (
-                  <li key={follow.userId}>{follow.nickname}</li>
+                  <li key={follow.userId}>{follow.nickname} </li>
                 ))}
               </ul>
               <PaginationBox>
