@@ -15,6 +15,7 @@ import ChatRoomHeader from "../components/Chat/ChatRoomHeader"
 import { getUserToken } from "../utils/getUserToken"
 import { createChatBubble } from "../utils/createChatBubble"
 import { CHAT_API } from "../apis"
+import { useCheckLogin } from "../hooks/useCheckLogin"
 
 let stompClient
 let subscription
@@ -37,6 +38,9 @@ function ChatRoom() {
   // room enter
   const [isEnterSuccess, setIsEnterSuccess] = useState(false)
   const navigate = useNavigate()
+
+  // 로그인 안했으면 로그인 페이지로
+  useCheckLogin()
 
   // 채팅방 구독
   function subscribe() {
@@ -83,7 +87,7 @@ function ChatRoom() {
       if (
         error.response.data.errorMessage === "정원을 넘어 들어갈 수 없습니다."
       ) {
-        window.confirm("정원을 넘어 들어갈 수 없습니다.")
+        window.alert("정원을 넘어 들어갈 수 없습니다.")
         navigate("/chatlist")
       }
     }
