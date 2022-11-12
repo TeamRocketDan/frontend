@@ -20,7 +20,7 @@ function ChatListPagination({ currentPage, maxPage, onClickPageButton }) {
         className={arrowButtonClass}
       >
         <FontAwesomeIcon icon={faCircleChevronLeft} />
-        <span className="visuallyhidden">이전</span>
+        <span className="sr-only">이전</span>
       </button>
 
       {/* 페이지 버튼 최대 9개가 보임 */}
@@ -49,7 +49,7 @@ function ChatListPagination({ currentPage, maxPage, onClickPageButton }) {
         className={arrowButtonClass}
       >
         <FontAwesomeIcon icon={faCircleChevronRight} />
-        <span className="visuallyhidden">다음</span>
+        <span className="sr-only">다음</span>
       </button>
     </div>
   )

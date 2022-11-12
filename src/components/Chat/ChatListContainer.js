@@ -48,7 +48,7 @@ function ChatListContainer({ roomList, isMyList }) {
               {room.isPrivate && (
                 <span className="absolute top-3 right-3">
                   <FontAwesomeIcon icon={faLock} />
-                  <span className="visuallyhidden">비밀방</span>
+                  <span className="sr-only">비밀방</span>
                 </span>
               )}
 

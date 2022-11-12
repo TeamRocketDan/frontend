@@ -19,7 +19,7 @@ function ChatSendForm({ handleSubmit, textInputRef }) {
               icon={faPaperPlane}
               className="text-xl text-white"
             />
-            <span className="visuallyhidden">보내기</span>
+            <span className="sr-only">보내기</span>
           </button>
         </div>
       </form>
