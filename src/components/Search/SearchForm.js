@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import { useRecoilState } from "recoil"
 import { faXmark } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -8,7 +8,6 @@ import { selectedRegion01, selectedRegion02 } from "../../recoil/regionState"
 
 function SearchForm() {
   const [searchModalOpen, setSearchModalOpen] = useState(false)
-  const modalRef = useRef()
 
   const [depth01, setDepth01] = useRecoilState(selectedRegion01)
   const [depth02, setDepth02] = useRecoilState(selectedRegion02)
@@ -65,7 +64,6 @@ function SearchForm() {
         {/* 지역 선택 모달 */}
         {searchModalOpen && (
           <SearchModal
-            ref={modalRef}
             setSearchModalOpen={setSearchModalOpen}
             currentDistricts={currentDistricts}
             setCurrentDistricts={setCurrentDistricts}
