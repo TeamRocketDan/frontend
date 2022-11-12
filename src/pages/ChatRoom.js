@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react"
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import SockJS from "sockjs-client"
 import * as StompJs from "@stomp/stompjs"
 import { useRecoilState } from "recoil"
@@ -36,6 +36,7 @@ function ChatRoom() {
 
   // room enter
   const [isEnterSuccess, setIsEnterSuccess] = useState(false)
+  const navigate = useNavigate()
 
   // 채팅방 구독
   function subscribe() {
@@ -56,25 +57,35 @@ function ChatRoom() {
 
   // room enter 방 입장
   async function roomEnter() {
-    const token = await getUserToken()
-    const response = await axios.patch(
-      `${CHAT_API}/api/v1/chat/room-enter/${roomId}`,
-      null,
-      {
-        headers: {
-          Authorization: token,
-          "Content-Type": "application/json",
+    try {
+      const token = await getUserToken()
+      const response = await axios.patch(
+        `${CHAT_API}/api/v1/chat/room-enter/${roomId}`,
+        null,
+        {
+          headers: {
+            Authorization: token,
+            "Content-Type": "application/json",
+          },
         },
-      },
-    )
-    console.log("[ROOM ENTER] : ", response)
-    if (response) {
-      setIsEnterSuccess(true)
-    }
+      )
+      console.log("[ROOM ENTER] : ", response)
+      if (response) {
+        setIsEnterSuccess(true)
+      }
 
-    // 신규 유저일 경우 입장 메세지 stomp 연결 후에 보내야 한다
-    if (response.data.result.newUser) {
-      sendEnterMessage()
+      // 신규 유저일 경우 입장 메세지 stomp 연결 후에 보내야 한다
+      if (response.data.result.newUser) {
+        sendEnterMessage()
+      }
+    } catch (error) {
+      console.log(error.response.data.errorMessage)
+      if (
+        error.response.data.errorMessage === "정원을 넘어 들어갈 수 없습니다."
+      ) {
+        window.confirm("정원을 넘어 들어갈 수 없습니다.")
+        navigate("/chatlist")
+      }
     }
   }
   useEffect(() => {
