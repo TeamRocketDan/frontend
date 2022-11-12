@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { forwardRef, useEffect } from "react"
 import { useRecoilState } from "recoil"
 import axios from "axios"
 
@@ -6,12 +6,10 @@ import { selectedRegion01, selectedRegion02 } from "../../recoil/regionState"
 import { cityData } from "../../recoil/areaData"
 import { DEFAULT_API } from "../../apis"
 
-function SearchModal({
-  searchModalOpen,
-  setSearchModalOpen,
-  currentDistricts,
-  setCurrentDistricts,
-}) {
+export default forwardRef(function SearchModal(
+  { setSearchModalOpen, currentDistricts, setCurrentDistricts },
+  ref,
+) {
   const [cityList, setCityList] = useRecoilState(cityData)
 
   useEffect(() => {
@@ -57,11 +55,7 @@ function SearchModal({
   }
 
   return (
-    <div
-      className={`border w-64 absolute bg-white ${
-        searchModalOpen ? "" : "hidden"
-      }`}
-    >
+    <div ref={ref} className={`border w-64 absolute bg-white`}>
       {/* depth 01 */}
       <ul className="flex w-64 flex-wrap">
         {cityList.map((city) => (
@@ -97,6 +91,4 @@ function SearchModal({
       </ul>
     </div>
   )
-}
-
-export default SearchModal
+})

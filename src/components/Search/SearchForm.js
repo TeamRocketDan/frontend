@@ -1,4 +1,4 @@
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useRecoilState } from "recoil"
 import { faXmark } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -8,6 +8,7 @@ import { selectedRegion01, selectedRegion02 } from "../../recoil/regionState"
 
 function SearchForm() {
   const [searchModalOpen, setSearchModalOpen] = useState(false)
+  const modalRef = useRef()
 
   const [depth01, setDepth01] = useRecoilState(selectedRegion01)
   const [depth02, setDepth02] = useRecoilState(selectedRegion02)
@@ -22,8 +23,21 @@ function SearchForm() {
     setCurrentDistricts([])
   }
 
+  const handleCloseModal = ({ target }) => {
+    if (!target.closest(".search-modal")) {
+      setSearchModalOpen(false)
+    }
+  }
+
+  useEffect(() => {
+    window.addEventListener("click", handleCloseModal)
+    return () => {
+      window.removeEventListener("click", handleCloseModal)
+    }
+  }, [])
+
   return (
-    <div className="ml-4">
+    <div className="search-modal ml-4">
       <form>
         <span
           onClick={() => {
@@ -49,12 +63,14 @@ function SearchForm() {
         </button>
 
         {/* 지역 선택 모달 */}
-        <SearchModal
-          searchModalOpen={searchModalOpen}
-          setSearchModalOpen={setSearchModalOpen}
-          currentDistricts={currentDistricts}
-          setCurrentDistricts={setCurrentDistricts}
-        />
+        {searchModalOpen && (
+          <SearchModal
+            ref={modalRef}
+            setSearchModalOpen={setSearchModalOpen}
+            currentDistricts={currentDistricts}
+            setCurrentDistricts={setCurrentDistricts}
+          />
+        )}
       </form>
     </div>
   )
