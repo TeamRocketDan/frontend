@@ -159,7 +159,7 @@ function ChatRoomHeader({
             participants.map((participant) => (
               <li key={participant.userId} className="flex items-center">
                 <span
-                  className="w-10 h-10 mr-2 my-1 rounded-full oveflow-hidden bg-cover block bg-rose-100"
+                  className="w-10 h-10 mr-2 my-1 rounded-full oveflow-hidden bg-cover bg-center block bg-rose-100"
                   style={{
                     backgroundImage: `url(${participant.profileImage})`,
                   }}
