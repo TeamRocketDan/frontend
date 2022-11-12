@@ -11,6 +11,7 @@ export const createChatBubble = (payload, userName, roomId) => {
       "border-y",
       "border-dashed",
       "bg-slate-100",
+      "first:mt-auto",
     )
     bubble.textContent = payload.message
 

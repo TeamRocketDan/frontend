@@ -251,7 +251,8 @@ function ChatRoom() {
     if (response.data.result.lastDay && response.data.result.lastPage) {
       console.log("메세지 끝")
       setIsMessageEnd(true)
-      scrollObserver.current.classList.add("hidden")
+      // scrollObserver.current.classList.add("hidden")
+      scrollObserver.current.remove()
     }
 
     // 마지막 페이지일 때 => 날짜가 넘어감
@@ -303,7 +304,7 @@ function ChatRoom() {
           }}
         >
           <ul
-            className="scrollhide flex flex-col pt-4 overflow-y-scroll absolute top-0 left-0 bottom-0 right-0"
+            className="scrollhide h-full flex flex-col pt-4 overflow-y-scroll absolute top-0 left-0 bottom-0 right-0"
             ref={messageListRef}
           >
             <li
