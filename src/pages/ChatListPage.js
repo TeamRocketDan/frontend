@@ -126,15 +126,9 @@ function ChatListPage() {
         lng: room.longitude,
       }),
     )
-    recentRoomList.forEach((room) =>
-      newPositions.push({
-        lat: room.latitude,
-        lng: room.longitude,
-      }),
-    )
 
     setPositionData(newPositions)
-  }, [myRoomList, recentRoomList])
+  }, [myRoomList])
 
   return (
     <Container>
