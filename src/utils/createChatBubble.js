@@ -1,6 +1,6 @@
-export const createChatBubble = (payload, userName, roomId) => {
-  // 입장 퇴장 메세지
-  if (payload.senderName === `system${roomId}`) {
+export const createChatBubble = ({ payload, userId, participants }) => {
+  // 입장 퇴장 시스템 메세지
+  if (payload.userId === "666") {
     const bubble = document.createElement("li")
     bubble.classList.add(
       "w-full",
@@ -18,17 +18,18 @@ export const createChatBubble = (payload, userName, roomId) => {
     return bubble
   }
 
+  // 기본 메세지 버블
   const bubble = document.createElement("li")
   bubble.classList.add(
     "first:mt-auto",
     "rounded-lg",
     "w-fit",
-    "mb-4",
+    "mt-6",
     "py-2",
     "px-3",
     "relative",
   )
-  if (payload.senderName === userName) {
+  if (payload.userId === userId) {
     bubble.classList.add("bg-rose-200", "self-end", "mr-12")
   } else {
     bubble.classList.add("border", "border-rose-300", "self-start", "ml-12")
@@ -46,9 +47,13 @@ export const createChatBubble = (payload, userName, roomId) => {
     "-mt-2",
   )
 
+  const currentSender = participants.filter(
+    (participant) => participant.userId === payload.userId,
+  )[0]
+
   prof.style.backgroundImage = `url(${
-    payload.senderImgSrc
-      ? payload.senderImgSrc
+    currentSender.profileImage
+      ? currentSender.profileImage
       : "https://via.placeholder.com/50"
   })`
   const timeStamp = document.createElement("span")
@@ -67,15 +72,29 @@ export const createChatBubble = (payload, userName, roomId) => {
         }분`
       : `${payload.createdAt[3]}시 ${payload.createdAt[4]}분`
 
-  if (payload.senderName === userName) {
+  const userNameArea = document.createElement("span")
+  userNameArea.classList.add(
+    "text-slate-500",
+    "w-fit",
+    "absolute",
+    "w-full",
+    "-top-5",
+    "text-sm",
+  )
+  userNameArea.textContent = currentSender.nickname
+
+  if (payload.userId === userId) {
     prof.classList.add("-right-12")
     timeStamp.classList.add("-left-20", "text-right")
+    userNameArea.classList.add("right-0", "text-right")
   } else {
     prof.classList.add("-left-12")
     timeStamp.classList.add("-right-20", "text-left")
+    userNameArea.classList.add("left-0", "text-left")
   }
   bubble.appendChild(prof)
   bubble.appendChild(timeStamp)
+  bubble.appendChild(userNameArea)
 
   return bubble
 }

@@ -16,36 +16,12 @@ function ChatRoomHeader({
   roomId,
   stompClient,
   userName,
-  isEnterSuccess,
   disConnect,
+  participants,
+  roomTitle,
 }) {
   const navigate = useNavigate()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [participants, setParticipants] = useState([])
-  const [roomTitle, setRoomTitle] = useState("")
-
-  // 참가자 리스트 불러오기
-  useEffect(() => {
-    async function getRoomInfo() {
-      const token = getUserToken()
-      const response = await axios.get(
-        `${CHAT_API}/api/v1/chat/room/info/${roomId}`,
-        {
-          headers: {
-            Authorization: token,
-            "Content-Type": "application/json",
-          },
-        },
-      )
-
-      console.log("[GET ROOM INFO] : ", response)
-
-      setParticipants(response.data.result.participants)
-      setRoomTitle(response.data.result.roomTitle)
-    }
-
-    getRoomInfo()
-  }, [isEnterSuccess])
 
   // 퇴장 메세지 보내기
   async function sendLeaveMessage() {

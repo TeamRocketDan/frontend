@@ -6,7 +6,11 @@ import { useRecoilState } from "recoil"
 import dayjs from "dayjs"
 import axios from "axios"
 
-import { currentUserName, currentUserProf } from "../recoil/userAuth"
+import {
+  currentUserName,
+  currentUserProf,
+  currentUserId,
+} from "../recoil/userAuth"
 
 import ChatSendForm from "../components/Chat/ChatSendForm"
 import Container from "../components/Layout/Container"
@@ -25,9 +29,12 @@ function ChatRoom() {
   const { roomId } = useParams()
   const [userName, setUserName] = useRecoilState(currentUserName)
   const [userProf, setUserProf] = useRecoilState(currentUserProf)
+  const [userId, setUserId] = useRecoilState(currentUserId)
   const textInputRef = useRef()
   const messageListRef = useRef()
   const [token, setToken] = useState("")
+  const [participants, setParticipants] = useState([])
+  const [roomTitle, setRoomTitle] = useState("")
 
   // 메세지 가져오기
   const [messagePage, setMessagePage] = useState(0)
@@ -50,7 +57,11 @@ function ChatRoom() {
         (content) => {
           const payload = JSON.parse(content.body)
           console.log(payload)
-          const bubble = createChatBubble(payload, userName, roomId)
+          const bubble = createChatBubble({
+            payload,
+            userId,
+            participants,
+          })
           messageListRef.current.appendChild(bubble)
 
           messageListRef.current.scrollTop = messageListRef.current.scrollHeight
@@ -114,14 +125,6 @@ function ChatRoom() {
       console.log("입장 메세지 보냄")
     }
   }
-
-  useEffect(() => {
-    async function getToken() {
-      const newToken = await getUserToken()
-      setToken(newToken)
-    }
-    getToken()
-  }, [])
 
   // stompClient 생성
   useEffect(() => {
@@ -197,9 +200,8 @@ function ChatRoom() {
     if (input.value === "") return
 
     const message = {
-      senderName: userName,
       message: input.value,
-      senderImgSrc: userProf,
+      userId,
     }
 
     const token = await getUserToken()
@@ -239,8 +241,8 @@ function ChatRoom() {
 
     console.log("[GET MESSAGE] : ", response)
 
-    prevList.forEach((data) => {
-      const bubble = createChatBubble(data, userName, roomId)
+    prevList.forEach((payload) => {
+      const bubble = createChatBubble({ payload, userId, participants })
       scrollObserver.current.after(bubble)
     })
 
@@ -269,7 +271,7 @@ function ChatRoom() {
     }
   }, [messagePage, isEnterSuccess])
 
-  // IntersectionObserver 생성
+  // IntersectionObserver 생성, token, room info 불러오기
   useEffect(() => {
     if (isEnterSuccess) {
       const io = new IntersectionObserver((entries, observer) => {
@@ -281,6 +283,33 @@ function ChatRoom() {
         })
       }, {})
       io.observe(scrollObserver.current)
+
+      async function getToken() {
+        const newToken = await getUserToken()
+        setToken(newToken)
+      }
+
+      getToken()
+
+      async function getRoomInfo() {
+        const token = getUserToken()
+        const response = await axios.get(
+          `${CHAT_API}/api/v1/chat/room/info/${roomId}`,
+          {
+            headers: {
+              Authorization: token,
+              "Content-Type": "application/json",
+            },
+          },
+        )
+
+        console.log("[GET ROOM INFO] : ", response)
+
+        setParticipants(response.data.result.participants)
+        setRoomTitle(response.data.result.roomTitle)
+      }
+
+      getRoomInfo()
     }
   }, [isEnterSuccess])
 
@@ -292,8 +321,9 @@ function ChatRoom() {
           roomId={roomId}
           stompClient={stompClient}
           userName={userName}
-          isEnterSuccess={isEnterSuccess}
           disConnect={disConnect}
+          participants={participants}
+          roomTitle={roomTitle}
         />
 
         {/* 채팅 내용 나타나는 부분 */}
