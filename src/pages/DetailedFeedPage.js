@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import axios from "axios"
 
+import Container from "../components/Layout/Container"
 import { faMap, faHeart } from "@fortawesome/free-regular-svg-icons"
 import { faHeartCircleCheck } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -369,11 +370,11 @@ function DetailedFeedPage() {
   }
 
   return (
-    <div className="justify-center min-h-screen ml-64">
+    <Container>
       <h3 className={titleClass}>
         피드 <FontAwesomeIcon icon={faMap} />
       </h3>
-      <div className=" rounded overflow-hidden border w-full lg:w-6/12 md:w-6/12 bg-white mx-3 md:mx-0 lg:mx-0">
+      <div className=" rounded overflow-hidden border w-full">
         <div className="w-full flex justify-between p-3">
           <div className="flex">
             <div className="rounded-full h-16 w-16 bg-gray-500 flex items-center justify-center overflow-hidden">
@@ -545,7 +546,7 @@ function DetailedFeedPage() {
         </div>
         {/* Comment https://flowbite.com/docs/forms/textarea/ */}
         <form onSubmit={postComment}>
-          <div className="mb-4 w-full bg-gray-50 rounded-lg border border-gray-200 dark:bg-gray-700 dark:border-gray-600">
+          <div className="mb-4 w-full bg-gray-50 rounded-lg border border-gray-200 dark:bg-gray-700 dark:border-gray-600 mt-2">
             <div className="py-2 px-4 bg-white rounded-t-lg dark:bg-gray-800">
               <label htmlFor="comment" className="sr-only">
                 Your comment
@@ -571,7 +572,7 @@ function DetailedFeedPage() {
           </div>
         </form>
       </div>
-    </div>
+    </Container>
   )
 }
 

@@ -122,9 +122,8 @@ function FeedListPage() {
       <h3 className={titleClass}>
         피드 리스트 <FontAwesomeIcon icon={faMap} />
       </h3>
-
-      {feedList.map((index) => (
-        <div className="flex flex-wrap -m-4">
+      <div className="flex flex-wrap -m-4">
+        {feedList.map((index) => (
           <Card
             feedId={index.feedId}
             profile={index.profileImagePath}
@@ -135,9 +134,8 @@ function FeedListPage() {
             liked={index.feedLikeCnt}
             reply={index.feedCommentCnt}
           />
-        </div>
-      ))}
-
+        ))}
+      </div>
       <ChatListPagination
         maxPage={listMaxPage}
         currentPage={listPage}
