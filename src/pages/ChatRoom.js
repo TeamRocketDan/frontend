@@ -241,8 +241,8 @@ function ChatRoom() {
 
     console.log("[GET MESSAGE] : ", response)
 
-    prevList.forEach((data) => {
-      const bubble = createChatBubble(data, userId, participants)
+    prevList.forEach((payload) => {
+      const bubble = createChatBubble({ payload, userId, participants })
       scrollObserver.current.after(bubble)
     })
 
