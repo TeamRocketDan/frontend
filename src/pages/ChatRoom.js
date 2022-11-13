@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react"
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import SockJS from "sockjs-client"
 import * as StompJs from "@stomp/stompjs"
 import { useRecoilState } from "recoil"
@@ -15,6 +15,7 @@ import ChatRoomHeader from "../components/Chat/ChatRoomHeader"
 import { getUserToken } from "../utils/getUserToken"
 import { createChatBubble } from "../utils/createChatBubble"
 import { CHAT_API } from "../apis"
+import { useCheckLogin } from "../hooks/useCheckLogin"
 
 let stompClient
 let subscription
@@ -36,6 +37,10 @@ function ChatRoom() {
 
   // room enter
   const [isEnterSuccess, setIsEnterSuccess] = useState(false)
+  const navigate = useNavigate()
+
+  // 로그인 안했으면 로그인 페이지로
+  useCheckLogin()
 
   // 채팅방 구독
   function subscribe() {
@@ -56,25 +61,35 @@ function ChatRoom() {
 
   // room enter 방 입장
   async function roomEnter() {
-    const token = await getUserToken()
-    const response = await axios.patch(
-      `${CHAT_API}/api/v1/chat/room-enter/${roomId}`,
-      null,
-      {
-        headers: {
-          Authorization: token,
-          "Content-Type": "application/json",
+    try {
+      const token = await getUserToken()
+      const response = await axios.patch(
+        `${CHAT_API}/api/v1/chat/room-enter/${roomId}`,
+        null,
+        {
+          headers: {
+            Authorization: token,
+            "Content-Type": "application/json",
+          },
         },
-      },
-    )
-    console.log("[ROOM ENTER] : ", response)
-    if (response) {
-      setIsEnterSuccess(true)
-    }
+      )
+      console.log("[ROOM ENTER] : ", response)
+      if (response) {
+        setIsEnterSuccess(true)
+      }
 
-    // 신규 유저일 경우 입장 메세지 stomp 연결 후에 보내야 한다
-    if (response.data.result.newUser) {
-      sendEnterMessage()
+      // 신규 유저일 경우 입장 메세지 stomp 연결 후에 보내야 한다
+      if (response.data.result.newUser) {
+        sendEnterMessage()
+      }
+    } catch (error) {
+      console.log(error.response.data.errorMessage)
+      if (
+        error.response.data.errorMessage === "정원을 넘어 들어갈 수 없습니다."
+      ) {
+        window.alert("정원을 넘어 들어갈 수 없습니다.")
+        navigate("/chatlist")
+      }
     }
   }
   useEffect(() => {
@@ -236,7 +251,8 @@ function ChatRoom() {
     if (response.data.result.lastDay && response.data.result.lastPage) {
       console.log("메세지 끝")
       setIsMessageEnd(true)
-      scrollObserver.current.classList.add("hidden")
+      // scrollObserver.current.classList.add("hidden")
+      scrollObserver.current.remove()
     }
 
     // 마지막 페이지일 때 => 날짜가 넘어감
@@ -288,7 +304,7 @@ function ChatRoom() {
           }}
         >
           <ul
-            className="scrollhide flex flex-col pt-4 overflow-y-scroll absolute top-0 left-0 bottom-0 right-0"
+            className="scrollhide h-full flex flex-col pt-4 overflow-y-scroll absolute top-0 left-0 bottom-0 right-0"
             ref={messageListRef}
           >
             <li

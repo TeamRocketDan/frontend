@@ -119,6 +119,19 @@ function ChatRoomHeader({
     navigate("/chatlist")
   }
 
+  const handleCloseModal = ({ target }) => {
+    if (!target.closest(".chat-menu")) {
+      setIsMenuOpen(false)
+    }
+  }
+
+  useEffect(() => {
+    window.addEventListener("click", handleCloseModal)
+    return () => {
+      window.removeEventListener("click", handleCloseModal)
+    }
+  }, [])
+
   return (
     <div className="flex justify-between text-2xl text-rose-300 relative border-b">
       {/* 채팅방 제목 */}
@@ -126,7 +139,7 @@ function ChatRoomHeader({
       {/* 메뉴 버튼 */}
       <button
         type="button"
-        className="py-1 px-4"
+        className="chat-menu py-1 px-4"
         title="채팅방 메뉴"
         onClick={() => setIsMenuOpen(!isMenuOpen)}
       >
@@ -137,7 +150,7 @@ function ChatRoomHeader({
       <div
         className={`${
           !isMenuOpen && "hidden"
-        } absolute bg-white border border-rose-500 p-2 top-10 right-0 z-10 w-60`}
+        } chat-menu absolute bg-white border border-rose-500 p-2 top-10 right-0 z-10 w-60`}
       >
         {/* 채팅 목록으로 버튼 */}
         <button
@@ -159,7 +172,7 @@ function ChatRoomHeader({
             participants.map((participant) => (
               <li key={participant.userId} className="flex items-center">
                 <span
-                  className="w-10 h-10 mr-2 my-1 rounded-full oveflow-hidden bg-cover block bg-rose-100"
+                  className="w-10 h-10 mr-2 my-1 rounded-full oveflow-hidden bg-cover bg-center block bg-rose-100"
                   style={{
                     backgroundImage: `url(${participant.profileImage})`,
                   }}

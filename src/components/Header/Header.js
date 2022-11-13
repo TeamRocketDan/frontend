@@ -24,13 +24,15 @@ function Header() {
 
           {/* 메뉴 버튼 */}
           <div
-            className="ml-auto cursor-pointer p-2 relative"
+            className="header-menu ml-auto cursor-pointer p-2 relative"
             onClick={() => setModalOpen(!modalOpen)}
           >
             <FontAwesomeIcon icon={faBars} className="text-2xl text-rose-500" />
 
             {/* 메뉴 모달 */}
-            <HeaderMenu modalOpen={modalOpen} />
+            {modalOpen && (
+              <HeaderMenu modalOpen={modalOpen} setModalOpen={setModalOpen} />
+            )}
           </div>
         </div>
       </div>

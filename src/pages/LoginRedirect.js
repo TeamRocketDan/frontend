@@ -44,7 +44,7 @@ function LoginRedirect() {
     // 페이지 이동
     setTimeout(() => {
       navigate("/", { replace: true })
-    }, 1000)
+    }, 0)
 
     // 유저 이름 저장
     axios

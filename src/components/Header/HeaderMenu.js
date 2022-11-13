@@ -1,3 +1,4 @@
+import { useEffect } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { useRecoilState } from "recoil"
 import axios from "axios"
@@ -23,7 +24,7 @@ const menuList = [
 const menuStyle =
   "flex w-full justify-center items-center py-2 border-l-4 border-white hover:text-rose-400 hover:border-l-4 hover:border-rose-400"
 
-function HeaderMenu({ modalOpen }) {
+function HeaderMenu({ modalOpen, setModalOpen }) {
   const navigate = useNavigate()
 
   // 로그인 상태 확인
@@ -59,8 +60,21 @@ function HeaderMenu({ modalOpen }) {
     }
   }
 
+  const handleCloseModal = ({ target }) => {
+    if (!target.closest(".header-menu")) {
+      setModalOpen(false)
+    }
+  }
+
+  useEffect(() => {
+    window.addEventListener("click", handleCloseModal)
+    return () => {
+      window.removeEventListener("click", handleCloseModal)
+    }
+  }, [])
+
   return (
-    <div className={`absolute right-0 ${modalOpen ? "" : "hidden"}`}>
+    <div className={`absolute right-0`}>
       <ul className="w-40 bg-white shadow-lg overflow-hidden">
         {menuList.map((menu) => (
           <li key={menu.path}>
