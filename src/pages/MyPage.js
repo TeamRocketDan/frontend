@@ -150,8 +150,6 @@ function MyPage() {
             />
             <p className="font-semibold">{userInfo.username}</p>
             <div className="text-sm leading-normal text-gray-400 flex justify-center items-center">
-<<<<<<< HEAD
-=======
               {/* <svg
                 viewBox="0 0 24 24"
                 className="mr-1"
@@ -166,7 +164,6 @@ function MyPage() {
                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                 <circle cx="12" cy="10" r="3"></circle>
               </svg> */}
->>>>>>> 7b035150b364ed87b916af6dea07f939452d8ea1
               <button
                 className="float-right m-2 text-sm text-blue-300"
                 onClick={() => {
@@ -190,8 +187,6 @@ function MyPage() {
               <p className="text-black">{userInfo.following}</p>
               <span className="text-gray-400">Folowing</span>
             </div>
-<<<<<<< HEAD
-=======
             {/* <button
               className="float-right m-2 text-sm text-blue-300"
               onClick={() => {
@@ -200,7 +195,6 @@ function MyPage() {
             >
               개인정보 수정
             </button> */}
->>>>>>> 7b035150b364ed87b916af6dea07f939452d8ea1
 
             <Modal
               isOpen={modal}
@@ -307,10 +301,7 @@ function MyPage() {
                 <img
                   className="w-16 rounded-full"
                   src={follow.profileImagePath}
-<<<<<<< HEAD
                   alt="profile_image"
-=======
->>>>>>> 7b035150b364ed87b916af6dea07f939452d8ea1
                 />
                 <span className="text-xs text-gray-500">{follow.nickname}</span>
               </li>
@@ -338,10 +329,7 @@ function MyPage() {
                 <img
                   className="w-16 rounded-full"
                   src={follow.profileImagePath}
-<<<<<<< HEAD
                   alt="profile_image"
-=======
->>>>>>> 7b035150b364ed87b916af6dea07f939452d8ea1
                 />
                 <span className="text-xs text-gray-500">{follow.nickname}</span>
               </li>
