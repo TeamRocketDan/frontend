@@ -8,6 +8,7 @@ import { DEFAULT_API } from "../apis"
 
 import {
   isUserLoggedIn,
+  currentUserId,
   currentUserName,
   currentUserProf,
 } from "../recoil/userAuth"
@@ -20,6 +21,7 @@ function LoginRedirect() {
   const [searchParams] = useSearchParams()
   const [message, setMessage] = useState("")
   const [userValid, setUserValid] = useRecoilState(isUserLoggedIn)
+  const [userId, setUserId] = useRecoilState(currentUserId)
   const [userName, setUserName] = useRecoilState(currentUserName)
   const [userProf, setUserProf] = useRecoilState(currentUserProf)
 
@@ -44,7 +46,7 @@ function LoginRedirect() {
     // 페이지 이동
     setTimeout(() => {
       navigate("/", { replace: true })
-    }, 1000)
+    }, 0)
 
     // 유저 이름 저장
     axios
@@ -61,6 +63,7 @@ function LoginRedirect() {
             : response.data.result.nickname,
         )
         setUserProf(response.data.result.profileImagePath)
+        setUserId(response.data.result.userId)
       })
       .catch(function (error) {
         console.log(error)

@@ -16,36 +16,12 @@ function ChatRoomHeader({
   roomId,
   stompClient,
   userName,
-  isEnterSuccess,
   disConnect,
+  participants,
+  roomTitle,
 }) {
   const navigate = useNavigate()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [participants, setParticipants] = useState([])
-  const [roomTitle, setRoomTitle] = useState("")
-
-  // 참가자 리스트 불러오기
-  useEffect(() => {
-    async function getRoomInfo() {
-      const token = getUserToken()
-      const response = await axios.get(
-        `${CHAT_API}/api/v1/chat/room/info/${roomId}`,
-        {
-          headers: {
-            Authorization: token,
-            "Content-Type": "application/json",
-          },
-        },
-      )
-
-      console.log("[GET ROOM INFO] : ", response)
-
-      setParticipants(response.data.result.participants)
-      setRoomTitle(response.data.result.roomTitle)
-    }
-
-    getRoomInfo()
-  }, [isEnterSuccess])
 
   // 퇴장 메세지 보내기
   async function sendLeaveMessage() {
@@ -119,6 +95,19 @@ function ChatRoomHeader({
     navigate("/chatlist")
   }
 
+  const handleCloseModal = ({ target }) => {
+    if (!target.closest(".chat-menu")) {
+      setIsMenuOpen(false)
+    }
+  }
+
+  useEffect(() => {
+    window.addEventListener("click", handleCloseModal)
+    return () => {
+      window.removeEventListener("click", handleCloseModal)
+    }
+  }, [])
+
   return (
     <div className="flex justify-between text-2xl text-rose-300 relative border-b">
       {/* 채팅방 제목 */}
@@ -126,7 +115,7 @@ function ChatRoomHeader({
       {/* 메뉴 버튼 */}
       <button
         type="button"
-        className="py-1 px-4"
+        className="chat-menu py-1 px-4"
         title="채팅방 메뉴"
         onClick={() => setIsMenuOpen(!isMenuOpen)}
       >
@@ -137,7 +126,7 @@ function ChatRoomHeader({
       <div
         className={`${
           !isMenuOpen && "hidden"
-        } absolute bg-white border border-rose-500 p-2 top-10 right-0 z-10 w-60`}
+        } chat-menu absolute bg-white border border-rose-500 p-2 top-10 right-0 z-10 w-60`}
       >
         {/* 채팅 목록으로 버튼 */}
         <button
@@ -159,7 +148,7 @@ function ChatRoomHeader({
             participants.map((participant) => (
               <li key={participant.userId} className="flex items-center">
                 <span
-                  className="w-10 h-10 mr-2 my-1 rounded-full oveflow-hidden bg-cover block bg-rose-100"
+                  className="w-10 h-10 mr-2 my-1 rounded-full oveflow-hidden bg-cover bg-center block bg-rose-100"
                   style={{
                     backgroundImage: `url(${participant.profileImage})`,
                   }}

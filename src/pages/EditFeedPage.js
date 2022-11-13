@@ -12,7 +12,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { DEFAULT_API } from "../apis"
 import { getUserToken } from "../utils/getUserToken"
 
-function EditFeed() {
+function EditFeedPage() {
   const { feedId } = useParams()
   const navigate = useNavigate()
 
@@ -116,6 +116,7 @@ function EditFeed() {
       return false
     }
 
+    // 이미지 수정 기능은 없으므로 미리보기로 대체할 것
     const formData = new FormData()
     const variables = {
       title: title, // 제목
@@ -297,4 +298,4 @@ function EditFeed() {
   )
 }
 
-export default EditFeed
+export default EditFeedPage

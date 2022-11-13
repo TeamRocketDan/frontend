@@ -12,7 +12,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { DEFAULT_API } from "../apis"
 import { getUserToken } from "../utils/getUserToken"
 
-function CreateFeed() {
+function CreateFeedPage() {
   const navigate = useNavigate()
 
   // 스타일 클래스
@@ -96,6 +96,7 @@ function CreateFeed() {
       return false
     }
 
+    // 이미지 첨부 4장까지 되도록 코드 수정
     const formData = new FormData()
     const variables = {
       title: title, // 제목
@@ -128,7 +129,7 @@ function CreateFeed() {
       })
       .then((res) => {
         console.log("Post Success!")
-        console.log(res)
+        // console.log(res)
         const feedId = res.data.result.feedId
         navigate(`/detailedfeed/${feedId}`, { replace: true })
       })
@@ -286,4 +287,4 @@ function CreateFeed() {
   )
 }
 
-export default CreateFeed
+export default CreateFeedPage

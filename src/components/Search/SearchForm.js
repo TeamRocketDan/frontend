@@ -1,4 +1,4 @@
-import { useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import { useRecoilState } from "recoil"
 import { faXmark } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -22,8 +22,21 @@ function SearchForm() {
     setCurrentDistricts([])
   }
 
+  const handleCloseModal = ({ target }) => {
+    if (!target.closest(".search-modal")) {
+      setSearchModalOpen(false)
+    }
+  }
+
+  useEffect(() => {
+    window.addEventListener("click", handleCloseModal)
+    return () => {
+      window.removeEventListener("click", handleCloseModal)
+    }
+  }, [])
+
   return (
-    <div className="ml-4">
+    <div className="search-modal ml-4">
       <form>
         <span
           onClick={() => {
@@ -49,12 +62,13 @@ function SearchForm() {
         </button>
 
         {/* 지역 선택 모달 */}
-        <SearchModal
-          searchModalOpen={searchModalOpen}
-          setSearchModalOpen={setSearchModalOpen}
-          currentDistricts={currentDistricts}
-          setCurrentDistricts={setCurrentDistricts}
-        />
+        {searchModalOpen && (
+          <SearchModal
+            setSearchModalOpen={setSearchModalOpen}
+            currentDistricts={currentDistricts}
+            setCurrentDistricts={setCurrentDistricts}
+          />
+        )}
       </form>
     </div>
   )

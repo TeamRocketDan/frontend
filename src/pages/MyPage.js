@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
 
 import styled from "styled-components"
 import Pagination from "react-js-pagination"
@@ -8,8 +9,8 @@ import { useRecoilState } from "recoil"
 
 import { DEFAULT_API } from "../apis"
 import { getUserToken } from "../utils/getUserToken"
-import { data } from "autoprefixer"
 import { currentUserName, currentUserProf } from "../recoil/userAuth"
+import { useCheckLogin } from "../hooks/useCheckLogin"
 
 function MyPage() {
   const [userInfo, setInfo] = useState([])
@@ -36,6 +37,9 @@ function MyPage() {
   // 유저 정보 수정하면 로컬스토리지에도 적용
   const [userName, setUserName] = useRecoilState(currentUserName)
   const [userProf, setUserProf] = useRecoilState(currentUserProf)
+
+  // 로그인 안했으면 로그인 페이지로
+  useCheckLogin()
 
   useEffect(() => {
     const token = getUserToken().then((token) => {
@@ -134,37 +138,68 @@ function MyPage() {
 
   return (
     <>
-      <div className="w-4/5 h-5/6 m-auto mt-8">
+      <div className="w-2/5 h-5/6 m-auto mt-8">
         <h3 className="text-2xl font-semibold text-left text-slate-900">
           마이페이지
         </h3>
         <h3 className="text-1xl text-slate-500 mt-12">
-          *[개인정보 수정] 클릭 후, 선택정보에서 선호지역을 등록하시면 해당 지역
-          프로모션 정보를 손쉽게 받으실 수 있습니다.
+          *[개인정보 수정] 클릭 후, 프로필 사진과 닉네임을 수정하실 수 있습니다.
         </h3>
-        <div className="flex flex-wrap content-center">
-          <div className="myPicture border-inherit flex-none w-1/3 h-1/2 ml-auto mr-auto">
-            <h3 className="text-lg font-semibold text-left text-blue-800 mt-1">
-              나의 사진
-            </h3>
+        <div className="bg-white shadow rounded-lg p-10">
+          <div className="flex flex-col gap-1 text-center items-center">
             <img
+              className="h-32 w-32 bg-white p-2 rounded-full shadow mb-4 object-contain"
               src={userInfo.profileImagePath}
-              width="200"
-              alt="프로필 사진"
+              alt="profile_image"
             />
+            <p className="font-semibold">{userInfo.username}</p>
+            <div className="text-sm leading-normal text-gray-400 flex justify-center items-center">
+              {/* <svg
+                viewBox="0 0 24 24"
+                className="mr-1"
+                width="16"
+                height="16"
+                stroke="currentColor"
+                stroke-width="2"
+                fill="none"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg> */}
+              <button
+                className="float-right m-2 text-sm text-blue-300"
+                onClick={() => {
+                  setModal(true)
+                }}
+              >
+                개인정보 수정
+              </button>
+            </div>
           </div>
-          <div className=" ml-auto mr-auto w-1/3 h-1/2">
-            <h3 className="text-lg font-semibold text-left text-blue-500 mt-1 inline-block">
-              나의 정보
-            </h3>
-            <button
+          <div className="flex justify-center items-center gap-2 my-3">
+            <div className="font-semibold text-center mx-4">
+              <p className="text-black">{userInfo.nickname}</p>
+              <span className="text-gray-400">Nickname</span>
+            </div>
+            <div className="font-semibold text-center mx-4">
+              <p className="text-black">{userInfo.follower}</p>
+              <span className="text-gray-400">Followers</span>
+            </div>
+            <div className="font-semibold text-center mx-4">
+              <p className="text-black">{userInfo.following}</p>
+              <span className="text-gray-400">Folowing</span>
+            </div>
+            {/* <button
               className="float-right m-2 text-sm text-blue-300"
               onClick={() => {
                 setModal(true)
               }}
             >
               개인정보 수정
-            </button>
+            </button> */}
+
             <Modal
               isOpen={modal}
               ariaHideApp={false}
@@ -255,34 +290,69 @@ function MyPage() {
                 </div>
               </form>
             </Modal>
-
-            <form className="login-form grid place-items-center my-4">
-              <table className="text-center">
-                <tbody>
-                  <tr>
-                    <td>회원번호</td>
-                    <td>{userInfo.userId}</td>
-                  </tr>
-                  <tr>
-                    <td>회원명</td>
-                    <td>{userInfo.username}</td>
-                  </tr>
-                  <tr>
-                    <td>닉네임</td>
-                    <td>{userInfo.nickname}</td>
-                  </tr>
-                  <tr>
-                    <td>이메일</td>
-                    <td>{userInfo.email}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </form>
           </div>
         </div>
 
-        <div className="flex flex-wrap m-4">
-          {/* <div className="w-1/4 ml-auto mr-auto">
+        {/* Following */}
+        <div class="bg-white shadow mt-6  rounded-lg p-6">
+          <h3 class="text-gray-600 text-sm font-semibold mb-4">Following</h3>
+          <ul class="flex items-center justify-center space-x-2">
+            {userFollowing.map((follow) => (
+              <li
+                key={follow.userId}
+                className="flex flex-col items-center space-y-2"
+              >
+                <img
+                  className="w-16 rounded-full"
+                  src={follow.profileImagePath}
+                  alt="profile_image"
+                />
+                <span className="text-xs text-gray-500">{follow.nickname}</span>
+              </li>
+            ))}
+          </ul>
+          <PaginationBox>
+            <Pagination
+              activePage={page}
+              totalItemsCount={followingCount}
+              itemsCountPerPage={10}
+              pageRangeDisplayed={5}
+              onChange={handlePageChange}
+            />
+          </PaginationBox>
+        </div>
+        {/* Follower */}
+        <div class="bg-white shadow mt-6  rounded-lg p-6">
+          <h3 class="text-gray-600 text-sm font-semibold mb-4">Follower</h3>
+          <ul class="flex items-center justify-center space-x-2">
+            {userFollower.map((follow) => (
+              <li
+                key={follow.userId}
+                className="flex flex-col items-center space-y-2"
+              >
+                <img
+                  className="w-16 rounded-full"
+                  src={follow.profileImagePath}
+                  alt="profile_image"
+                />
+                <span className="text-xs text-gray-500">{follow.nickname}</span>
+              </li>
+            ))}
+          </ul>
+          <PaginationBox>
+            <Pagination
+              activePage={page}
+              totalItemsCount={followerCount}
+              itemsCountPerPage={10}
+              pageRangeDisplayed={5}
+              onChange={handlePageChange}
+            />
+          </PaginationBox>
+        </div>
+
+        {/* 관심 지역 향후 추가 예정 */}
+        {/* <div className="flex flex-wrap m-4">
+          <div className="w-1/4 ml-auto mr-auto">
             <h3 className="text-lg font-semibold text-left text-blue-800 mt-1">
               나의 관심 지역
             </h3>
@@ -297,59 +367,8 @@ function MyPage() {
                 />
               </PaginationBox>
             </form>
-          </div> */}
-
-          <div className="w-1/4 ml-auto mr-auto">
-            <h3 className="text-lg font-semibold text-left text-blue-800 mt-1 inline-block">
-              FOLLOWER
-            </h3>
-            {/* <FontAwesomeIcon
-              icon={faCirclePlus}
-              className="text-2xl text-rose-500 float-right m-2"
-            /> */}
-            <form className="login-form grid place-items-center my-4">
-              <ul className="h-1/2">
-                {userFollower.map((follow) => (
-                  <li key={follow.userId}>{follow.nickname}</li>
-                ))}
-              </ul>
-              <PaginationBox>
-                <Pagination
-                  activePage={page}
-                  totalItemsCount={followerCount}
-                  itemsCountPerPage={10}
-                  pageRangeDisplayed={5}
-                  onChange={handlePageChange}
-                />
-              </PaginationBox>
-            </form>
           </div>
-          <div className="w-1/4 ml-auto mr-auto">
-            <h3 className="text-lg font-semibold text-left text-blue-800 mt-1 inline-block">
-              FOLLOWING
-            </h3>
-            {/* <FontAwesomeIcon
-              icon={faCirclePlus}
-              className="text-2xl text-rose-500 float-right m-2"
-            /> */}
-            <form className="login-form grid place-items-center my-4">
-              <ul className="h-1/2">
-                {userFollowing.map((follow) => (
-                  <li key={follow.userId}>{follow.nickname}</li>
-                ))}
-              </ul>
-              <PaginationBox>
-                <Pagination
-                  activePage={page}
-                  totalItemsCount={followerCount}
-                  itemsCountPerPage={10}
-                  pageRangeDisplayed={5}
-                  onChange={handlePageChange}
-                />
-              </PaginationBox>
-            </form>
-          </div>
-        </div>
+        </div> */}
       </div>
     </>
   )

@@ -3,29 +3,27 @@ import { useSearchParams } from "react-router-dom"
 import axios from "axios"
 import { useRecoilState } from "recoil"
 import Container from "../components/Layout/Container"
-import ChatListContainer from "../components/Chat/ChatListContainer"
-import ChatListMap from "../components/Map/ChatListMap"
+import FeedListMap from "../components/Map/FeedListMap"
 import ChatListPagination from "../components/Chat/ChatListPagination"
 
-import { faCommentDots, faMap } from "@fortawesome/free-regular-svg-icons"
+import Card from "../components/FeedList/Card"
+
+import { faMap } from "@fortawesome/free-regular-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 import { getUserToken } from "../utils/getUserToken"
 import { selectedRegion01, selectedRegion02 } from "../recoil/regionState"
-import { CHAT_API } from "../apis"
-import { useCheckLogin } from "../hooks/useCheckLogin"
 
-function ChatListPage() {
-  // 로그인 안했으면 로그인 페이지로
-  useCheckLogin()
+import { DEFAULT_API } from "../apis"
 
+function MyFeedListPage() {
   // class names
   const titleClass =
     "my-4 px-2 font-semibold text-2xl inline-block relative before:block before:absolute before:left-0 before:bottom-0 before:bg-rose-400 before:h-3 before:w-full before:opacity-30"
 
-  // 채팅방 리스트가 2가지여서 각각 리스트 가공해서 ChatListContainer로 보낼 예정
-  const [myRoomList, setMyRoomList] = useState([])
-  const [recentRoomList, setRecentRoomList] = useState([])
+  // 피드 리스트
+  const [myFeedList, setMyFeedList] = useState([])
+
   const [positionData, setPositionData] = useState([])
 
   // 페이지네이션 관련
@@ -47,12 +45,12 @@ function ChatListPage() {
   const [rcate1, setRcate1] = useRecoilState(selectedRegion01)
   const [rcate2, setRcate2] = useRecoilState(selectedRegion02)
 
-  // 지역 채팅 리스트 받아오기
-  async function getChatRooms({ page, size, rcate1, rcate2 }) {
+  // 피드 리스트 받아오기
+  async function getFeeds({ page, size }) {
     const token = await getUserToken()
 
     try {
-      const response = await axios.get(`${CHAT_API}/api/v1/chat/room-list`, {
+      const response = await axios.get(`${DEFAULT_API}/api/v1/feeds/feedList`, {
         params: {
           page,
           size,
@@ -64,26 +62,7 @@ function ChatListPage() {
           "Content-Type": "application/json",
         },
       })
-      return response
-    } catch (error) {
-      console.log(error)
-    }
-  }
-  // 내 채팅 리스트 받아오기
-  async function getMyChatRooms({ page, size }) {
-    const token = await getUserToken()
 
-    try {
-      const response = await axios.get(`${CHAT_API}/api/v1/chat/my-room-list`, {
-        params: {
-          page,
-          size,
-        },
-        headers: {
-          Authorization: token,
-          "Content-Type": "application/json",
-        },
-      })
       return response
     } catch (error) {
       console.log(error)
@@ -91,17 +70,16 @@ function ChatListPage() {
   }
 
   useEffect(() => {
-    // 채팅방 리스트 가져오기
+    // 피드 리스트 가져오기
     async function getRegionList() {
-      const regionChatList = await getChatRooms({
+      const regionFeedList = await getFeeds({
         page: regionListPage - 1,
         size: 10,
         rcate1,
         rcate2,
       })
-      const result = regionChatList.data.result
-      console.log("[GET REGION CHAT LIST] : ", result)
-      setRecentRoomList(result.content)
+      const result = regionFeedList.data.result
+      console.log(result)
       setRegionListMaxPage(result.totalPage)
     }
     if (rcate2 !== "") {
@@ -109,55 +87,58 @@ function ChatListPage() {
     }
 
     async function getMyList() {
-      const myChatList = await getMyChatRooms({
+      const myFeedList = await getFeeds({
         page: myListPage - 1,
         size: 10,
+        rcate1,
+        rcate2,
       })
-      const result = myChatList.data.result
-      console.log("[GET MY CHAT LIST] : ", result)
-      setMyRoomList(result.content)
-      setMyListMaxPage(result.totalPage)
+      const result = myFeedList.data.result
+      console.log(result)
+      setMyFeedList(result.content)
     }
+
     getMyList()
   }, [myListPage, regionListPage, rcate2])
 
   // 지도 표시 리스트
   useEffect(() => {
     const newPositions = []
-    myRoomList.forEach((room) =>
+    myFeedList.forEach((feed) =>
       newPositions.push({
-        lat: room.latitude,
-        lng: room.longitude,
+        lat: feed.latitude,
+        lng: feed.longitude,
       }),
     )
 
     setPositionData(newPositions)
-  }, [myRoomList])
+  }, [myFeedList])
 
   return (
     <Container>
       {/* 지도에 채팅 위치 표시 */}
-      <ChatListMap positionData={positionData} />
+      <FeedListMap positionData={positionData} />
 
       <h3 className={titleClass}>
-        내 채팅 리스트 <FontAwesomeIcon icon={faCommentDots} />
+        나의 여행 <FontAwesomeIcon icon={faMap} />
       </h3>
-      <ChatListContainer roomList={myRoomList} isMyList={true} />
+      <div className="flex flex-wrap -m-4">
+        {myFeedList.map((index) => (
+          <Card
+            feedId={index.feedId}
+            imageSrc={index.feedImages}
+            location={index.rcate1}
+            title={index.title}
+            desc={index.content}
+            liked={index.feedLikeCnt}
+            reply={index.feedCommentCnt}
+          />
+        ))}
+      </div>
+
       <ChatListPagination
         maxPage={myListMaxPage}
         currentPage={myListPage}
-        onClickPageButton={(pageNumber) =>
-          updateParams({ mylistpage: pageNumber })
-        }
-      />
-
-      <h3 className={titleClass}>
-        지역 채팅 리스트 <FontAwesomeIcon icon={faMap} />
-      </h3>
-      <ChatListContainer roomList={recentRoomList} />
-      <ChatListPagination
-        maxPage={regionListMaxPage}
-        currentPage={regionListPage}
         onClickPageButton={(pageNumber) =>
           updateParams({ regionlistpage: pageNumber })
         }
@@ -166,4 +147,4 @@ function ChatListPage() {
   )
 }
 
-export default ChatListPage
+export default MyFeedListPage
