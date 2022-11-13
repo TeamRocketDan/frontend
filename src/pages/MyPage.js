@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
 
 import styled from "styled-components"
 import Pagination from "react-js-pagination"
@@ -8,8 +9,8 @@ import { useRecoilState } from "recoil"
 
 import { DEFAULT_API } from "../apis"
 import { getUserToken } from "../utils/getUserToken"
-import { data } from "autoprefixer"
 import { currentUserName, currentUserProf } from "../recoil/userAuth"
+import { useCheckLogin } from "../hooks/useCheckLogin"
 
 function MyPage() {
   const [userInfo, setInfo] = useState([])
@@ -36,6 +37,9 @@ function MyPage() {
   // 유저 정보 수정하면 로컬스토리지에도 적용
   const [userName, setUserName] = useRecoilState(currentUserName)
   const [userProf, setUserProf] = useRecoilState(currentUserProf)
+
+  // 로그인 안했으면 로그인 페이지로
+  useCheckLogin()
 
   useEffect(() => {
     const token = getUserToken().then((token) => {

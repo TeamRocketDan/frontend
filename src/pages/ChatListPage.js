@@ -13,8 +13,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { getUserToken } from "../utils/getUserToken"
 import { selectedRegion01, selectedRegion02 } from "../recoil/regionState"
 import { CHAT_API } from "../apis"
+import { useCheckLogin } from "../hooks/useCheckLogin"
 
 function ChatListPage() {
+  // 로그인 안했으면 로그인 페이지로
+  useCheckLogin()
+
   // class names
   const titleClass =
     "my-4 px-2 font-semibold text-2xl inline-block relative before:block before:absolute before:left-0 before:bottom-0 before:bg-rose-400 before:h-3 before:w-full before:opacity-30"
@@ -126,15 +130,9 @@ function ChatListPage() {
         lng: room.longitude,
       }),
     )
-    recentRoomList.forEach((room) =>
-      newPositions.push({
-        lat: room.latitude,
-        lng: room.longitude,
-      }),
-    )
 
     setPositionData(newPositions)
-  }, [myRoomList, recentRoomList])
+  }, [myRoomList])
 
   return (
     <Container>

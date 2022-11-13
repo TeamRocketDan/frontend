@@ -15,6 +15,12 @@ export const currentUserName = atom({
   effects_UNSTABLE: [persistAtom],
 })
 
+export const currentUserId = atom({
+  key: "currentUserId",
+  default: "",
+  effects_UNSTABLE: [persistAtom],
+})
+
 export const currentUserProf = atom({
   key: "currentUserProf",
   default: "",
