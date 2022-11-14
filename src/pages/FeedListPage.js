@@ -23,6 +23,7 @@ function FeedListPage() {
 
   const [positionData, setPositionData] = useState([])
   const [feedList, setFeedList] = useState([])
+  const [feedLike, setFeedLike] = useState([])
 
   // 페이지네이션 관련
   const [searchParams, setSearchParams] = useSearchParams()
@@ -50,22 +51,45 @@ function FeedListPage() {
     console.log(`rcate1: ${rcate1}`)
     console.log(`rcate2: ${rcate2}`)
 
-    try {
-      const response = await axios.get(`${DEFAULT_API}/api/v1/feeds`, {
-        params: {
-          page,
-          size,
-          rcate1,
-          rcate2,
-        },
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
+    const token = await getUserToken()
+    if (!token) {
+      try {
+        const response = await axios.get(`${DEFAULT_API}/api/v1/feeds`, {
+          params: {
+            page,
+            size,
+            rcate1,
+            rcate2,
+          },
+          headers: {
+            // 토큰 유무에 따라 다르게
+            "Content-Type": "application/json",
+          },
+        })
 
-      return response
-    } catch (error) {
-      console.log(error)
+        return response
+      } catch (error) {
+        console.log(error)
+      }
+    } else {
+      try {
+        const response = await axios.get(`${DEFAULT_API}/api/v1/feeds`, {
+          params: {
+            page,
+            size,
+            rcate1,
+            rcate2,
+          },
+          headers: {
+            Authorization: token,
+            "Content-Type": "application/json",
+          },
+        })
+
+        return response
+      } catch (error) {
+        console.log(error)
+      }
     }
   }
 
@@ -127,12 +151,13 @@ function FeedListPage() {
           <Card
             feedId={index.feedId}
             profile={index.profileImagePath}
-            imageSrc={index.feedImages}
+            imageSrc={index.feedImages[0]}
             location={index.rcate1}
             title={index.title}
             desc={index.content}
             liked={index.feedLikeCnt}
             reply={index.feedCommentCnt}
+            like={index.isLikeFeed}
           />
         ))}
       </div>
