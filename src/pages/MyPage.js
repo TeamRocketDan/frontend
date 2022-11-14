@@ -294,9 +294,11 @@ function MyPage() {
         </div>
 
         {/* Following */}
-        <div class="bg-white shadow mt-6  rounded-lg p-6">
-          <h3 class="text-gray-600 text-sm font-semibold mb-4">Following</h3>
-          <ul class="flex items-center justify-center space-x-2">
+        <div className="bg-white shadow mt-6  rounded-lg p-6">
+          <h3 className="text-gray-600 text-sm font-semibold mb-4">
+            Following
+          </h3>
+          <ul className="flex items-center justify-center space-x-2">
             {userFollowing.map((follow) => (
               <li
                 key={follow.userId}
@@ -322,9 +324,9 @@ function MyPage() {
           </PaginationBox>
         </div>
         {/* Follower */}
-        <div class="bg-white shadow mt-6  rounded-lg p-6">
-          <h3 class="text-gray-600 text-sm font-semibold mb-4">Follower</h3>
-          <ul class="flex items-center justify-center space-x-2">
+        <div className="bg-white shadow mt-6  rounded-lg p-6">
+          <h3 className="text-gray-600 text-sm font-semibold mb-4">Follower</h3>
+          <ul className="flex items-center justify-center space-x-2">
             {userFollower.map((follow) => (
               <li
                 key={follow.userId}

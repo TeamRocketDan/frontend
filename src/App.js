@@ -10,6 +10,7 @@ import CreateChatPage from "./pages/CreateChatPage"
 import ChatRoom from "./pages/ChatRoom"
 import LoginRedirect from "./pages/LoginRedirect"
 import CreateFeedPage from "./pages/CreateFeedPage"
+import EditFeedPage from "./pages/EditFeedPage"
 import MyFeedListPage from "./pages/MyFeedListPage"
 import DetailedFeedPage from "./pages/DetailedFeedPage"
 
@@ -26,6 +27,7 @@ function App() {
         <Route path="/chatroom/:roomId" element={<ChatRoom />} />
         <Route path="/myfeedlist" element={<MyFeedListPage />} />
         <Route path="/createfeed" element={<CreateFeedPage />} />
+        <Route path="/editfeed/:feedId" element={<EditFeedPage />} />
         <Route path="/detailedfeed/:feedId" element={<DetailedFeedPage />} />
 
         {/* login redirect */}
