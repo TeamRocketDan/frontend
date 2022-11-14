@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import axios from "axios"
 
+import Container from "../components/Layout/Container"
 import FormSearchModal from "../components/Search/FormSearchModal"
 import { useRecoilState } from "recoil"
 import { cityData } from "../recoil/areaData"
@@ -137,9 +138,9 @@ function CreateFeedPage() {
   }
 
   return (
-    <>
+    <Container>
       {/* <!-- Container --> */}
-      <div className="container mx-auto">
+      <div className="container">
         <h3 className={titleClass}>
           피드 생성
           <FontAwesomeIcon icon={faMessage} className="ml-1" />
@@ -184,6 +185,7 @@ function CreateFeedPage() {
                     type="file"
                     className="hidden"
                     accept="image/"
+                    multiple
                     onChange={onChangeImage}
                   />
                 </label>
@@ -283,7 +285,7 @@ function CreateFeedPage() {
           </div>
         </div>
       </div>
-    </>
+    </Container>
   )
 }
 
