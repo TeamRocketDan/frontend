@@ -51,6 +51,17 @@ function FeedListPage() {
     console.log(`rcate1: ${rcate1}`)
     console.log(`rcate2: ${rcate2}`)
 
+    if (
+      rcate1 == null ||
+      rcate1 == "" ||
+      rcate1 == undefined ||
+      rcate2 == null ||
+      rcate2 == "" ||
+      rcate2 == undefined
+    ) {
+      return
+    }
+
     const token = await getUserToken()
     if (!token) {
       try {
@@ -140,27 +151,34 @@ function FeedListPage() {
 
   return (
     <Container>
-      {/* 지도에 채팅 위치 표시 */}
+      {/* 지도에 피드 위치 표시 */}
       <FeedListMap positionData={positionData} />
 
       <h3 className={titleClass}>
         피드 리스트 <FontAwesomeIcon icon={faMap} />
       </h3>
-      <div className="flex flex-wrap -m-4">
-        {feedList.map((index) => (
-          <Card
-            feedId={index.feedId}
-            profile={index.profileImagePath}
-            imageSrc={index.feedImages[0]}
-            location={index.rcate1}
-            title={index.title}
-            desc={index.content}
-            liked={index.feedLikeCnt}
-            reply={index.feedCommentCnt}
-            like={index.isLikeFeed}
-          />
-        ))}
-      </div>
+      {feedList.length == 0 ? (
+        <div>
+          <h3>( ˃̣̣̥᷄⌓˂̣̣̥᷅ ) 피드가 없다냥!</h3>
+        </div>
+      ) : (
+        <div className="flex flex-wrap -m-4">
+          {feedList.map((index) => (
+            <Card
+              feedId={index.feedId}
+              profile={index.profileImagePath}
+              imageSrc={index.feedImages[0]}
+              location={index.rcate1}
+              title={index.title}
+              desc={index.content}
+              liked={index.feedLikeCnt}
+              reply={index.feedCommentCnt}
+              like={index.isLikeFeed}
+            />
+          ))}
+        </div>
+      )}
+
       <ChatListPagination
         maxPage={listMaxPage}
         currentPage={listPage}

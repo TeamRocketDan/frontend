@@ -79,7 +79,6 @@ function MyFeedListPage() {
         rcate2,
       })
       const result = regionFeedList.data.result
-      console.log(result)
       setRegionListMaxPage(result.totalPage)
     }
     if (rcate2 !== "") {
@@ -94,7 +93,6 @@ function MyFeedListPage() {
         rcate2,
       })
       const result = myFeedList.data.result
-      console.log(result)
       setMyFeedList(result.content)
     }
 
@@ -116,25 +114,31 @@ function MyFeedListPage() {
 
   return (
     <Container>
-      {/* 지도에 채팅 위치 표시 */}
+      {/* 지도에 피드 위치 표시 */}
       <FeedListMap positionData={positionData} />
 
       <h3 className={titleClass}>
         나의 여행 <FontAwesomeIcon icon={faMap} />
       </h3>
-      <div className="flex flex-wrap -m-4">
-        {myFeedList.map((index) => (
-          <Card
-            feedId={index.feedId}
-            imageSrc={index.feedImages[0]}
-            location={index.rcate1}
-            title={index.title}
-            desc={index.content}
-            liked={index.feedLikeCnt}
-            reply={index.feedCommentCnt}
-          />
-        ))}
-      </div>
+      {myFeedList.length == 0 ? (
+        <div>
+          <h3>( ˃̣̣̥᷄⌓˂̣̣̥᷅ ) 피드가 없다냥!</h3>
+        </div>
+      ) : (
+        <div className="flex flex-wrap -m-4">
+          {myFeedList.map((index) => (
+            <Card
+              feedId={index.feedId}
+              imageSrc={index.feedImages[0]}
+              location={index.rcate1}
+              title={index.title}
+              desc={index.content}
+              liked={index.feedLikeCnt}
+              reply={index.feedCommentCnt}
+            />
+          ))}
+        </div>
+      )}
 
       <ChatListPagination
         maxPage={myListMaxPage}
