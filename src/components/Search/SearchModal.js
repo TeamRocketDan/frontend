@@ -7,6 +7,7 @@ import { cityData } from "../../recoil/areaData"
 import { DEFAULT_API } from "../../apis"
 
 function SearchModal({
+  searchModalOpen,
   setSearchModalOpen,
   currentDistricts,
   setCurrentDistricts,
@@ -56,7 +57,11 @@ function SearchModal({
   }
 
   return (
-    <div className={`border w-64 absolute bg-white`}>
+    <div
+      className={`border w-64 absolute bg-white ${
+        searchModalOpen ? "" : "hidden"
+      }`}
+    >
       {/* depth 01 */}
       <ul className="flex w-64 flex-wrap">
         {cityList.map((city) => (

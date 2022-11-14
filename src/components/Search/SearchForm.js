@@ -62,13 +62,12 @@ function SearchForm() {
         </button>
 
         {/* 지역 선택 모달 */}
-        {searchModalOpen && (
-          <SearchModal
-            setSearchModalOpen={setSearchModalOpen}
-            currentDistricts={currentDistricts}
-            setCurrentDistricts={setCurrentDistricts}
-          />
-        )}
+        <SearchModal
+          searchModalOpen={searchModalOpen}
+          setSearchModalOpen={setSearchModalOpen}
+          currentDistricts={currentDistricts}
+          setCurrentDistricts={setCurrentDistricts}
+        />
       </form>
     </div>
   )
