@@ -1,6 +1,6 @@
-export const createChatBubble = ({ payload, userId, participants }) => {
+export const createChatBubble = ({ payload, userId }) => {
   // 입장 퇴장 시스템 메세지
-  if (payload.userId === "666") {
+  if (payload.userId === 666) {
     const bubble = document.createElement("li")
     bubble.classList.add(
       "w-full",
@@ -47,13 +47,9 @@ export const createChatBubble = ({ payload, userId, participants }) => {
     "-mt-2",
   )
 
-  const currentSender = participants.filter(
-    (participant) => participant.userId === payload.userId,
-  )[0]
-
   prof.style.backgroundImage = `url(${
-    currentSender.profileImage
-      ? currentSender.profileImage
+    payload.profileImage
+      ? payload.profileImage
       : "https://via.placeholder.com/50"
   })`
   const timeStamp = document.createElement("span")
@@ -81,7 +77,7 @@ export const createChatBubble = ({ payload, userId, participants }) => {
     "-top-5",
     "text-sm",
   )
-  userNameArea.textContent = currentSender.nickname
+  userNameArea.textContent = payload.senderName
 
   if (payload.userId === userId) {
     prof.classList.add("-right-12")
