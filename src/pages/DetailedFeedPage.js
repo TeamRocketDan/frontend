@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import axios from "axios"
+import styled from "styled-components"
+import Slider from "react-slick"
+import "slick-carousel/slick/slick.css"
+import "slick-carousel/slick/slick-theme.css"
 
 import Container from "../components/Layout/Container"
-import { faMap, faHeart } from "@fortawesome/free-regular-svg-icons"
-import { faHeartCircleCheck } from "@fortawesome/free-solid-svg-icons"
+import { faMap } from "@fortawesome/free-regular-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import HeartButton from "../components/Feed/HeartButton"
 import CommentHeartButton from "../components/Feed/CommentHeartButton"
@@ -19,7 +22,18 @@ function DetailedFeedPage() {
   // class names
   const titleClass =
     "my-4 px-2 font-semibold text-2xl inline-block relative before:block before:absolute before:left-0 before:bottom-0 before:bg-rose-400 before:h-3 before:w-full before:opacity-30"
+
+  // 슬라이드 setting
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+  }
+
   const [feedInfo, setFeedInfo] = useState([]) // 피드
+  const [feedsImages, setFeedsImages] = useState([]) // 피드 이미지 리스트
   const [comment, setComment] = useState("") // 코멘트
   const [editComments, setEditComments] = useState("") // 코멘트 수정
   const [commentList, setCommentList] = useState([]) // 코멘트 리스트
@@ -28,6 +42,7 @@ function DetailedFeedPage() {
   const [commentContents, setCommentContents] = useState([]) // 코멘트 내용
   const [followingList, setFollowingList] = useState([]) // 유저가 팔로잉하고 있는 아이디 리스트
   const [follow, setFollow] = useState(false) // 팔로우 여부
+  const [userId, setUserId] = useState("") // 사용 중인 유저 ID
 
   const getCommentLike = (props) => {
     props.map((index) => {
@@ -168,6 +183,7 @@ function DetailedFeedPage() {
         .then((res) => {
           setFeedLike(res.data.result.likeFeed)
           setFeedInfo(res.data.result)
+          setFeedsImages(res.data.result.feedImages)
         })
         .catch((err) => {
           console.log(err)
@@ -198,6 +214,19 @@ function DetailedFeedPage() {
           res.data.result.content.map((index) => {
             setFollowingList(...followingList, index.userId)
           })
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+      axios
+        .get(`${DEFAULT_API}/api/v1/users/mypage`, {
+          headers: {
+            Authorization: token,
+            "Content-Type": "application/json",
+          },
+        })
+        .then((res) => {
+          setUserId(res.data.result.userId)
         })
         .catch((err) => {
           console.log(err)
@@ -250,7 +279,8 @@ function DetailedFeedPage() {
   }
 
   // 코멘트 생성
-  const postComment = async () => {
+  const postComment = async (e) => {
+    e.preventDefault()
     const formData = new FormData()
     const variable = {
       comment: comment,
@@ -374,7 +404,8 @@ function DetailedFeedPage() {
       <h3 className={titleClass}>
         피드 <FontAwesomeIcon icon={faMap} />
       </h3>
-      <div className=" rounded overflow-hidden border w-full">
+
+      <div className="rounded overflow-hidden border w-full">
         <div className="w-full flex justify-between p-3">
           <div className="flex">
             <div className="rounded-full h-16 w-16 bg-gray-500 flex items-center justify-center overflow-hidden">
@@ -412,11 +443,37 @@ function DetailedFeedPage() {
           </span>
         </div>
         <h3 className="text-3xl ml-2">{feedInfo.title}</h3>
-        <img
-          className="w-full bg-cover object-contain max-h-96 mt-2"
-          alt="피드 이미지"
-          src={feedInfo.feedImages}
-        />
+
+        {/* feedsImages */}
+        {/* //Slider 태그, 위에서 설정한 슬라이더가 나옴 */}
+        {feedsImages.length > 0 ? (
+          feedsImages.length !== 1 ? (
+            <Wrap>
+              <Slider {...settings}>
+                {feedsImages.map((index) => (
+                  <div key={index}>
+                    <img
+                      className="w-full bg-cover object-contain max-h-96 mt-2"
+                      alt="피드 이미지"
+                      src={index}
+                    />
+                  </div>
+                ))}
+                {/* //Slider 안에 들어가는 내용(콘텐츠) */}
+              </Slider>
+            </Wrap>
+          ) : (
+            <img
+              className="w-full bg-cover object-contain max-h-96 mt-2"
+              alt="피드 이미지"
+              src={feedsImages[0]}
+              key={feedsImages[0]}
+            />
+          )
+        ) : (
+          ""
+        )}
+
         <div className="px-3 pb-2">
           <div className="pt-2">
             <i className="far fa-heart cursor-pointer"></i>
@@ -428,20 +485,24 @@ function DetailedFeedPage() {
                   onClick={feedLike ? onChangeCancelFeedLike : onChangeFeedLike}
                 />
               </span>
-              <span className="">
-                <button
-                  className="bg-transparent hover:bg-rose-500 text-rose-500 font-semibold hover:text-white py-2 px-2 border border-rose-500 hover:border-transparent rounded"
-                  onClick={editFeed}
-                >
-                  피드 수정
-                </button>
-                <button
-                  className="bg-transparent hover:bg-rose-500 text-rose-500 font-semibold hover:text-white py-2 px-2 border border-rose-500 hover:border-transparent rounded"
-                  onClick={deleteFeed}
-                >
-                  피드 삭제
-                </button>
-              </span>
+              {userId == feedInfo.userId ? (
+                <span className="">
+                  <button
+                    className="bg-transparent hover:bg-rose-500 text-rose-500 font-semibold hover:text-white py-2 px-2 border border-rose-500 hover:border-transparent rounded"
+                    onClick={editFeed}
+                  >
+                    피드 수정
+                  </button>
+                  <button
+                    className="bg-transparent hover:bg-rose-500 text-rose-500 font-semibold hover:text-white py-2 px-2 border border-rose-500 hover:border-transparent rounded"
+                    onClick={deleteFeed}
+                  >
+                    피드 삭제
+                  </button>
+                </span>
+              ) : (
+                ""
+              )}
             </div>
           </div>
           <div className="pt-1">
@@ -515,31 +576,36 @@ function DetailedFeedPage() {
                 <span className="text-sm text-gray-400 font-medium">
                   좋아요 {index.commentLikeCnt}개
                 </span>
-
-                <button
-                  className="bg-transparent hover:bg-rose-500 text-rose-500 font-semibold hover:text-white py-2 px-2 border border-rose-500 hover:border-transparent rounded"
-                  onClick={(event) => {
-                    // console.log(event.target)
-                    event.target
-                      .closest(".comment-wrap")
-                      .querySelector(".comment")
-                      .classList.add("hidden")
-                    event.target
-                      .closest(".comment-wrap")
-                      .querySelector(".comment-edit")
-                      .classList.remove("hidden")
-                  }}
-                >
-                  코멘트 수정
-                </button>
-                <button
-                  className="bg-transparent hover:bg-rose-500 text-rose-500 font-semibold hover:text-white py-2 px-2 border border-rose-500 hover:border-transparent rounded"
-                  onClick={() => {
-                    deleteComment(index.commentId)
-                  }}
-                >
-                  코멘트 삭제
-                </button>
+                {userId === index.userId ? (
+                  <span>
+                    <button
+                      className="bg-transparent hover:bg-rose-500 text-rose-500 font-semibold hover:text-white py-2 px-2 border border-rose-500 hover:border-transparent rounded"
+                      onClick={(event) => {
+                        // console.log(event.target)
+                        event.target
+                          .closest(".comment-wrap")
+                          .querySelector(".comment")
+                          .classList.add("hidden")
+                        event.target
+                          .closest(".comment-wrap")
+                          .querySelector(".comment-edit")
+                          .classList.remove("hidden")
+                      }}
+                    >
+                      코멘트 수정
+                    </button>
+                    <button
+                      className="bg-transparent hover:bg-rose-500 text-rose-500 font-semibold hover:text-white py-2 px-2 border border-rose-500 hover:border-transparent rounded"
+                      onClick={() => {
+                        deleteComment(index.commentId)
+                      }}
+                    >
+                      코멘트 삭제
+                    </button>
+                  </span>
+                ) : (
+                  ""
+                )}
               </span>
             </div>
           ))}
@@ -575,5 +641,19 @@ function DetailedFeedPage() {
     </Container>
   )
 }
+
+const Wrap = styled.div`
+  margin: 5% auto;
+  width: 100%;
+  .slick-prev:before {
+    opaicty: 1; // 기존에 숨어있던 화살표 버튼이 보이게
+    color: black; // 버튼 색은 검은색으로
+    left: 0;
+  }
+  .slick-next:before {
+    opacity: 1;
+    color: black;
+  }
+`
 
 export default DetailedFeedPage
