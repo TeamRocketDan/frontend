@@ -21,7 +21,7 @@ const Card = (props) => {
             {props.location}
           </h2>
           <h1 className="text-2xl font-semibold mb-3">{props.title}</h1>
-          <p className="leading-relaxed mb-3">{props.desc}</p>
+          <p className="leading-relaxed mb-3 truncate">{props.desc}</p>
           <div className="flex items-center flex-wrap cursor-pointer">
             <button
               className="text-indigo-300 inline-flex items-center md:mb-2 lg:mb-0"
