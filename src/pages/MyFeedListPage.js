@@ -125,6 +125,7 @@ function MyFeedListPage() {
       <div className="flex flex-wrap -m-4">
         {myFeedList.map((index) => (
           <Card
+            key={index.feedId}
             feedId={index.feedId}
             imageSrc={index.feedImages[0]}
             location={index.rcate1}

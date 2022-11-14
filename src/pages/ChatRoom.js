@@ -57,11 +57,12 @@ function ChatRoom() {
         (content) => {
           const payload = JSON.parse(content.body)
           console.log(payload)
-          const bubble = createChatBubble({
-            payload,
-            userId,
-            participants,
-          })
+
+          if (payload.userId === 666) {
+            getRoomInfo()
+          }
+
+          const bubble = createChatBubble({ payload, userId })
           messageListRef.current.appendChild(bubble)
 
           messageListRef.current.scrollTop = messageListRef.current.scrollHeight
@@ -90,8 +91,11 @@ function ChatRoom() {
       }
 
       // 신규 유저일 경우 입장 메세지 stomp 연결 후에 보내야 한다
+      console.log("신규 유저", response.data.result.newUser)
       if (response.data.result.newUser) {
-        sendEnterMessage()
+        setTimeout(() => {
+          sendEnterMessage()
+        }, 500)
       }
     } catch (error) {
       console.log(error.response.data.errorMessage)
@@ -137,7 +141,7 @@ function ChatRoom() {
           Authorization: token,
         },
         debug: function (str) {
-          console.log(str)
+          // console.log(str)
         },
         onConnect: () => {
           // 연결 됐을 때 구독 시작
@@ -174,22 +178,6 @@ function ChatRoom() {
       stompClient.deactivate()
       subscription.unsubscribe()
       console.log("채팅 연결 끊어짐")
-
-      // try {
-      //   const response = await axios.patch(
-      //     `${CHAT_API}/api/v1/chat/chat-end/${roomId}`,
-      //     null,
-      //     {
-      //       headers: {
-      //         Authorization: token,
-      //         "Content-Type": "application/json",
-      //       },
-      //     },
-      //   )
-      //   console.log("[CHAT END] : ", response)
-      // } catch (error) {
-      //   console.log(error)
-      // }
     }
   }
 
@@ -202,6 +190,8 @@ function ChatRoom() {
     const message = {
       message: input.value,
       userId,
+      profileImage: userProf,
+      senderName: userName,
     }
 
     const token = await getUserToken()
@@ -242,19 +232,19 @@ function ChatRoom() {
     console.log("[GET MESSAGE] : ", response)
 
     prevList.forEach((payload) => {
-      const bubble = createChatBubble({ payload, userId, participants })
+      const bubble = createChatBubble({ payload, userId })
       scrollObserver.current.after(bubble)
     })
 
     // 채팅창 스크롤 이동 (메세지 로딩중 요소 안보일 정도만)
-    messageListRef.current.scrollTo(0, 60)
+    messageListRef.current.scrollTo(0, 140)
 
     // 마지막 날, 마지막 페이지일 때 => 메세지 끝(더 이상 불러오지 않음)
     if (response.data.result.lastDay && response.data.result.lastPage) {
       console.log("메세지 끝")
       setIsMessageEnd(true)
-      // scrollObserver.current.classList.add("hidden")
-      scrollObserver.current.remove()
+      scrollObserver.current.classList.add("hidden")
+      // scrollObserver.current.remove()
     }
 
     // 마지막 페이지일 때 => 날짜가 넘어감
@@ -270,6 +260,25 @@ function ChatRoom() {
       getMessage()
     }
   }, [messagePage, isEnterSuccess])
+
+  // get room info
+  async function getRoomInfo() {
+    const token = getUserToken()
+    const response = await axios.get(
+      `${CHAT_API}/api/v1/chat/room/info/${roomId}`,
+      {
+        headers: {
+          Authorization: token,
+          "Content-Type": "application/json",
+        },
+      },
+    )
+
+    console.log("[GET ROOM INFO] : ", response)
+
+    setParticipants(response.data.result.participants)
+    setRoomTitle(response.data.result.roomTitle)
+  }
 
   // IntersectionObserver 생성, token, room info 불러오기
   useEffect(() => {
@@ -290,24 +299,6 @@ function ChatRoom() {
       }
 
       getToken()
-
-      async function getRoomInfo() {
-        const token = getUserToken()
-        const response = await axios.get(
-          `${CHAT_API}/api/v1/chat/room/info/${roomId}`,
-          {
-            headers: {
-              Authorization: token,
-              "Content-Type": "application/json",
-            },
-          },
-        )
-
-        console.log("[GET ROOM INFO] : ", response)
-
-        setParticipants(response.data.result.participants)
-        setRoomTitle(response.data.result.roomTitle)
-      }
 
       getRoomInfo()
     }
