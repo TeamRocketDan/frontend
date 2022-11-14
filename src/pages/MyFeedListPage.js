@@ -126,7 +126,7 @@ function MyFeedListPage() {
         {myFeedList.map((index) => (
           <Card
             feedId={index.feedId}
-            imageSrc={index.feedImages}
+            imageSrc={index.feedImages[0]}
             location={index.rcate1}
             title={index.title}
             desc={index.content}
