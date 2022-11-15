@@ -120,25 +120,20 @@ function MyFeedListPage() {
       <h3 className={titleClass}>
         나의 여행 <FontAwesomeIcon icon={faMap} />
       </h3>
-      {myFeedList.length == 0 ? (
-        <div>
-          <h3>( ˃̣̣̥᷄⌓˂̣̣̥᷅ ) 피드가 없다냥!</h3>
-        </div>
-      ) : (
-        <div className="flex flex-wrap -m-4">
-          {myFeedList.map((index) => (
-            <Card
-              feedId={index.feedId}
-              imageSrc={index.feedImages[0]}
-              location={index.rcate1}
-              title={index.title}
-              desc={index.content}
-              liked={index.feedLikeCnt}
-              reply={index.feedCommentCnt}
-            />
-          ))}
-        </div>
-      )}
+      <div className="flex flex-wrap -m-4">
+        {myFeedList.map((index) => (
+          <Card
+            key={index.feedId}
+            feedId={index.feedId}
+            imageSrc={index.feedImages[0]}
+            location={index.rcate1}
+            title={index.title}
+            desc={index.content}
+            liked={index.feedLikeCnt}
+            reply={index.feedCommentCnt}
+          />
+        ))}
+      </div>
 
       <ChatListPagination
         maxPage={myListMaxPage}
