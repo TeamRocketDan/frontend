@@ -46,36 +46,32 @@ function MyFeedListPage() {
 
   // 피드 리스트 받아오기
   async function getFeeds({ page, size }) {
-    if (
-      rcate1 == null ||
-      rcate1 == "" ||
-      rcate1 == undefined ||
-      rcate2 == null ||
-      rcate2 == "" ||
-      rcate2 == undefined
-    ) {
+    if ((rcate1 === "" && rcate2 === "") || (rcate1 !== "" && rcate2 !== "")) {
+      const token = await getUserToken()
+
+      try {
+        const response = await axios.get(
+          `${DEFAULT_API}/api/v1/feeds/feedList`,
+          {
+            params: {
+              page,
+              size,
+              rcate1,
+              rcate2,
+            },
+            headers: {
+              Authorization: token,
+              "Content-Type": "application/json",
+            },
+          },
+        )
+
+        return response
+      } catch (error) {
+        console.log(error)
+      }
+    } else {
       return
-    }
-
-    const token = await getUserToken()
-
-    try {
-      const response = await axios.get(`${DEFAULT_API}/api/v1/feeds/feedList`, {
-        params: {
-          page,
-          size,
-          rcate1,
-          rcate2,
-        },
-        headers: {
-          Authorization: token,
-          "Content-Type": "application/json",
-        },
-      })
-
-      return response
-    } catch (error) {
-      console.log(error)
     }
   }
 
