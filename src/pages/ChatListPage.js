@@ -49,24 +49,29 @@ function ChatListPage() {
 
   // 지역 채팅 리스트 받아오기
   async function getChatRooms({ page, size, rcate1, rcate2 }) {
-    const token = await getUserToken()
+    if ((rcate1 === "" && rcate2 === "") || (rcate1 !== "" && rcate2 !== "")) {
+      // 리스트 요청 보내기
+      const token = await getUserToken()
 
-    try {
-      const response = await axios.get(`${CHAT_API}/api/v1/chat/room-list`, {
-        params: {
-          page,
-          size,
-          rcate1,
-          rcate2,
-        },
-        headers: {
-          Authorization: token,
-          "Content-Type": "application/json",
-        },
-      })
-      return response
-    } catch (error) {
-      console.log(error)
+      try {
+        const response = await axios.get(`${CHAT_API}/api/v1/chat/room-list`, {
+          params: {
+            page,
+            size,
+            rcate1,
+            rcate2,
+          },
+          headers: {
+            Authorization: token,
+            "Content-Type": "application/json",
+          },
+        })
+        return response
+      } catch (error) {
+        console.log(error)
+      }
+    } else {
+      return
     }
   }
   // 내 채팅 리스트 받아오기
@@ -104,9 +109,7 @@ function ChatListPage() {
       setRecentRoomList(result.content)
       setRegionListMaxPage(result.totalPage)
     }
-    if (rcate2 !== "") {
-      getRegionList()
-    }
+    getRegionList()
 
     async function getMyList() {
       const myChatList = await getMyChatRooms({
