@@ -162,6 +162,7 @@ function FeedListPage() {
         <div className="flex flex-wrap -m-4 mx-auto w-8/12">
           {feedList.map((index) => (
             <Card
+              key={index.feedId}
               feedId={index.feedId}
               profile={index.profileImagePath}
               imageSrc={index.feedImages[0]}
