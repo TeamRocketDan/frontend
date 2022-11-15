@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useRef } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import axios from "axios"
 import styled from "styled-components"
+import Pagination from "react-js-pagination"
 import Slider from "react-slick"
 import "slick-carousel/slick/slick.css"
 import "slick-carousel/slick/slick-theme.css"
@@ -18,6 +19,7 @@ import { getUserToken } from "../utils/getUserToken"
 function DetailedFeedPage() {
   const { feedId } = useParams()
   const navigate = useNavigate()
+  const commentTextareaRef = useRef()
 
   // class names
   const titleClass =
@@ -32,6 +34,12 @@ function DetailedFeedPage() {
     slidesToScroll: 1,
   }
 
+  // 페이지네이션
+  const [page, setPage] = useState(1)
+  const handlePageChange = (page) => {
+    setPage(page)
+  }
+
   const [feedInfo, setFeedInfo] = useState([]) // 피드
   const [feedsImages, setFeedsImages] = useState([]) // 피드 이미지 리스트
   const [comment, setComment] = useState("") // 코멘트
@@ -40,20 +48,23 @@ function DetailedFeedPage() {
   const [feedLike, setFeedLike] = useState(true) // 피드 좋아요
   const [commentLike, setCommentLike] = useState(false) // 코멘트 좋아요
   const [commentContents, setCommentContents] = useState([]) // 코멘트 내용
-  const [followingList, setFollowingList] = useState([]) // 유저가 팔로잉하고 있는 아이디 리스트
-  const [follow, setFollow] = useState(false) // 팔로우 여부
   const [userId, setUserId] = useState("") // 사용 중인 유저 ID
+  const [follow, setFollow] = useState(false) // 팔로잉 여부
 
   const getCommentLike = (props) => {
-    props.map((index) => {
-      setCommentLike(...commentLike, index.likeFeedComment)
+    const newCommentLike = []
+    props.forEach((comment) => {
+      newCommentLike.push(comment.likeFeedComment)
     })
+    setCommentLike([...commentLike, ...newCommentLike])
   }
 
   const getCommentContents = (props) => {
-    props.map((index) => {
-      setCommentContents(...commentContents, index.content)
+    const newContents = []
+    props.forEach((content) => {
+      newContents.push(content.content)
     })
+    setCommentContents([...commentContents, ...newContents])
   }
 
   // 피드 좋아요
@@ -93,7 +104,6 @@ function DetailedFeedPage() {
         setFeedLike(false)
       })
       .catch((err) => {
-        // console.log("피드 좋아요 취소 에러")
         console.log(err)
       })
   }
@@ -118,7 +128,6 @@ function DetailedFeedPage() {
         setCommentLike(!commentLike)
       })
       .catch((err) => {
-        // console.log("코멘트 좋아요 에러")
         console.log(err)
       })
   }
@@ -142,7 +151,6 @@ function DetailedFeedPage() {
         setCommentLike(!commentLike)
       })
       .catch((err) => {
-        // console.log("코멘트 좋아요 취소 에러")
         console.log(err)
       })
   }
@@ -171,6 +179,31 @@ function DetailedFeedPage() {
       .catch((err) => console.log(err))
   }
 
+  // get comment list
+  const getCommentList = async () => {
+    try {
+      const token = await getUserToken()
+      const res = await axios.get(
+        `${DEFAULT_API}/api/v1/feeds/${feedId}/comments`,
+        {
+          headers: {
+            Authorization: token,
+            "Content-Type": "application/json",
+          },
+        },
+      )
+      console.log("[GET COMMENT LIST] : ", res)
+      if (res.data.success) {
+        setComment(res.data.result)
+        setCommentList(res.data.result.content)
+        getCommentLike(res.data.result.content)
+        getCommentContents(res.data.result.content)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   useEffect(() => {
     const token = getUserToken().then((token) => {
       axios
@@ -184,36 +217,8 @@ function DetailedFeedPage() {
           setFeedLike(res.data.result.likeFeed)
           setFeedInfo(res.data.result)
           setFeedsImages(res.data.result.feedImages)
-        })
-        .catch((err) => {
-          console.log(err)
-        })
-      axios
-        .get(`${DEFAULT_API}/api/v1/feeds/${feedId}/comments`, {
-          headers: {
-            Authorization: token,
-            "Content-Type": "application/json",
-          },
-        })
-        .then((res) => {
-          setCommentList(res.data.result.content)
-          getCommentLike(commentList)
-          getCommentContents(commentList)
-        })
-        .catch((err) => {
-          console.log(err)
-        })
-      axios
-        .get(`${DEFAULT_API}/api/v1/users/following`, {
-          headers: {
-            Authorization: token,
-            "Content-Type": "application/json",
-          },
-        })
-        .then((res) => {
-          res.data.result.content.map((index) => {
-            setFollowingList(...followingList, index.userId)
-          })
+          setFollow(res.data.result.follow)
+          console.log(res.data.result)
         })
         .catch((err) => {
           console.log(err)
@@ -232,6 +237,8 @@ function DetailedFeedPage() {
           console.log(err)
         })
     })
+
+    getCommentList()
   }, [])
 
   useEffect(() => {
@@ -247,26 +254,11 @@ function DetailedFeedPage() {
           // console.log(res.data.result)
           setFeedLike(res.data.result.likeFeed)
           setFeedInfo(res.data.result)
+          setFollow(res.data.result.follow)
         })
         .catch((err) => console.log(err))
     })
   }, [feedLike])
-
-  useEffect(() => {
-    const token = getUserToken().then((token) => {
-      axios
-        .get(`${DEFAULT_API}/api/v1/feeds/${feedId}/comments`, {
-          headers: {
-            Authorization: token,
-            "Content-Type": "application/json",
-          },
-        })
-        .then((res) => {
-          setCommentList(res.data.result.content)
-        })
-        .catch((err) => console.log(err))
-    })
-  }, [commentLike, commentContents])
 
   // 코멘트 데이터 생성시
   const onChangeComment = (e) => {
@@ -281,6 +273,7 @@ function DetailedFeedPage() {
   // 코멘트 생성
   const postComment = async (e) => {
     e.preventDefault()
+
     const formData = new FormData()
     const variable = {
       comment: comment,
@@ -294,7 +287,6 @@ function DetailedFeedPage() {
     const token = await getUserToken()
     axios
       .post(`${DEFAULT_API}/api/v1/feeds/${feedId}/comments`, formData, {
-        // 경로 수정 여부 확인
         headers: {
           Authorization: token,
           "Content-Type": "multipart/form-data",
@@ -302,7 +294,8 @@ function DetailedFeedPage() {
       })
       .then((res) => {
         console.log("Post Comment Success!")
-        // console.log(res)
+        getCommentList()
+        commentTextareaRef.current.value = ""
       })
       .catch((err) => console.log(err))
   }
@@ -334,10 +327,9 @@ function DetailedFeedPage() {
       )
       .then((res) => {
         console.log("Edit Comment Success")
-        // console.log(res)
+        getCommentList()
       })
       .catch((err) => {
-        // console.log("코멘트 수정 에러")
         console.log(err)
       })
   }
@@ -357,9 +349,9 @@ function DetailedFeedPage() {
         )
         .then((res) => {
           console.log(`Delete ${res.data.result.feedCommentId} comment`)
+          getCommentList()
         })
         .catch((err) => {
-          // console.log("코멘트 삭제 에러")
           console.log(err)
         })
     })
@@ -415,7 +407,9 @@ function DetailedFeedPage() {
               {feedInfo.nickname}
             </span>
             <span>
-              {follow ? (
+              {userId == feedInfo.userId ? (
+                ""
+              ) : follow ? (
                 <button
                   className="pt-1 mt-5 ml-4 text-sl text-center"
                   onClick={() => {
@@ -609,6 +603,15 @@ function DetailedFeedPage() {
               </span>
             </div>
           ))}
+          <PaginationBox>
+            <Pagination
+              activePage={page}
+              totalItemsCount={comment.size}
+              itemsCountPerPage={10}
+              pageRangeDisplayed={5}
+              onChange={handlePageChange}
+            />
+          </PaginationBox>
         </div>
         {/* Comment https://flowbite.com/docs/forms/textarea/ */}
         <form onSubmit={postComment}>
@@ -624,6 +627,7 @@ function DetailedFeedPage() {
                 placeholder="Write a comment..."
                 required=""
                 onChange={onChangeComment}
+                ref={commentTextareaRef}
               ></textarea>
             </div>
 
@@ -653,6 +657,49 @@ const Wrap = styled.div`
   .slick-next:before {
     opacity: 1;
     color: black;
+  }
+`
+
+const PaginationBox = styled.div`
+  .pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+  }
+  ul {
+    list-style: none;
+    padding: 0;
+  }
+  ul.pagination li {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    border: 1px solid #e2e2e2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1rem;
+  }
+  ul.pagination li:first-child {
+    border-radius: 5px 0 0 5px;
+  }
+  ul.pagination li:last-child {
+    border-radius: 0 5px 5px 0;
+  }
+  ul.pagination li a {
+    text-decoration: none;
+    color: #337ab7;
+    font-size: 1rem;
+  }
+  ul.pagination li.active a {
+    color: white;
+  }
+  ul.pagination li.active {
+    background-color: #337ab7;
+  }
+  ul.pagination li a:hover,
+  ul.pagination li a.active {
+    color: blue;
   }
 `
 
