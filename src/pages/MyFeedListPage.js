@@ -44,6 +44,13 @@ function MyFeedListPage() {
   const [rcate1, setRcate1] = useRecoilState(selectedRegion01)
   const [rcate2, setRcate2] = useRecoilState(selectedRegion02)
 
+  // 지역 선택이 바뀌면 현재 페이지 초기화
+  useEffect(() => {
+    updateParams({
+      mylistpage: 1,
+    })
+  }, [rcate2])
+
   // 피드 리스트 받아오기
   async function getFeeds({ page, size }) {
     if ((rcate1 === "" && rcate2 === "") || (rcate1 !== "" && rcate2 !== "")) {
