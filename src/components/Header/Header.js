@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { faBars } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import Container from "../Layout/Container"
 import HeaderMenu from "./HeaderMenu"
 import Logo from "./Logo"
 import SearchForm from "../Search/SearchForm"
@@ -14,7 +15,7 @@ function Header() {
 
   return (
     <header className="border-b z-20 relative">
-      <div className="container mx-auto">
+      <Container className="container mx-auto">
         <div className="flex items-center">
           {/* 로고 */}
           <Logo />
@@ -35,7 +36,7 @@ function Header() {
             )}
           </div>
         </div>
-      </div>
+      </Container>
     </header>
   )
 }
