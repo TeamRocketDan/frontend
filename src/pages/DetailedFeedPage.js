@@ -125,7 +125,8 @@ function DetailedFeedPage() {
       )
       .then((res) => {
         console.log("I like this comment")
-        setCommentLike(!commentLike)
+        getCommentList()
+        console.log(res)
       })
       .catch((err) => {
         console.log(err)
@@ -148,7 +149,7 @@ function DetailedFeedPage() {
       )
       .then((res) => {
         console.log("Cancel Comment Like")
-        setCommentLike(!commentLike)
+        getCommentList()
       })
       .catch((err) => {
         console.log(err)
