@@ -133,7 +133,7 @@ function MyFeedListPage() {
           <h3>( ˃̣̣̥᷄⌓˂̣̣̥᷅ ) 피드가 없다냥!</h3>
         </div>
       ) : (
-        <div className="flex flex-wrap -m-4">
+        <div className="flex flex-wrap -m-4 w-8/12 mx-auto">
           {myFeedList.map((index) => (
             <Card
               feedId={index.feedId}
