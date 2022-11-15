@@ -39,6 +39,9 @@ function DetailedFeedPage() {
   const handlePageChange = (page) => {
     setPage(page)
   }
+  useEffect(() => {
+    getCommentList()
+  }, [page])
 
   const [feedInfo, setFeedInfo] = useState([]) // 피드
   const [feedsImages, setFeedsImages] = useState([]) // 피드 이미지 리스트
@@ -183,7 +186,9 @@ function DetailedFeedPage() {
     try {
       const token = await getUserToken()
       const res = await axios.get(
-        `${DEFAULT_API}/api/v1/feeds/${feedId}/comments`,
+        `${DEFAULT_API}/api/v1/feeds/${feedId}/comments?page=${
+          page - 1
+        }&size=10`,
         {
           headers: {
             Authorization: token,
@@ -601,7 +606,7 @@ function DetailedFeedPage() {
           <PaginationBox>
             <Pagination
               activePage={page}
-              totalItemsCount={comment.totalElements}
+              totalItemsCount={comment === "" ? 0 : comment.totalElements}
               itemsCountPerPage={10}
               pageRangeDisplayed={3}
               prevPageText={"‹"}
