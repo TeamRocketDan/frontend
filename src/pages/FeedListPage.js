@@ -23,7 +23,6 @@ function FeedListPage() {
 
   const [positionData, setPositionData] = useState([])
   const [feedList, setFeedList] = useState([])
-  const [feedLike, setFeedLike] = useState([])
 
   // 페이지네이션 관련
   const [searchParams, setSearchParams] = useSearchParams()

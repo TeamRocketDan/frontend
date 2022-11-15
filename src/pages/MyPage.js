@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
 
 import styled from "styled-components"
 import Pagination from "react-js-pagination"
@@ -22,9 +21,72 @@ function MyPage() {
   const [nickname, setNickname] = useState("")
 
   // 페이지네이션
-  const [page, setPage] = useState(1)
-  const handlePageChange = (page) => {
-    setPage(page)
+  const [followerPage, setFollowerPage] = useState(1)
+  const [followingPage, setFollowingPage] = useState(1)
+
+  const handleFollowerPageChange = (page) => {
+    setFollowerPage(page)
+  }
+  const handleFollowingPageChange = (page) => {
+    setFollowingPage(page)
+  }
+
+  useEffect(() => {
+    getFollowerList()
+  }, [followerPage])
+
+  useEffect(() => {
+    getFollowingList()
+  }, [followingPage])
+
+  const getFollowerList = async () => {
+    try {
+      const token = await getUserToken()
+      const res = await axios
+        .get(
+          `${DEFAULT_API}/api/v1/users/follower?page=${
+            followerPage - 1
+          }&size=10`,
+          {
+            headers: {
+              Authorization: token,
+              "Content-Type": "application/json",
+            },
+          },
+        )
+        .then((res) => {
+          setFollower(res.data.result.content)
+          setFollowerCount(res.data.result.totalElements)
+        })
+        .catch((err) => console.log(err))
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const getFollowingList = async () => {
+    try {
+      const token = await getUserToken()
+      const res = await axios
+        .get(
+          `${DEFAULT_API}/api/v1/users/following?page=${
+            followingPage - 1
+          }&size=10`,
+          {
+            headers: {
+              Authorization: token,
+              "Content-Type": "application/json",
+            },
+          },
+        )
+        .then((res) => {
+          setFollowing(res.data.result.content)
+          setFollowingCount(res.data.result.totalElements)
+        })
+        .catch((err) => console.log(err))
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   // 모달
@@ -52,36 +114,12 @@ function MyPage() {
         })
         .then((res) => {
           setInfo(res.data.result)
-          // console.log(res.data.result)
-        })
-        .catch((err) => console.log(err))
-
-      axios
-        .get(`${DEFAULT_API}/api/v1/users/following`, {
-          headers: {
-            Authorization: token,
-            "Content-Type": "application/json",
-          },
-        })
-        .then((res) => {
-          setFollowing(res.data.result.content)
-          setFollowingCount(res.data.result.totalElements)
-        })
-        .catch((err) => console.log(err))
-
-      axios
-        .get(`${DEFAULT_API}/api/v1/users/follower`, {
-          headers: {
-            Authorization: token,
-            "Content-Type": "application/json",
-          },
-        })
-        .then((res) => {
-          setFollower(res.data.result.content)
-          setFollowerCount(res.data.result.totalElements)
         })
         .catch((err) => console.log(err))
     })
+
+    getFollowingList()
+    getFollowerList()
   }, [userName, userProf])
 
   // 개인정보 수정
@@ -154,20 +192,6 @@ function MyPage() {
             />
             <p className="font-semibold">{userInfo.username}</p>
             <div className="text-sm leading-normal text-gray-400 flex justify-center items-center">
-              {/* <svg
-                viewBox="0 0 24 24"
-                className="mr-1"
-                width="16"
-                height="16"
-                stroke="currentColor"
-                stroke-width="2"
-                fill="none"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                <circle cx="12" cy="10" r="3"></circle>
-              </svg> */}
               <button
                 className="float-right m-2 text-sm text-blue-300"
                 onClick={() => {
@@ -191,14 +215,6 @@ function MyPage() {
               <p className="text-black">{userInfo.following}</p>
               <span className="text-gray-400">Folowing</span>
             </div>
-            {/* <button
-              className="float-right m-2 text-sm text-blue-300"
-              onClick={() => {
-                setModal(true)
-              }}
-            >
-              개인정보 수정
-            </button> */}
 
             <Modal
               isOpen={modal}
@@ -315,11 +331,11 @@ function MyPage() {
           </ul>
           <PaginationBox>
             <Pagination
-              activePage={page}
+              activePage={followingPage}
               totalItemsCount={followingCount}
               itemsCountPerPage={10}
               pageRangeDisplayed={5}
-              onChange={handlePageChange}
+              onChange={handleFollowingPageChange}
             />
           </PaginationBox>
         </div>
@@ -343,34 +359,14 @@ function MyPage() {
           </ul>
           <PaginationBox>
             <Pagination
-              activePage={page}
+              activePage={followerPage}
               totalItemsCount={followerCount}
               itemsCountPerPage={10}
               pageRangeDisplayed={5}
-              onChange={handlePageChange}
+              onChange={handleFollowerPageChange}
             />
           </PaginationBox>
         </div>
-
-        {/* 관심 지역 향후 추가 예정 */}
-        {/* <div className="flex flex-wrap m-4">
-          <div className="w-1/4 ml-auto mr-auto">
-            <h3 className="text-lg font-semibold text-left text-blue-800 mt-1">
-              나의 관심 지역
-            </h3>
-            <form className="login-form grid place-items-center my-4">
-              <PaginationBox>
-                <Pagination
-                  activePage={page}
-                  totalItemsCount={followerCount}
-                  itemsCountPerPage={10}
-                  pageRangeDisplayed={5}
-                  onChange={handlePageChange}
-                />
-              </PaginationBox>
-            </form>
-          </div>
-        </div> */}
       </div>
     </>
   )
