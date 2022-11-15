@@ -45,60 +45,58 @@ function FeedListPage() {
 
   // 피드 리스트 받아오기
   async function getFeeds({ page, size }) {
-    console.log(`page: ${page}`)
-    console.log(`size: ${size}`)
-    console.log(`rcate1: ${rcate1}`)
-    console.log(`rcate2: ${rcate2}`)
-
-    if (
-      rcate1 == null ||
-      rcate1 == "" ||
-      rcate1 == undefined ||
-      rcate2 == null ||
-      rcate2 == "" ||
-      rcate2 == undefined
-    ) {
-      return
-    }
-
     const token = await getUserToken()
     if (!token) {
-      try {
-        const response = await axios.get(`${DEFAULT_API}/api/v1/feeds`, {
-          params: {
-            page,
-            size,
-            rcate1,
-            rcate2,
-          },
-          headers: {
-            // 토큰 유무에 따라 다르게
-            "Content-Type": "application/json",
-          },
-        })
+      if (
+        (rcate1 === "" && rcate2 === "") ||
+        (rcate1 !== "" && rcate2 !== "")
+      ) {
+        try {
+          const response = await axios.get(`${DEFAULT_API}/api/v1/feeds`, {
+            params: {
+              page,
+              size,
+              rcate1,
+              rcate2,
+            },
+            headers: {
+              // 토큰 유무에 따라 다르게
+              "Content-Type": "application/json",
+            },
+          })
 
-        return response
-      } catch (error) {
-        console.log(error)
+          return response
+        } catch (error) {
+          console.log(error)
+        }
+      } else {
+        return
       }
     } else {
-      try {
-        const response = await axios.get(`${DEFAULT_API}/api/v1/feeds`, {
-          params: {
-            page,
-            size,
-            rcate1,
-            rcate2,
-          },
-          headers: {
-            Authorization: token,
-            "Content-Type": "application/json",
-          },
-        })
+      if (
+        (rcate1 === "" && rcate2 === "") ||
+        (rcate1 !== "" && rcate2 !== "")
+      ) {
+        try {
+          const response = await axios.get(`${DEFAULT_API}/api/v1/feeds`, {
+            params: {
+              page,
+              size,
+              rcate1,
+              rcate2,
+            },
+            headers: {
+              Authorization: token,
+              "Content-Type": "application/json",
+            },
+          })
 
-        return response
-      } catch (error) {
-        console.log(error)
+          return response
+        } catch (error) {
+          console.log(error)
+        }
+      } else {
+        return
       }
     }
   }
