@@ -83,7 +83,6 @@ function DetailedFeedPage() {
         setFeedLike(true)
       })
       .catch((err) => {
-        // console.log("피드 좋아요 에러")
         console.log(err)
       })
   }
@@ -126,7 +125,6 @@ function DetailedFeedPage() {
       .then((res) => {
         console.log("I like this comment")
         getCommentList()
-        console.log(res)
       })
       .catch((err) => {
         console.log(err)
@@ -219,7 +217,6 @@ function DetailedFeedPage() {
           setFeedInfo(res.data.result)
           setFeedsImages(res.data.result.feedImages)
           setFollow(res.data.result.follow)
-          console.log(res.data.result)
         })
         .catch((err) => {
           console.log(err)
@@ -252,7 +249,6 @@ function DetailedFeedPage() {
           },
         })
         .then((res) => {
-          // console.log(res.data.result)
           setFeedLike(res.data.result.likeFeed)
           setFeedInfo(res.data.result)
           setFollow(res.data.result.follow)
@@ -481,9 +477,9 @@ function DetailedFeedPage() {
                 />
               </span>
               {userId == feedInfo.userId ? (
-                <span className="">
+                <span className="ml-auto shrink-0">
                   <button
-                    className="bg-transparent hover:bg-rose-500 text-rose-500 font-semibold hover:text-white py-2 px-2 border border-rose-500 hover:border-transparent rounded"
+                    className="bg-transparent hover:bg-rose-500 text-rose-500 font-semibold hover:text-white py-2 px-2 border border-rose-500 hover:border-transparent rounded mr-2"
                     onClick={editFeed}
                   >
                     피드 수정
@@ -578,7 +574,6 @@ function DetailedFeedPage() {
                   <button
                     className="bg-transparent hover:bg-rose-500 text-rose-500 font-semibold hover:text-white py-1 px-2 mx-1 border border-rose-500 hover:border-transparent rounded"
                     onClick={(event) => {
-                      // console.log(event.target)
                       event.target
                         .closest(".comment-wrap")
                         .querySelector(".comment")
@@ -606,9 +601,11 @@ function DetailedFeedPage() {
           <PaginationBox>
             <Pagination
               activePage={page}
-              totalItemsCount={comment.size}
+              totalItemsCount={comment.totalElements}
               itemsCountPerPage={10}
-              pageRangeDisplayed={5}
+              pageRangeDisplayed={3}
+              prevPageText={"‹"}
+              nextPageText={"›"}
               onChange={handlePageChange}
             />
           </PaginationBox>
