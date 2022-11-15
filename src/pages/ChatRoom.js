@@ -49,6 +49,10 @@ function ChatRoom() {
   // 로그인 안했으면 로그인 페이지로
   useCheckLogin()
 
+  useEffect(() => {
+    console.log("[메세지페이지!!!!] : ", messagePage)
+  }, [messagePage])
+
   // 채팅방 구독
   function subscribe() {
     if (stompClient != null) {
@@ -214,11 +218,9 @@ function ChatRoom() {
       .subtract(requestDate, "day")
       .format("YYYY-MM-DD")
     const token = await getUserToken()
-    console.log("2일 이전의 요청인가요? : ", requestDate >= 2)
+
     const response = await axios.get(
-      requestDate >= 2
-        ? `${CHAT_API}/api/v1/chat/message/mongo/${roomId}?page=${messagePage}&size=20`
-        : `${CHAT_API}/api/v1/chat/message/${roomId}?date=${date}&page=${messagePage}&size=20`,
+      `${CHAT_API}/api/v1/chat/message/${roomId}?date=${date}&page=${messagePage}&size=20`,
       {
         headers: {
           Authorization: token,
@@ -250,7 +252,7 @@ function ChatRoom() {
     // 마지막 페이지일 때 => 날짜가 넘어감
     if (response.data.result.lastPage) {
       setMessagePage(0)
-      setRequestDate(requestDate + 1)
+      setRequestDate((requestDate) => requestDate + 1)
     }
   }
 
@@ -259,7 +261,7 @@ function ChatRoom() {
     if (!isMessageEnd && isEnterSuccess) {
       getMessage()
     }
-  }, [messagePage, isEnterSuccess])
+  }, [messagePage, requestDate, isEnterSuccess])
 
   // get room info
   async function getRoomInfo() {
@@ -280,13 +282,19 @@ function ChatRoom() {
     setRoomTitle(response.data.result.roomTitle)
   }
 
+  // update messagePage
+  function updateMessagePage() {
+    console.log(messagePage)
+    setMessagePage((messagePage) => messagePage + 1)
+  }
+
   // IntersectionObserver 생성, token, room info 불러오기
   useEffect(() => {
     if (isEnterSuccess) {
       const io = new IntersectionObserver((entries, observer) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            setMessagePage(messagePage + 1)
+            updateMessagePage()
             console.log("detected!!!!")
           }
         })
