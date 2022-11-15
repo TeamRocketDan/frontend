@@ -71,11 +71,11 @@ export const createChatBubble = ({ payload, userId }) => {
   const userNameArea = document.createElement("span")
   userNameArea.classList.add(
     "text-slate-500",
-    "w-fit",
     "absolute",
     "w-full",
     "-top-5",
     "text-sm",
+    "whitespace-nowrap",
   )
   userNameArea.textContent = payload.senderName
 

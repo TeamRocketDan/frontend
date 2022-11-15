@@ -333,7 +333,7 @@ function ChatRoom() {
           }}
         >
           <ul
-            className="scrollhide h-full flex flex-col pt-4 overflow-y-scroll absolute top-0 left-0 bottom-0 right-0"
+            className="scrollhide h-full flex flex-col py-4 overflow-y-scroll absolute top-0 left-0 bottom-0 right-0"
             ref={messageListRef}
           >
             <li
