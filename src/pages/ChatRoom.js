@@ -3,7 +3,6 @@ import { useNavigate, useParams } from "react-router-dom"
 import SockJS from "sockjs-client"
 import * as StompJs from "@stomp/stompjs"
 import { useRecoilState } from "recoil"
-import dayjs from "dayjs"
 import axios from "axios"
 
 import {
@@ -38,7 +37,6 @@ function ChatRoom() {
 
   // 메세지 가져오기
   const [messagePage, setMessagePage] = useState(0)
-  const [requestDate, setRequestDate] = useState(0)
   const scrollObserver = useRef()
   const [isMessageEnd, setIsMessageEnd] = useState(false)
 
@@ -48,10 +46,6 @@ function ChatRoom() {
 
   // 로그인 안했으면 로그인 페이지로
   useCheckLogin()
-
-  useEffect(() => {
-    console.log("[메세지페이지!!!!] : ", messagePage)
-  }, [messagePage])
 
   // 채팅방 구독
   function subscribe() {
@@ -214,13 +208,10 @@ function ChatRoom() {
 
   // 이전 메세지 가져오기
   async function getMessage() {
-    const date = dayjs(new Date())
-      .subtract(requestDate, "day")
-      .format("YYYY-MM-DD")
     const token = await getUserToken()
 
     const response = await axios.get(
-      `${CHAT_API}/api/v1/chat/message/${roomId}?date=${date}&page=${messagePage}&size=20`,
+      `${CHAT_API}/api/v1/chat/message/${roomId}?&page=${messagePage}&size=20`,
       {
         headers: {
           Authorization: token,
@@ -248,12 +239,6 @@ function ChatRoom() {
       scrollObserver.current.classList.add("hidden")
       // scrollObserver.current.remove()
     }
-
-    // 마지막 페이지일 때 => 날짜가 넘어감
-    if (response.data.result.lastPage) {
-      setMessagePage(0)
-      setRequestDate((requestDate) => requestDate + 1)
-    }
   }
 
   // 메세지가 끝이 아닐 때만 불러옴
@@ -261,7 +246,7 @@ function ChatRoom() {
     if (!isMessageEnd && isEnterSuccess) {
       getMessage()
     }
-  }, [messagePage, requestDate, isEnterSuccess])
+  }, [messagePage, isEnterSuccess])
 
   // get room info
   async function getRoomInfo() {
@@ -284,7 +269,6 @@ function ChatRoom() {
 
   // update messagePage
   function updateMessagePage() {
-    console.log(messagePage)
     setMessagePage((messagePage) => messagePage + 1)
   }
 
