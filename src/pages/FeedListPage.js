@@ -34,8 +34,7 @@ function FeedListPage() {
 
   function updateParams(updates) {
     setSearchParams({
-      listPage: searchParams.get("listPage"),
-      regionlistpage: searchParams.get("regionlistpage"),
+      regionlistpage: parseInt(searchParams.get("regionlistpage") ?? "1", 10),
       ...updates,
     })
   }
@@ -180,8 +179,8 @@ function FeedListPage() {
       )}
 
       <ChatListPagination
-        maxPage={listMaxPage}
-        currentPage={listPage}
+        maxPage={regionListMaxPage}
+        currentPage={regionListPage}
         onClickPageButton={(pageNumber) =>
           updateParams({ regionlistpage: pageNumber })
         }

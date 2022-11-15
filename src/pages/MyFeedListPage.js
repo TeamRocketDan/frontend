@@ -35,7 +35,7 @@ function MyFeedListPage() {
 
   function updateParams(updates) {
     setSearchParams({
-      mylistpage: searchParams.get("mylistpage"),
+      mylistpage: parseInt(searchParams.get("mylistpage") ?? "1", 10),
       ...updates,
     })
   }
