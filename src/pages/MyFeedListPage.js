@@ -36,7 +36,6 @@ function MyFeedListPage() {
   function updateParams(updates) {
     setSearchParams({
       mylistpage: searchParams.get("mylistpage"),
-      regionlistpage: searchParams.get("regionlistpage"),
       ...updates,
     })
   }
@@ -47,6 +46,17 @@ function MyFeedListPage() {
 
   // 피드 리스트 받아오기
   async function getFeeds({ page, size }) {
+    if (
+      rcate1 == null ||
+      rcate1 == "" ||
+      rcate1 == undefined ||
+      rcate2 == null ||
+      rcate2 == "" ||
+      rcate2 == undefined
+    ) {
+      return
+    }
+
     const token = await getUserToken()
 
     try {
@@ -79,7 +89,8 @@ function MyFeedListPage() {
         rcate2,
       })
       const result = regionFeedList.data.result
-      console.log(result)
+      console.log("[GET FEED LIST] : ", result)
+      setMyListMaxPage(result.totalPage)
       setRegionListMaxPage(result.totalPage)
     }
     if (rcate2 !== "") {
@@ -94,7 +105,6 @@ function MyFeedListPage() {
         rcate2,
       })
       const result = myFeedList.data.result
-      console.log(result)
       setMyFeedList(result.content)
     }
 
@@ -116,32 +126,37 @@ function MyFeedListPage() {
 
   return (
     <Container>
-      {/* 지도에 채팅 위치 표시 */}
+      {/* 지도에 피드 위치 표시 */}
       <FeedListMap positionData={positionData} />
 
       <h3 className={titleClass}>
         나의 여행 <FontAwesomeIcon icon={faMap} />
       </h3>
-      <div className="flex flex-wrap -m-4">
-        {myFeedList.map((index) => (
-          <Card
-            key={index.feedId}
-            feedId={index.feedId}
-            imageSrc={index.feedImages[0]}
-            location={index.rcate1}
-            title={index.title}
-            desc={index.content}
-            liked={index.feedLikeCnt}
-            reply={index.feedCommentCnt}
-          />
-        ))}
-      </div>
+      {myFeedList.length == 0 ? (
+        <div>
+          <h3>( ˃̣̣̥᷄⌓˂̣̣̥᷅ ) 피드가 없다냥!</h3>
+        </div>
+      ) : (
+        <div className="flex flex-wrap -m-4">
+          {myFeedList.map((index) => (
+            <Card
+              feedId={index.feedId}
+              imageSrc={index.feedImages[0]}
+              location={index.rcate1}
+              title={index.title}
+              desc={index.content}
+              liked={index.feedLikeCnt}
+              reply={index.feedCommentCnt}
+            />
+          ))}
+        </div>
+      )}
 
       <ChatListPagination
         maxPage={myListMaxPage}
         currentPage={myListPage}
         onClickPageButton={(pageNumber) =>
-          updateParams({ regionlistpage: pageNumber })
+          updateParams({ mylistpage: pageNumber })
         }
       />
     </Container>
