@@ -7,7 +7,8 @@ import EmptyHeartImg from "../../assets/feed/empty-heart.png"
 const CommentHeart = styled.img`
     // css
     width: 20px;
-    margin-top: 7px;
+    margin-left: 0.2rem;
+    margin-right: 0.2rem;
     }
 `
 

@@ -512,17 +512,20 @@ function DetailedFeedPage() {
           </div>
         </div>
 
-        <div>
+        <div className="w-full px-2">
           {/* Comment List */}
           {commentList.map((index) => (
-            <div className="comment-wrap flex" key={index.commentId}>
-              <div className="rounded-full h-8 w-8 bg-gray-500 flex items-center justify-center overflow-hidden">
+            <div
+              className="comment-wrap flex items-center w-full my-1"
+              key={index.commentId}
+            >
+              <div className="rounded-full h-8 w-8 mx-1 bg-gray-500 flex items-center justify-center overflow-hidden">
                 <img src={index.profileImagePath} alt="profilepicture" />
               </div>
-              <span className="pt-2 ml-4 font-bold text-sl text-center">
+              <span className="mx-2 font-bold text-sl text-center shrink-0">
                 {index.nickname}
               </span>
-              <span className="comment text-sl pt-1 ml-2">{index.comment}</span>
+              <span className="comment text-sl mx-2">{index.comment}</span>
 
               {/* 코멘트 수정 폼*/}
               <form
@@ -566,41 +569,37 @@ function DetailedFeedPage() {
                 />
               </span>
 
-              <span className="">
-                <span className="text-sm text-gray-400 font-medium">
-                  좋아요 {index.commentLikeCnt}개
-                </span>
-                {userId === index.userId ? (
-                  <span>
-                    <button
-                      className="bg-transparent hover:bg-rose-500 text-rose-500 font-semibold hover:text-white py-2 px-2 border border-rose-500 hover:border-transparent rounded"
-                      onClick={(event) => {
-                        // console.log(event.target)
-                        event.target
-                          .closest(".comment-wrap")
-                          .querySelector(".comment")
-                          .classList.add("hidden")
-                        event.target
-                          .closest(".comment-wrap")
-                          .querySelector(".comment-edit")
-                          .classList.remove("hidden")
-                      }}
-                    >
-                      코멘트 수정
-                    </button>
-                    <button
-                      className="bg-transparent hover:bg-rose-500 text-rose-500 font-semibold hover:text-white py-2 px-2 border border-rose-500 hover:border-transparent rounded"
-                      onClick={() => {
-                        deleteComment(index.commentId)
-                      }}
-                    >
-                      코멘트 삭제
-                    </button>
-                  </span>
-                ) : (
-                  ""
-                )}
+              <span className="text-sm text-gray-400 font-medium mx-1">
+                좋아요 {index.commentLikeCnt}개
               </span>
+              {userId === index.userId && (
+                <span className="ml-auto shrink-0">
+                  <button
+                    className="bg-transparent hover:bg-rose-500 text-rose-500 font-semibold hover:text-white py-1 px-2 mx-1 border border-rose-500 hover:border-transparent rounded"
+                    onClick={(event) => {
+                      // console.log(event.target)
+                      event.target
+                        .closest(".comment-wrap")
+                        .querySelector(".comment")
+                        .classList.add("hidden")
+                      event.target
+                        .closest(".comment-wrap")
+                        .querySelector(".comment-edit")
+                        .classList.remove("hidden")
+                    }}
+                  >
+                    수정
+                  </button>
+                  <button
+                    className="bg-transparent hover:bg-rose-500 text-rose-500 font-semibold hover:text-white py-1 px-2 mx-1 border border-rose-500 hover:border-transparent rounded"
+                    onClick={() => {
+                      deleteComment(index.commentId)
+                    }}
+                  >
+                    삭제
+                  </button>
+                </span>
+              )}
             </div>
           ))}
           <PaginationBox>
