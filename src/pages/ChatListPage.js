@@ -137,6 +137,13 @@ function ChatListPage() {
     setPositionData(newPositions)
   }, [myRoomList])
 
+  // 지역 선택이 바뀌면 현재 페이지 초기화
+  useEffect(() => {
+    updateParams({
+      regionlistpage: 1,
+    })
+  }, [rcate2])
+
   return (
     <Container>
       {/* 지도에 채팅 위치 표시 */}

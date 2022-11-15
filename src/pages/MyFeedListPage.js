@@ -29,9 +29,7 @@ function MyFeedListPage() {
   // 페이지네이션 관련
   const [searchParams, setSearchParams] = useSearchParams()
   const [myListMaxPage, setMyListMaxPage] = useState(1)
-  const [regionListMaxPage, setRegionListMaxPage] = useState(1)
   const myListPage = parseInt(searchParams.get("mylistpage") ?? "1", 10)
-  const regionListPage = parseInt(searchParams.get("regionlistpage") ?? "1", 10)
 
   function updateParams(updates) {
     setSearchParams({
@@ -44,8 +42,15 @@ function MyFeedListPage() {
   const [rcate1, setRcate1] = useRecoilState(selectedRegion01)
   const [rcate2, setRcate2] = useRecoilState(selectedRegion02)
 
+  // 지역 선택이 바뀌면 현재 페이지 초기화
+  useEffect(() => {
+    updateParams({
+      mylistpage: 1,
+    })
+  }, [rcate2])
+
   // 피드 리스트 받아오기
-  async function getFeeds({ page, size }) {
+  async function getFeeds({ page, size, rcate1, rcate2 }) {
     if ((rcate1 === "" && rcate2 === "") || (rcate1 !== "" && rcate2 !== "")) {
       const token = await getUserToken()
 
@@ -77,22 +82,6 @@ function MyFeedListPage() {
 
   useEffect(() => {
     // 피드 리스트 가져오기
-    async function getRegionList() {
-      const regionFeedList = await getFeeds({
-        page: regionListPage - 1,
-        size: 10,
-        rcate1,
-        rcate2,
-      })
-      const result = regionFeedList.data.result
-      console.log("[GET FEED LIST] : ", result)
-      setMyListMaxPage(result.totalPage)
-      setRegionListMaxPage(result.totalPage)
-    }
-    if (rcate2 !== "") {
-      getRegionList()
-    }
-
     async function getMyList() {
       const myFeedList = await getFeeds({
         page: myListPage - 1,
@@ -102,10 +91,11 @@ function MyFeedListPage() {
       })
       const result = myFeedList.data.result
       setMyFeedList(result.content)
+      setMyListMaxPage(result.totalPage)
     }
 
     getMyList()
-  }, [myListPage, regionListPage, rcate2])
+  }, [myListPage, rcate2])
 
   // 지도 표시 리스트
   useEffect(() => {
@@ -128,7 +118,7 @@ function MyFeedListPage() {
       <h3 className={titleClass}>
         나의 여행 <FontAwesomeIcon icon={faMap} />
       </h3>
-      {myFeedList.length == 0 ? (
+      {myFeedList.length === 0 ? (
         <div>
           <h3>( ˃̣̣̥᷄⌓˂̣̣̥᷅ ) 피드가 없다냥!</h3>
         </div>
@@ -136,6 +126,7 @@ function MyFeedListPage() {
         <div className="flex flex-wrap -m-4 w-8/12 mx-auto">
           {myFeedList.map((index) => (
             <Card
+              key={index.feedId}
               feedId={index.feedId}
               imageSrc={index.feedImages[0]}
               location={index.rcate1}
