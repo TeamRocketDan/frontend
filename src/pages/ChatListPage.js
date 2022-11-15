@@ -37,8 +37,8 @@ function ChatListPage() {
 
   function updateParams(updates) {
     setSearchParams({
-      mylistpage: searchParams.get("mylistpage"),
-      regionlistpage: searchParams.get("regionlistpage"),
+      mylistpage: parseInt(searchParams.get("mylistpage") ?? "1", 10),
+      regionlistpage: parseInt(searchParams.get("regionlistpage") ?? "1", 10),
       ...updates,
     })
   }
