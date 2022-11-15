@@ -28,13 +28,10 @@ function FeedListPage() {
   // 페이지네이션 관련
   const [searchParams, setSearchParams] = useSearchParams()
   const [listMaxPage, setListMaxPage] = useState(1)
-  const [regionListMaxPage, setRegionListMaxPage] = useState(1)
-  const listPage = parseInt(searchParams.get("listPage") ?? "1", 10)
-  const regionListPage = parseInt(searchParams.get("regionlistpage") ?? "1", 10)
+  const listPage = parseInt(searchParams.get("listpage") ?? "1", 10)
 
   function updateParams(updates) {
     setSearchParams({
-      regionlistpage: parseInt(searchParams.get("regionlistpage") ?? "1", 10),
       ...updates,
     })
   }
@@ -44,7 +41,7 @@ function FeedListPage() {
   const [rcate2, setRcate2] = useRecoilState(selectedRegion02)
 
   // 피드 리스트 받아오기
-  async function getFeeds({ page, size }) {
+  async function getFeeds({ page, size, rcate1, rcate2 }) {
     const token = await getUserToken()
     if (!token) {
       if (
@@ -103,21 +100,6 @@ function FeedListPage() {
 
   useEffect(() => {
     // 피드 리스트 가져오기
-    async function getRegionList() {
-      const regionFeedList = await getFeeds({
-        page: regionListPage - 1,
-        size: 10,
-        rcate1,
-        rcate2,
-      })
-      const result = regionFeedList.data.result
-      console.log(result)
-      setRegionListMaxPage(result.totalPage)
-    }
-    if (rcate2 !== "") {
-      getRegionList()
-    }
-
     async function getList() {
       const feedList = await getFeeds({
         page: listPage - 1,
@@ -128,10 +110,11 @@ function FeedListPage() {
       const result = feedList.data.result
       console.log(result)
       setFeedList(result.content)
+      setListMaxPage(result.totalPage)
     }
 
     getList()
-  }, [listPage, regionListPage, rcate2])
+  }, [listPage, rcate2])
 
   // 지도 표시 리스트
   useEffect(() => {
@@ -154,7 +137,7 @@ function FeedListPage() {
       <h3 className={titleClass}>
         피드 리스트 <FontAwesomeIcon icon={faMap} />
       </h3>
-      {feedList.length == 0 ? (
+      {feedList.length === 0 ? (
         <div>
           <h3>( ˃̣̣̥᷄⌓˂̣̣̥᷅ ) 피드가 없다냥!</h3>
         </div>
@@ -178,10 +161,10 @@ function FeedListPage() {
       )}
 
       <ChatListPagination
-        maxPage={regionListMaxPage}
-        currentPage={regionListPage}
+        maxPage={listMaxPage}
+        currentPage={listPage}
         onClickPageButton={(pageNumber) =>
-          updateParams({ regionlistpage: pageNumber })
+          updateParams({ listpage: pageNumber })
         }
       />
     </Container>
