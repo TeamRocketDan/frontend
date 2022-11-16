@@ -4,7 +4,8 @@ import { faCirclePlus, faLock, faUser } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 function ChatListContainer({ roomList, isMyList }) {
-  const listItemClass = "sm:w-48 w-full m-2"
+  const listItemClass =
+    "2xl:w-56 xl:w-56 lg:w-44 md:w-44 sm:w-44 w-full m-2 2xl:m-3 xl:m-3 lg:m-2.5 md:m-1 sm:m-2.5"
   const listLinkClass =
     "relative flex flex-col p-2.5 items-center justify-center rounded-lg shadow-xl hover:shadow-lg w-full h-64 text-center leading-relaxed"
 

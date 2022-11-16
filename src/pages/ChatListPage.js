@@ -34,6 +34,7 @@ function ChatListPage() {
   const [regionListMaxPage, setRegionListMaxPage] = useState(1)
   const myListPage = parseInt(searchParams.get("mylistpage") ?? "1", 10)
   const regionListPage = parseInt(searchParams.get("regionlistpage") ?? "1", 10)
+  const [pageSize, setPageSize] = useState(10)
 
   function updateParams(updates) {
     setSearchParams({
@@ -100,7 +101,7 @@ function ChatListPage() {
     async function getRegionList() {
       const regionChatList = await getChatRooms({
         page: regionListPage - 1,
-        size: 10,
+        size: pageSize,
         rcate1,
         rcate2,
       })
@@ -114,7 +115,7 @@ function ChatListPage() {
     async function getMyList() {
       const myChatList = await getMyChatRooms({
         page: myListPage - 1,
-        size: 10,
+        size: pageSize - 1,
       })
       const result = myChatList.data.result
       console.log("[GET MY CHAT LIST] : ", result)
@@ -122,7 +123,7 @@ function ChatListPage() {
       setMyListMaxPage(result.totalPage)
     }
     getMyList()
-  }, [myListPage, regionListPage, rcate2])
+  }, [myListPage, regionListPage, rcate2, pageSize])
 
   // 지도 표시 리스트
   useEffect(() => {
@@ -143,6 +144,30 @@ function ChatListPage() {
       regionlistpage: 1,
     })
   }, [rcate2])
+
+  // 채팅 페이지네이션 사이즈 변경
+  function getWindowSize() {
+    const width = window.innerWidth
+
+    if (width <= 768) {
+      setPageSize(6)
+    } else if (width <= 1024) {
+      setPageSize(8)
+    } else if (width <= 1280) {
+      setPageSize(10)
+    } else if (width <= 1536) {
+      setPageSize(10)
+    } else {
+      setPageSize(12)
+    }
+  }
+  useEffect(() => {
+    getWindowSize()
+    window.addEventListener("resize", getWindowSize)
+    return function () {
+      window.removeEventListener("resize", getWindowSize)
+    }
+  }, [])
 
   return (
     <Container>
