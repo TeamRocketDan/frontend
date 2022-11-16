@@ -9,7 +9,7 @@ function FeedListMap({ positionData }) {
   useEffect(() => {
     const map = new kakao.maps.Map(mapRef.current, {
       // 지도를 표시할 div
-      center: new kakao.maps.LatLng(36.2683, 127.6358), // 지도의 중심좌표
+      center: new kakao.maps.LatLng(35.5583, 127.6358), // 지도의 중심좌표
       level: 14, // 지도의 확대 레벨
     })
 
