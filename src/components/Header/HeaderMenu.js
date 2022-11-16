@@ -7,6 +7,7 @@ import {
   isUserLoggedIn,
   currentUserName,
   currentUserProf,
+  currentUserId,
 } from "../../recoil/userAuth"
 import { DEFAULT_API } from "../../apis"
 import { getUserToken } from "../../utils/getUserToken"
@@ -31,6 +32,7 @@ function HeaderMenu({ modalOpen, setModalOpen }) {
   const [userValid, setUserValid] = useRecoilState(isUserLoggedIn)
   const [userName, setUserName] = useRecoilState(currentUserName)
   const [userProf, setUserProf] = useRecoilState(currentUserProf)
+  const [userId, setUserId] = useRecoilState(currentUserId)
 
   // 로그아웃
   async function handleLogout(event) {
@@ -53,6 +55,7 @@ function HeaderMenu({ modalOpen, setModalOpen }) {
         setUserValid(false)
         setUserName(null)
         setUserProf(null)
+        setUserId(null)
         navigate("/", { replace: true })
       }
     } catch (error) {
