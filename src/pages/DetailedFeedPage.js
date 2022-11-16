@@ -532,7 +532,18 @@ function DetailedFeedPage() {
               {/* 코멘트 수정 폼*/}
               <form
                 className="hidden comment-edit"
-                onSubmit={() => editComment(index.commentId)}
+                onSubmit={(e) => {
+                  e.preventDefault()
+                  editComment(index.commentId)
+                  e.target
+                    .closest(".comment-wrap")
+                    .querySelector(".comment")
+                    .classList.remove("hidden")
+                  e.target
+                    .closest(".comment-wrap")
+                    .querySelector(".comment-edit")
+                    .classList.add("hidden")
+                }}
               >
                 <div className="mb-4 w-full bg-gray-50 rounded-lg border border-gray-200 dark:bg-gray-700 dark:border-gray-600">
                   <div className="py-2 px-4 bg-white rounded-t-lg dark:bg-gray-800">
