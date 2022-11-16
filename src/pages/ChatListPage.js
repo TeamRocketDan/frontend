@@ -190,11 +190,7 @@ function ChatListPage() {
       <h3 className={titleClass}>
         내 채팅 리스트 <FontAwesomeIcon icon={faCommentDots} />
       </h3>
-      <ChatListContainer
-        roomList={myRoomList}
-        isMyList={true}
-        isLoggedIn={isLoggedIn}
-      />
+      <ChatListContainer roomList={myRoomList} isMyList={true} />
       <ChatListPagination
         maxPage={myListMaxPage}
         currentPage={myListPage}
@@ -206,7 +202,7 @@ function ChatListPage() {
       <h3 className={titleClass}>
         지역 채팅 리스트 <FontAwesomeIcon icon={faMap} />
       </h3>
-      <ChatListContainer roomList={recentRoomList} />
+      <ChatListContainer roomList={recentRoomList} isMyList={false} />
       <ChatListPagination
         maxPage={regionListMaxPage}
         currentPage={regionListPage}
