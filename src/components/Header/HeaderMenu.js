@@ -7,16 +7,18 @@ import {
   isUserLoggedIn,
   currentUserName,
   currentUserProf,
+  currentUserId,
 } from "../../recoil/userAuth"
 import { DEFAULT_API } from "../../apis"
 import { getUserToken } from "../../utils/getUserToken"
 
 // 메뉴 리스트
 const menuList = [
-  { title: "회원 상세", path: "/mypage" },
-  { title: "채팅 목록", path: "/chatlist" },
-  { title: "피드 생성", path: "/createfeed" },
-  { title: "내 피드 목록", path: "/myfeedlist" },
+  { title: "회원 상세", path: "/mypage", requireLogin: true },
+  { title: "피드 목록", path: "/", requireLogin: false },
+  { title: "내 피드 목록", path: "/myfeedlist", requireLogin: true },
+  { title: "피드 생성", path: "/createfeed", requireLogin: true },
+  { title: "채팅 목록", path: "/chatlist", requireLogin: false },
   // { title: "문의하기", path: "/qna" },
 ]
 
@@ -31,6 +33,7 @@ function HeaderMenu({ modalOpen, setModalOpen }) {
   const [userValid, setUserValid] = useRecoilState(isUserLoggedIn)
   const [userName, setUserName] = useRecoilState(currentUserName)
   const [userProf, setUserProf] = useRecoilState(currentUserProf)
+  const [userId, setUserId] = useRecoilState(currentUserId)
 
   // 로그아웃
   async function handleLogout(event) {
@@ -53,6 +56,7 @@ function HeaderMenu({ modalOpen, setModalOpen }) {
         setUserValid(false)
         setUserName(null)
         setUserProf(null)
+        setUserId(null)
         navigate("/", { replace: true })
       }
     } catch (error) {
@@ -76,13 +80,16 @@ function HeaderMenu({ modalOpen, setModalOpen }) {
   return (
     <div className={`absolute right-0`}>
       <ul className="w-40 bg-white shadow-lg overflow-hidden">
-        {menuList.map((menu) => (
-          <li key={menu.path}>
-            <Link to={menu.path} className={menuStyle}>
-              {menu.title}
-            </Link>
-          </li>
-        ))}
+        {menuList.map(
+          (menu) =>
+            (userValid || !menu.requireLogin) && (
+              <li key={menu.path}>
+                <Link to={menu.path} className={menuStyle}>
+                  {menu.title}
+                </Link>
+              </li>
+            ),
+        )}
 
         {userValid ? (
           <li>

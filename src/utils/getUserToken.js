@@ -5,6 +5,11 @@ import { DEFAULT_API } from "../apis"
 
 export const getUserToken = async () => {
   let token = localStorage.getItem("token")
+
+  if (token === null) {
+    return ""
+  }
+
   const decoded = jwt_decode(token.split("Bearer ")[1])
 
   if (decoded.exp * 1000 - Date.now() <= 300000) {

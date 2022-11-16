@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from "react"
 import { useNavigate, useParams } from "react-router-dom"
+import { useRecoilState } from "recoil"
 import axios from "axios"
 import styled from "styled-components"
 import Pagination from "react-js-pagination"
@@ -15,8 +16,14 @@ import CommentHeartButton from "../components/Feed/CommentHeartButton"
 
 import { DEFAULT_API } from "../apis"
 import { getUserToken } from "../utils/getUserToken"
+import { useCheckLogin } from "../hooks/useCheckLogin"
+import { isUserLoggedIn } from "../recoil/userAuth"
 
 function DetailedFeedPage() {
+  // 로그인 안했으면 로그인 페이지로
+  useCheckLogin()
+  const [isLoggedIn, setIsLoggedIn] = useRecoilState(isUserLoggedIn)
+
   const { feedId } = useParams()
   const navigate = useNavigate()
   const commentTextareaRef = useRef()
@@ -40,7 +47,9 @@ function DetailedFeedPage() {
     setPage(page)
   }
   useEffect(() => {
-    getCommentList()
+    if (isLoggedIn) {
+      getCommentList()
+    }
   }, [page])
 
   const [feedInfo, setFeedInfo] = useState([]) // 피드
@@ -209,57 +218,61 @@ function DetailedFeedPage() {
   }
 
   useEffect(() => {
-    const token = getUserToken().then((token) => {
-      axios
-        .get(`${DEFAULT_API}/api/v1/feeds/${feedId}`, {
-          headers: {
-            Authorization: token,
-            "Content-Type": "application/json",
-          },
-        })
-        .then((res) => {
-          setFeedLike(res.data.result.likeFeed)
-          setFeedInfo(res.data.result)
-          setFeedsImages(res.data.result.feedImages)
-          setFollow(res.data.result.follow)
-        })
-        .catch((err) => {
-          console.log(err)
-        })
-      axios
-        .get(`${DEFAULT_API}/api/v1/users/mypage`, {
-          headers: {
-            Authorization: token,
-            "Content-Type": "application/json",
-          },
-        })
-        .then((res) => {
-          setUserId(res.data.result.userId)
-        })
-        .catch((err) => {
-          console.log(err)
-        })
-    })
+    if (isLoggedIn) {
+      const token = getUserToken().then((token) => {
+        axios
+          .get(`${DEFAULT_API}/api/v1/feeds/${feedId}`, {
+            headers: {
+              Authorization: token,
+              "Content-Type": "application/json",
+            },
+          })
+          .then((res) => {
+            setFeedLike(res.data.result.likeFeed)
+            setFeedInfo(res.data.result)
+            setFeedsImages(res.data.result.feedImages)
+            setFollow(res.data.result.follow)
+          })
+          .catch((err) => {
+            console.log(err)
+          })
+        axios
+          .get(`${DEFAULT_API}/api/v1/users/mypage`, {
+            headers: {
+              Authorization: token,
+              "Content-Type": "application/json",
+            },
+          })
+          .then((res) => {
+            setUserId(res.data.result.userId)
+          })
+          .catch((err) => {
+            console.log(err)
+          })
+      })
 
-    getCommentList()
+      getCommentList()
+    }
   }, [])
 
   useEffect(() => {
-    const token = getUserToken().then((token) => {
-      axios
-        .get(`${DEFAULT_API}/api/v1/feeds/${feedId}`, {
-          headers: {
-            Authorization: token,
-            "Content-Type": "application/json",
-          },
-        })
-        .then((res) => {
-          setFeedLike(res.data.result.likeFeed)
-          setFeedInfo(res.data.result)
-          setFollow(res.data.result.follow)
-        })
-        .catch((err) => console.log(err))
-    })
+    if (isLoggedIn) {
+      const token = getUserToken().then((token) => {
+        axios
+          .get(`${DEFAULT_API}/api/v1/feeds/${feedId}`, {
+            headers: {
+              Authorization: token,
+              "Content-Type": "application/json",
+            },
+          })
+          .then((res) => {
+            setFeedLike(res.data.result.likeFeed)
+            setFeedInfo(res.data.result)
+            setFollow(res.data.result.follow)
+          })
+          .catch((err) => console.log(err))
+      })
+    }
   }, [feedLike])
 
   // 코멘트 데이터 생성시

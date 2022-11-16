@@ -10,7 +10,7 @@ export function useCheckLogin() {
   useEffect(() => {
     if (!isLoggedIn) {
       window.alert("먼저 로그인 해주세요!")
-      navigate("/login")
+      navigate("/login", { replace: true })
     }
   }, [])
 }
