@@ -3,7 +3,7 @@ import { Link } from "react-router-dom"
 import { faCirclePlus, faLock, faUser } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
-function ChatListContainer({ roomList, isMyList }) {
+function ChatListContainer({ roomList, isMyList, isLoggedIn }) {
   const listItemClass =
     "2xl:w-56 xl:w-56 lg:w-44 md:w-44 sm:w-44 w-full m-2 2xl:m-3 xl:m-3 lg:m-2.5 md:m-1 sm:m-2.5"
   const listLinkClass =
@@ -30,7 +30,15 @@ function ChatListContainer({ roomList, isMyList }) {
 
       {/* 채탕방 */}
       {roomList.length === 0 ? (
-        <li className="text-rose-600 text-xl">( ˃̣̣̥᷄⌓˂̣̣̥᷅ ) 채팅방이 없다냥!</li>
+        <li className="text-rose-600 text-xl">
+          {!isLoggedIn ? (
+            <Link to="/login" className="pt-2 flex">
+              &gt; 로그인하러 가기
+            </Link>
+          ) : (
+            "( ˃̣̣̥᷄⌓˂̣̣̥᷅ ) 채팅방이 없다냥!"
+          )}
+        </li>
       ) : (
         roomList.map((room) => (
           <li key={room.id} className={listItemClass}>

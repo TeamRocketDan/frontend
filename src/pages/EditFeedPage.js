@@ -11,8 +11,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 import { DEFAULT_API } from "../apis"
 import { getUserToken } from "../utils/getUserToken"
+import { useCheckLogin } from "../hooks/useCheckLogin"
 
 function EditFeedPage() {
+  // 로그인 안했으면 로그인 페이지로
+  useCheckLogin()
+
   const { feedId } = useParams()
   const navigate = useNavigate()
 

@@ -11,8 +11,12 @@ import FormSearchModal from "../components/Search/FormSearchModal"
 import { getUserToken } from "../utils/getUserToken"
 import { CHAT_API, DEFAULT_API } from "../apis"
 import { cityData } from "../recoil/areaData"
+import { useCheckLogin } from "../hooks/useCheckLogin"
 
 function CreateChatPage() {
+  // 로그인 안했으면 로그인 페이지로
+  useCheckLogin()
+
   // 스타일 클래스
   const forLabel = "w-40 font-bold mb-2 inline-block"
   const forInput = "bg-slate-100 mb-2 py-1 px-2"

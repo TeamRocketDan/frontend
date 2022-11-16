@@ -1,13 +1,7 @@
-import { useNavigate } from "react-router-dom"
+import { Link } from "react-router-dom"
 import { ArrowRightIcon, HeartIcon, ChatIcon } from "@heroicons/react/outline"
 
 const Card = (props) => {
-  const navigate = useNavigate()
-
-  const toDetailedFeed = () => {
-    navigate(`/detailedFeed/${props.feedId}`)
-  }
-
   return (
     <div className="p-4 sm:w-1/2 lg:w-1/2">
       <div className="h-full border-2 border-gray-200 border-opacity-60 rounded-lg overflow-hidden">
@@ -23,15 +17,13 @@ const Card = (props) => {
           <h1 className="text-2xl font-semibold mb-3">{props.title}</h1>
           <p className="leading-relaxed mb-3 truncate">{props.desc}</p>
           <div className="flex items-center flex-wrap cursor-pointer">
-            <button
+            <Link
+              to={`/detailedFeed/${props.feedId}`}
               className="text-indigo-300 inline-flex items-center md:mb-2 lg:mb-0"
-              onClick={() => {
-                toDetailedFeed()
-              }}
             >
               Read More
               <ArrowRightIcon className="w-4 h-4 ml-2" />
-            </button>
+            </Link>
 
             <span className="text-gray-400 mr-3 inline-flex items-center lg:ml-auto md:ml-0 ml-auto leading-none text-sm pr-3 py-1 border-r-2 border-gray-200">
               {props.like ? (
