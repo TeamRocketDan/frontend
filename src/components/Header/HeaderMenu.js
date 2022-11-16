@@ -17,7 +17,7 @@ const menuList = [
   { title: "채팅 목록", path: "/chatlist" },
   { title: "피드 생성", path: "/createfeed" },
   { title: "내 피드 목록", path: "/myfeedlist" },
-  { title: "문의하기", path: "/qna" },
+  // { title: "문의하기", path: "/qna" },
 ]
 
 // 링크 메뉴 스타일 클래스
