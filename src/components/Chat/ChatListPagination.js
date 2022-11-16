@@ -10,7 +10,7 @@ function ChatListPagination({ currentPage, maxPage, onClickPageButton }) {
     "disabled:opacity-30 px-2 py-1 text-2xl text-rose-500"
 
   return (
-    <div className="flex justify-center py-1 text-slate-400">
+    <div className="flex justify-center my-3 text-slate-400">
       {/* 이전 버튼 */}
       <button
         disabled={currentPage === 1 || maxPage === 0}

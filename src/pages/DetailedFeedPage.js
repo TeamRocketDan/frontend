@@ -55,6 +55,7 @@ function DetailedFeedPage() {
   const [feedInfo, setFeedInfo] = useState([]) // 피드
   const [feedsImages, setFeedsImages] = useState([]) // 피드 이미지 리스트
   const [comment, setComment] = useState("") // 코멘트
+  const [commentCount, setCommentCount] = useState(0)
   const [editComments, setEditComments] = useState("") // 코멘트 수정
   const [commentList, setCommentList] = useState([]) // 코멘트 리스트
   const [feedLike, setFeedLike] = useState(true) // 피드 좋아요
@@ -208,6 +209,7 @@ function DetailedFeedPage() {
       console.log("[GET COMMENT LIST] : ", res)
       if (res.data.success) {
         setComment(res.data.result)
+        setCommentCount(res.data.result.totalElements)
         setCommentList(res.data.result.content)
         getCommentLike(res.data.result.content)
         getCommentContents(res.data.result.content)
@@ -412,21 +414,21 @@ function DetailedFeedPage() {
         피드 <FontAwesomeIcon icon={faMap} />
       </h3>
 
-      <div className="rounded overflow-hidden border w-full">
-        <div className="w-full flex justify-between p-3">
-          <div className="flex">
+      <div className="rounded overflow-hidden border w-full p-5 mb-5">
+        <div className="w-full flex justify-between mb-3">
+          <div className="flex items-center">
             <div className="rounded-full h-16 w-16 bg-gray-500 flex items-center justify-center overflow-hidden">
               <img src={feedInfo.profileImagePath} alt="profilepicture" />
             </div>
-            <span className="pt-1 mt-4 ml-4 font-bold text-xl text-center">
+            <span className="ml-4 font-bold text-xl text-center">
               {feedInfo.nickname}
             </span>
             <span>
-              {userId == feedInfo.userId ? (
+              {userId === parseInt(feedInfo.userId) ? (
                 ""
               ) : follow ? (
                 <button
-                  className="pt-1 mt-5 ml-4 text-sl text-center"
+                  className="ml-4 text-sl text-center"
                   onClick={() => {
                     cancelFollowing()
                   }}
@@ -435,7 +437,7 @@ function DetailedFeedPage() {
                 </button>
               ) : (
                 <button
-                  className="pt-1 mt-5 ml-4 text-sl text-center"
+                  className="ml-4 text-sl text-center"
                   onClick={() => {
                     following()
                   }}
@@ -445,13 +447,13 @@ function DetailedFeedPage() {
               )}
             </span>
           </div>
-          <span className="px-2 rounded">
+          <span className="px-2">
             <i className="fas fa-ellipsis-h pt-2 text-xs">
               {feedInfo.rcate1}, {feedInfo.rcate2}
             </i>
           </span>
         </div>
-        <h3 className="text-3xl ml-2">{feedInfo.title}</h3>
+        <h3 className="text-3xl my-2 mx-1">{feedInfo.title}</h3>
 
         {/* feedsImages */}
         {/* //Slider 태그, 위에서 설정한 슬라이더가 나옴 */}
@@ -462,7 +464,7 @@ function DetailedFeedPage() {
                 {feedsImages.map((index) => (
                   <div key={index}>
                     <img
-                      className="w-full bg-cover object-contain max-h-96 mt-2"
+                      className="w-full object-contain max-h-96 mt-2"
                       alt="피드 이미지"
                       src={index}
                     />
@@ -473,7 +475,7 @@ function DetailedFeedPage() {
             </Wrap>
           ) : (
             <img
-              className="w-full bg-cover object-contain max-h-96 mt-2"
+              className="w-full object-contain max-h-96 mt-2"
               alt="피드 이미지"
               src={feedsImages[0]}
               key={feedsImages[0]}
@@ -483,27 +485,31 @@ function DetailedFeedPage() {
           ""
         )}
 
-        <div className="px-3 pb-2">
+        <div>
           <div className="pt-2">
             <i className="far fa-heart cursor-pointer"></i>
 
-            <div className="flex flex-wrap">
+            <div className="flex items-center">
               <span className="mt-1">
                 <HeartButton
                   like={feedLike}
                   onClick={feedLike ? onChangeCancelFeedLike : onChangeFeedLike}
                 />
               </span>
-              {userId == feedInfo.userId ? (
+              <span className="text-sm text-gray-400 font-medium ml-2">
+                좋아요 {feedInfo.feedLikeCnt}개
+              </span>
+
+              {userId === parseInt(feedInfo.userId) ? (
                 <span className="ml-auto shrink-0">
                   <button
-                    className="bg-transparent hover:bg-rose-500 text-rose-500 font-semibold hover:text-white py-2 px-2 border border-rose-500 hover:border-transparent rounded mr-2"
+                    className="bg-transparent hover:bg-rose-500 text-rose-500 font-semibold hover:text-white py-1 px-2 border border-rose-500 hover:border-transparent rounded mr-2"
                     onClick={editFeed}
                   >
                     피드 수정
                   </button>
                   <button
-                    className="bg-transparent hover:bg-rose-500 text-rose-500 font-semibold hover:text-white py-2 px-2 border border-rose-500 hover:border-transparent rounded"
+                    className="bg-transparent hover:bg-rose-500 text-rose-500 font-semibold hover:text-white py-1 px-2 border border-rose-500 hover:border-transparent rounded"
                     onClick={deleteFeed}
                   >
                     피드 삭제
@@ -514,153 +520,161 @@ function DetailedFeedPage() {
               )}
             </div>
           </div>
-          <div className="pt-1">
-            <span className="text-sm text-gray-400 font-medium">
-              좋아요 {feedInfo.feedLikeCnt}개
-            </span>
-          </div>
-          <div className="pt-1">
-            <div className="mb-2 text-xl">{feedInfo.content}</div>
+          <div className="my-5">
+            <div className="mb-2 text-xl whitespace-pre-line">
+              {feedInfo.content}
+            </div>
           </div>
           <div className="text-sm mb-2 text-gray-400 cursor-pointer font-medium">
             {feedInfo.feedCommentCnt} comments
           </div>
         </div>
 
-        <div className="w-full px-2">
+        <div className="w-full">
           {/* Comment List */}
           {commentList.map((index) => (
-            <div
-              className="comment-wrap flex items-center w-full my-1"
-              key={index.commentId}
-            >
-              <div className="rounded-full h-8 w-8 mx-1 bg-gray-500 flex items-center justify-center overflow-hidden">
-                <img src={index.profileImagePath} alt="profilepicture" />
-              </div>
-              <span className="mx-2 font-bold text-sl text-center shrink-0">
-                {index.nickname}
-              </span>
-              <span className="comment text-sl mx-2">{index.comment}</span>
-
-              {/* 코멘트 수정 폼*/}
-              <form
-                className="hidden comment-edit"
-                onSubmit={(e) => {
-                  e.preventDefault()
-                  editComment(index.commentId)
-                  e.target
-                    .closest(".comment-wrap")
-                    .querySelector(".comment")
-                    .classList.remove("hidden")
-                  e.target
-                    .closest(".comment-wrap")
-                    .querySelector(".comment-edit")
-                    .classList.add("hidden")
-                }}
-              >
-                <div className="mb-4 w-full bg-gray-50 rounded-lg border border-gray-200 dark:bg-gray-700 dark:border-gray-600">
-                  <div className="py-2 px-4 bg-white rounded-t-lg dark:bg-gray-800">
-                    <label htmlFor="comment" className="sr-only">
-                      Your comment
-                    </label>
-                    <textarea
-                      id="edit"
-                      rows="1"
-                      className="px-0 w-full text-sm text-gray-900 bg-white border-0 dark:bg-gray-800 focus:ring-0 dark:text-white dark:placeholder-gray-400"
-                      placeholder="Write a comment..."
-                      required
-                      onChange={onChangeEditComment}
-                    ></textarea>
-                  </div>
-
-                  <div className="flex justify-between items-center py-2 px-3 border-t dark:border-gray-600">
-                    <button
-                      type="submit"
-                      className="inline-flex items-center py-2.5 px-4 text-xs font-medium text-center text-white bg-rose-300 rounded-lg focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-rose-500"
-                    >
-                      수정 완료
-                    </button>
-                  </div>
+            <div className="comment-wrap bg-rose-50 p-2" key={index.commentId}>
+              <div className="flex items-center w-full py-2">
+                <div className="shrink-0 rounded-full h-8 w-8 mx-1 bg-gray-500 flex items-center justify-center overflow-hidden">
+                  <img src={index.profileImagePath} alt="profilepicture" />
                 </div>
-              </form>
-
-              <span>
-                <CommentHeartButton
-                  like={index.likeFeedComment}
-                  onClick={() => {
-                    index.likeFeedComment
-                      ? onChangeCancelCommentLike(index.commentId)
-                      : onChangeCommentLike(index.commentId)
-                  }}
-                />
-              </span>
-
-              <span className="text-sm text-gray-400 font-medium mx-1">
-                좋아요 {index.commentLikeCnt}개
-              </span>
-              {userId === index.userId && (
-                <span className="ml-auto shrink-0">
-                  <button
-                    className="bg-transparent hover:bg-rose-500 text-rose-500 font-semibold hover:text-white py-1 px-2 mx-1 border border-rose-500 hover:border-transparent rounded"
-                    onClick={(event) => {
-                      event.target
-                        .closest(".comment-wrap")
-                        .querySelector(".comment")
-                        .classList.add("hidden")
-                      event.target
-                        .closest(".comment-wrap")
-                        .querySelector(".comment-edit")
-                        .classList.remove("hidden")
-                    }}
-                  >
-                    수정
-                  </button>
-                  <button
-                    className="bg-transparent hover:bg-rose-500 text-rose-500 font-semibold hover:text-white py-1 px-2 mx-1 border border-rose-500 hover:border-transparent rounded"
-                    onClick={() => {
-                      deleteComment(index.commentId)
-                    }}
-                  >
-                    삭제
-                  </button>
+                <span className="shrink-0 mx-2 font-bold text-sl text-center shrink-0">
+                  {index.nickname}
                 </span>
-              )}
+
+                {/* 코멘트 수정 폼*/}
+                <form
+                  className="hidden comment-edit"
+                  onSubmit={(e) => {
+                    e.preventDefault()
+                    editComment(index.commentId)
+                    e.target
+                      .closest(".comment-wrap")
+                      .querySelector(".comment")
+                      .classList.remove("hidden")
+                    e.target
+                      .closest(".comment-wrap")
+                      .querySelector(".comment-edit")
+                      .classList.add("hidden")
+                    e.target
+                      .closest(".comment-wrap")
+                      .querySelector(".comment-button-wrap")
+                      .classList.remove("hidden")
+                  }}
+                >
+                  <div className="w-full rounded-lg flex p-1 items-center">
+                    <div className="mr-2 flex items-center border border-rose-400 rounded-lg overflow-hidden">
+                      <label htmlFor="comment" className="sr-only">
+                        Your comment
+                      </label>
+                      <textarea
+                        id="edit"
+                        rows="1"
+                        className="px-2 py-1 w-full text-sm text-gray-900 border-0 focus:ring-0 outline-0"
+                        placeholder="Write a comment..."
+                        required
+                        onChange={onChangeEditComment}
+                      ></textarea>
+                    </div>
+
+                    <div className="flex justify-between items-center">
+                      <button
+                        type="submit"
+                        className="inline-flex items-center py-1 px-2 text-sm font-medium text-center text-white bg-rose-300 rounded-lg focus:ring-4 focus:ring-blue-200 hover:bg-rose-500"
+                      >
+                        수정 완료
+                      </button>
+                    </div>
+                  </div>
+                </form>
+
+                <span className="shrink-0">
+                  <CommentHeartButton
+                    like={index.likeFeedComment}
+                    onClick={() => {
+                      index.likeFeedComment
+                        ? onChangeCancelCommentLike(index.commentId)
+                        : onChangeCommentLike(index.commentId)
+                    }}
+                  />
+                </span>
+
+                <span className="shrink-0 text-sm text-gray-400 font-medium mx-1">
+                  좋아요 {index.commentLikeCnt}개
+                </span>
+                {userId === parseInt(index.userId) && (
+                  <span className="comment-button-wrap ml-auto shrink-0">
+                    <button
+                      className="bg-white hover:bg-rose-500 text-rose-500 font-semibold hover:text-white py-1 px-2 mx-1 border border-rose-500 hover:border-transparent rounded"
+                      onClick={(event) => {
+                        event.target
+                          .closest(".comment-wrap")
+                          .querySelector(".comment")
+                          .classList.add("hidden")
+                        event.target
+                          .closest(".comment-wrap")
+                          .querySelector(".comment-edit")
+                          .classList.remove("hidden")
+                        event.target
+                          .closest(".comment-wrap")
+                          .querySelector(".comment-button-wrap")
+                          .classList.add("hidden")
+                      }}
+                    >
+                      수정
+                    </button>
+                    <button
+                      className="bg-white hover:bg-rose-500 text-rose-500 font-semibold hover:text-white py-1 px-2 mx-1 border border-rose-500 hover:border-transparent rounded"
+                      onClick={() => {
+                        deleteComment(index.commentId)
+                      }}
+                    >
+                      삭제
+                    </button>
+                  </span>
+                )}
+              </div>
+              {/* 코멘트 내용 */}
+              <div className="comment text-sl mx-2 pb-2">{index.comment}</div>
             </div>
           ))}
-          <PaginationBox>
-            <Pagination
-              activePage={page}
-              totalItemsCount={comment === "" ? 0 : comment.totalElements}
-              itemsCountPerPage={10}
-              pageRangeDisplayed={3}
-              prevPageText={"‹"}
-              nextPageText={"›"}
-              onChange={handlePageChange}
-            />
-          </PaginationBox>
+
+          {commentList.length > 0 && (
+            <PaginationBox>
+              <Pagination
+                activePage={page}
+                totalItemsCount={commentCount}
+                itemsCountPerPage={10}
+                pageRangeDisplayed={3}
+                prevPageText={"‹"}
+                nextPageText={"›"}
+                onChange={handlePageChange}
+              />
+            </PaginationBox>
+          )}
         </div>
         {/* Comment https://flowbite.com/docs/forms/textarea/ */}
         <form onSubmit={postComment}>
-          <div className="mb-4 w-full bg-gray-50 rounded-lg border border-gray-200 dark:bg-gray-700 dark:border-gray-600 mt-2">
-            <div className="py-2 px-4 bg-white rounded-t-lg dark:bg-gray-800">
+          <div className="w-full bg-rose-50 rounded-lg border border-rose-400 mt-2">
+            <div className="py-2 px-4 bg-white rounded-t-lg">
               <label htmlFor="comment" className="sr-only">
                 Your comment
               </label>
               <textarea
                 id="comment"
                 rows="4"
-                className="px-0 w-full text-sm text-gray-900 bg-white border-0 dark:bg-gray-800 focus:ring-0 dark:text-white dark:placeholder-gray-400"
+                className="px-0 w-full text-sm text-gray-900 bg-white border-0 focus:ring-0 placeholder-gray-400 outline-0"
                 placeholder="Write a comment..."
-                required=""
+                required
                 onChange={onChangeComment}
                 ref={commentTextareaRef}
               ></textarea>
             </div>
 
-            <div className="flex justify-between items-center py-2 px-3 border-t dark:border-gray-600">
+            <div className="flex justify-between items-center py-2 px-3 border-t border-rose-200">
               <button
                 type="submit"
-                className="inline-flex items-center py-2.5 px-4 text-xs font-medium text-center text-white bg-rose-300 rounded-lg focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-rose-500"
+                className="inline-flex items-center py-2.5 px-4 text-xs font-medium text-center text-white bg-rose-300 rounded-lg focus:ring-4 focus:ring-blue-200 hover:bg-rose-500"
               >
                 Post comment
               </button>
@@ -673,16 +687,28 @@ function DetailedFeedPage() {
 }
 
 const Wrap = styled.div`
-  margin: 5% auto;
-  width: 100%;
+  margin: 50px auto;
+  width: calc(100% - 78px);
+  .slick-prev {
+    left: -36px;
+  }
+  .slick-next {
+    right: -36px;
+  }
+  .slick-prev,
+  .slick-next {
+    width: 32px;
+    height: 32px;
+  }
   .slick-prev:before {
     opaicty: 1; // 기존에 숨어있던 화살표 버튼이 보이게
-    color: black; // 버튼 색은 검은색으로
-    left: 0;
+    color: rgba(244, 63, 94, 1);
+    font-size: 32px;
   }
   .slick-next:before {
     opacity: 1;
-    color: black;
+    color: rgba(244, 63, 94, 1);
+    font-size: 32px;
   }
 `
 
@@ -690,42 +716,62 @@ const PaginationBox = styled.div`
   .pagination {
     display: flex;
     justify-content: center;
-    margin-top: 15px;
+    margin: 28px 0;
   }
   ul {
     list-style: none;
     padding: 0;
+    display: flex;
   }
   ul.pagination li {
-    display: inline-block;
+    margin: 0 0.3rem;
     width: 30px;
     height: 30px;
-    border: 1px solid #e2e2e2;
+    position: relative;
+    border-radius: 50%;
+    overflow: hidden;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 1rem;
+    border: 1px solid rgba(244, 63, 94, 1);
   }
-  ul.pagination li:first-child {
-    border-radius: 5px 0 0 5px;
+  ul.pagination li:nth-child(1),
+  ul.pagination li:nth-child(2),
+  ul.pagination li:nth-last-child(1),
+  ul.pagination li:nth-last-child(2) {
+    background-color: rgba(244, 63, 94, 0.3);
   }
-  ul.pagination li:last-child {
-    border-radius: 0 5px 5px 0;
+  ul.pagination li:nth-child(1) a,
+  ul.pagination li:nth-child(2) a,
+  ul.pagination li:nth-last-child(1) a,
+  ul.pagination li:nth-last-child(2) a {
+    position: absolute;
+    line-height: 1;
+    top: -2px;
+    font-size: 20px;
+  }
+
+  ul.pagination li:nth-child(1).disabled,
+  ul.pagination li:nth-child(2).disabled,
+  ul.pagination li:nth-last-child(1).disabled,
+  ul.pagination li:nth-last-child(2).disabled {
+    opacity: 0.4;
+    pointer-events: none;
   }
   ul.pagination li a {
+    width: 30px;
+    height: 30px;
     text-decoration: none;
-    color: #337ab7;
+    color: rgb(244 63 94);
     font-size: 1rem;
+    line-height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
   ul.pagination li.active a {
     color: white;
-  }
-  ul.pagination li.active {
-    background-color: #337ab7;
-  }
-  ul.pagination li a:hover,
-  ul.pagination li a.active {
-    color: blue;
+    background-color: rgba(244, 63, 94, 1);
   }
 `
 

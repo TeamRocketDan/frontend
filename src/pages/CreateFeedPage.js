@@ -162,7 +162,7 @@ function CreateFeedPage() {
           <FontAwesomeIcon icon={faMessage} className="ml-1" />
         </h3>
         <div className="flex justify-center px-6 my-12">
-          <div className="w-full xl:w-3/4 lg:w-11/12 flex">
+          <div className="w-full xl:w-3/4 lg:w-11/12 flex flex-col sm:flex-row">
             <div>
               {/* image input https://flowbite.com/docs/forms/file-input/ */}
               <div className="flex justify-center items-center w-full mt-16">
