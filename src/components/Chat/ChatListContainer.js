@@ -36,10 +36,16 @@ function ChatListContainer({ roomList, isMyList }) {
       {/* 채탕방 */}
       {roomList.length === 0 ? (
         <li className="text-rose-600 text-xl">
-          {!isLoggedIn && isMyList ? (
-            <Link to="/login" className="pt-2 flex">
-              &gt; 로그인하러 가기
-            </Link>
+          {isMyList ? (
+            <>
+              {!isLoggedIn ? (
+                <Link to="/login" className="pt-2 flex">
+                  &gt; 로그인하러 가기
+                </Link>
+              ) : (
+                "( ˃̣̣̥᷄⌓˂̣̣̥᷅ ) 채팅방이 없다냥!"
+              )}
+            </>
           ) : (
             "( ˃̣̣̥᷄⌓˂̣̣̥᷅ ) 채팅방이 없다냥!"
           )}
