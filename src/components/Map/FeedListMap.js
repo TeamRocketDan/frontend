@@ -41,7 +41,7 @@ function FeedListMap({ positionData }) {
   }, [positionData])
 
   return (
-    <div className="py-4">
+    <div className="w-full py-4">
       <div className="w-full h-72" ref={mapRef}></div>
     </div>
   )

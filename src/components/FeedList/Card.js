@@ -3,10 +3,10 @@ import { ArrowRightIcon, HeartIcon, ChatIcon } from "@heroicons/react/outline"
 
 const Card = (props) => {
   return (
-    <div className="p-4 sm:w-1/2 lg:w-1/2">
+    <div className="p-4 sm:w-1/2 lg:w-1/3">
       <div className="h-full border-2 border-gray-200 border-opacity-60 rounded-lg overflow-hidden">
         <img
-          className="lg:h-72 md:h-48 w-full object-cover object-center"
+          className="sm:h-60 lg:h-72 md:h-48 w-full object-cover object-center"
           src={props.imageSrc}
           alt="feedImage"
         />
@@ -14,7 +14,9 @@ const Card = (props) => {
           <h2 className="text-base font-medium text-indigo-300 mb-1">
             {props.location}
           </h2>
-          <h1 className="text-2xl font-semibold mb-3">{props.title}</h1>
+          <h1 className="text-2xl font-semibold mb-3 truncate">
+            {props.title}
+          </h1>
           <p className="leading-relaxed mb-3 truncate">{props.desc}</p>
           <div className="flex items-center flex-wrap cursor-pointer">
             <Link

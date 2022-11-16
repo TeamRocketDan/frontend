@@ -109,7 +109,7 @@ function FeedListPage() {
     async function getList() {
       const feedList = await getFeeds({
         page: listPage - 1,
-        size: 10,
+        size: 12,
         rcate1,
         rcate2,
       })
@@ -148,7 +148,7 @@ function FeedListPage() {
           <h3>( ˃̣̣̥᷄⌓˂̣̣̥᷅ ) 피드가 없다냥!</h3>
         </div>
       ) : (
-        <div className="flex flex-wrap -m-4 mx-auto w-8/12">
+        <div className="flex flex-wrap -m-4 w-full mx-auto">
           {feedList.map((index) => (
             <Card
               key={index.feedId}

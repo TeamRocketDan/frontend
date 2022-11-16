@@ -23,13 +23,13 @@ function MyFeedListPage() {
 
   // 피드 리스트
   const [myFeedList, setMyFeedList] = useState([])
-
   const [positionData, setPositionData] = useState([])
 
   // 페이지네이션 관련
   const [searchParams, setSearchParams] = useSearchParams()
   const [myListMaxPage, setMyListMaxPage] = useState(1)
   const myListPage = parseInt(searchParams.get("mylistpage") ?? "1", 10)
+  const [pageSize, setPageSize] = useState(10)
 
   function updateParams(updates) {
     setSearchParams({
@@ -48,6 +48,30 @@ function MyFeedListPage() {
       mylistpage: 1,
     })
   }, [rcate2])
+
+  // 피드 페이지네이션 사이즈 변경
+  function getWindowSize() {
+    const width = window.innerWidth
+
+    if (width <= 768) {
+      setPageSize(6)
+    } else if (width <= 1024) {
+      setPageSize(8)
+    } else if (width <= 1280) {
+      setPageSize(10)
+    } else if (width <= 1536) {
+      setPageSize(10)
+    } else {
+      setPageSize(12)
+    }
+  }
+  useEffect(() => {
+    getWindowSize()
+    window.addEventListener("resize", getWindowSize)
+    return function () {
+      window.removeEventListener("resize", getWindowSize)
+    }
+  }, [])
 
   // 피드 리스트 받아오기
   async function getFeeds({ page, size, rcate1, rcate2 }) {
@@ -85,7 +109,7 @@ function MyFeedListPage() {
     async function getMyList() {
       const myFeedList = await getFeeds({
         page: myListPage - 1,
-        size: 10,
+        size: 12,
         rcate1,
         rcate2,
       })
@@ -123,7 +147,7 @@ function MyFeedListPage() {
           <h3>( ˃̣̣̥᷄⌓˂̣̣̥᷅ ) 피드가 없다냥!</h3>
         </div>
       ) : (
-        <div className="flex flex-wrap -m-4 w-8/12 mx-auto">
+        <div className="flex flex-wrap -m-4 w-full mx-auto">
           {myFeedList.map((index) => (
             <Card
               key={index.feedId}
