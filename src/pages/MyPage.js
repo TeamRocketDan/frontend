@@ -176,7 +176,7 @@ function MyPage() {
 
   return (
     <>
-      <div className="w-2/5 h-5/6 m-auto mt-8">
+      <div className="md:w-1/2 xl:w-2/5 sm:mx-auto my-8 w-full px-8">
         <h3 className="text-2xl font-semibold text-left text-slate-900">
           마이페이지
         </h3>
@@ -311,17 +311,17 @@ function MyPage() {
 
         {/* Following */}
         <div className="bg-white shadow mt-6  rounded-lg p-6">
-          <h3 className="text-gray-600 text-sm font-semibold mb-4">
+          <h3 className="text-gray-600 text-lg font-semibold mb-4">
             Following
           </h3>
-          <ul className="flex items-center justify-center space-x-2">
+          <ul className="flex items-center justify-center space-x-2 flex-wrap">
             {userFollowing.map((follow) => (
               <li
                 key={follow.userId}
-                className="flex flex-col items-center space-y-2"
+                className="flex flex-col items-center space-y-2 shrink-0"
               >
                 <img
-                  className="w-16 rounded-full"
+                  className="w-16 h-16 rounded-full object-cover border border-rose-300"
                   src={follow.profileImagePath}
                   alt="profile_image"
                 />
@@ -335,21 +335,23 @@ function MyPage() {
               totalItemsCount={followingCount}
               itemsCountPerPage={10}
               pageRangeDisplayed={5}
+              prevPageText={"‹"}
+              nextPageText={"›"}
               onChange={handleFollowingPageChange}
             />
           </PaginationBox>
         </div>
         {/* Follower */}
         <div className="bg-white shadow mt-6  rounded-lg p-6">
-          <h3 className="text-gray-600 text-sm font-semibold mb-4">Follower</h3>
-          <ul className="flex items-center justify-center space-x-2">
+          <h3 className="text-gray-600 text-lg font-semibold mb-4">Follower</h3>
+          <ul className="flex items-center justify-center space-x-2 flex-wrap">
             {userFollower.map((follow) => (
               <li
                 key={follow.userId}
-                className="flex flex-col items-center space-y-2"
+                className="flex flex-col items-center space-y-2 shrink-0"
               >
                 <img
-                  className="w-16 rounded-full"
+                  className="w-16 h-16 rounded-full object-cover border border-rose-300"
                   src={follow.profileImagePath}
                   alt="profile_image"
                 />
@@ -363,6 +365,8 @@ function MyPage() {
               totalItemsCount={followerCount}
               itemsCountPerPage={10}
               pageRangeDisplayed={5}
+              prevPageText={"‹"}
+              nextPageText={"›"}
               onChange={handleFollowerPageChange}
             />
           </PaginationBox>
@@ -376,42 +380,62 @@ const PaginationBox = styled.div`
   .pagination {
     display: flex;
     justify-content: center;
-    margin-top: 15px;
+    margin: 28px 0;
   }
   ul {
     list-style: none;
     padding: 0;
+    display: flex;
   }
   ul.pagination li {
-    display: inline-block;
+    margin: 0 0.3rem;
     width: 30px;
     height: 30px;
-    border: 1px solid #e2e2e2;
+    position: relative;
+    border-radius: 50%;
+    overflow: hidden;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 1rem;
+    border: 1px solid rgba(244, 63, 94, 1);
   }
-  ul.pagination li:first-child {
-    border-radius: 5px 0 0 5px;
+  ul.pagination li:nth-child(1),
+  ul.pagination li:nth-child(2),
+  ul.pagination li:nth-last-child(1),
+  ul.pagination li:nth-last-child(2) {
+    background-color: rgba(244, 63, 94, 0.3);
   }
-  ul.pagination li:last-child {
-    border-radius: 0 5px 5px 0;
+  ul.pagination li:nth-child(1) a,
+  ul.pagination li:nth-child(2) a,
+  ul.pagination li:nth-last-child(1) a,
+  ul.pagination li:nth-last-child(2) a {
+    position: absolute;
+    line-height: 1;
+    top: -2px;
+    font-size: 20px;
+  }
+
+  ul.pagination li:nth-child(1).disabled,
+  ul.pagination li:nth-child(2).disabled,
+  ul.pagination li:nth-last-child(1).disabled,
+  ul.pagination li:nth-last-child(2).disabled {
+    opacity: 0.4;
+    pointer-events: none;
   }
   ul.pagination li a {
+    width: 30px;
+    height: 30px;
     text-decoration: none;
-    color: #337ab7;
+    color: rgb(244 63 94);
     font-size: 1rem;
+    line-height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
   ul.pagination li.active a {
     color: white;
-  }
-  ul.pagination li.active {
-    background-color: #337ab7;
-  }
-  ul.pagination li a:hover,
-  ul.pagination li a.active {
-    color: blue;
+    background-color: rgba(244, 63, 94, 1);
   }
 `
 
