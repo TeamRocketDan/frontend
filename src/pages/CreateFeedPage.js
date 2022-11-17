@@ -36,6 +36,8 @@ function CreateFeedPage() {
   const [latitude, setLatitude] = useState("")
   const [multipartFiles, setMultipartFiles] = useState([])
 
+  const [textCount, setTextCount] = useState(0)
+
   function onChange(event) {
     const { name, value } = event.target
     setInputValues({ ...inputValues, [name]: value })
@@ -49,6 +51,9 @@ function CreateFeedPage() {
   // 내용 추가
   const onChangeContent = (e) => {
     setContent(e.target.value)
+
+    const text = e.target.value
+    setTextCount(text.length)
   }
 
   // 이미지 미리보기
@@ -109,48 +114,80 @@ function CreateFeedPage() {
   // 피드 Post
   const postFeed = async (event) => {
     event.preventDefault()
+
+    if (validate()) {
+      // 이미지 첨부 4장까지 되도록 코드 수정
+      const formData = new FormData()
+      const variables = {
+        title: title, // 제목
+        content: content, // 내용
+        rcate1: depth01, // 시도
+        rcate2: depth02, // 구
+        longitude: inputValues.longitude, // 경도
+        latitude: inputValues.latitude, // 위도
+      }
+
+      formData.append(
+        "feed",
+        new Blob([JSON.stringify(variables)], { type: "application/json" }),
+      )
+
+      multipartFiles.forEach((file) => {
+        // 사진 첨부(리스트형태)
+        formData.append("files", file)
+      })
+
+      console.log(multipartFiles.length)
+
+      const token = await getUserToken()
+
+      axios
+        .post(`${DEFAULT_API}/api/v1/feeds`, formData, {
+          // 경로 수정 여부 확인
+          headers: {
+            Authorization: token,
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then((res) => {
+          console.log("Post Success!")
+          const feedId = res.data.result.feedId
+          navigate(`/detailedfeed/${feedId}`, { replace: true })
+        })
+        .catch((err) => console.log(err))
+    } else {
+      return false
+    }
+  }
+
+  // 폼 입력값 검증
+  const validate = () => {
     if (depth01 === "" || depth02 === "") {
       alert("지역을 선택해주세요.")
       return false
     }
 
-    // 이미지 첨부 4장까지 되도록 코드 수정
-    const formData = new FormData()
-    const variables = {
-      title: title, // 제목
-      content: content, // 내용
-      rcate1: depth01, // 시도
-      rcate2: depth02, // 구
-      longitude: inputValues.longitude, // 경도
-      latitude: inputValues.latitude, // 위도
+    if (multipartFiles.length === 0) {
+      alert("사진을 첨부해 주세요.")
+      return false
     }
 
-    formData.append(
-      "feed",
-      new Blob([JSON.stringify(variables)], { type: "application/json" }),
-    )
+    if (title === "") {
+      alert("제목을 입력해 주세요.")
+      return false
+    }
 
-    multipartFiles.forEach((file) => {
-      // 사진 첨부(리스트형태)
-      formData.append("files", file)
-    })
+    if (content === "") {
+      alert("내용을 입력해 주세요.")
+      return false
+    }
 
-    const token = await getUserToken()
+    if (content.length > 2048) {
+      alert("내용은 최대 2048자까지 입력 가능합니다.")
+      return false
+    }
 
-    axios
-      .post(`${DEFAULT_API}/api/v1/feeds`, formData, {
-        // 경로 수정 여부 확인
-        headers: {
-          Authorization: token,
-          "Content-Type": "multipart/form-data",
-        },
-      })
-      .then((res) => {
-        console.log("Post Success!")
-        const feedId = res.data.result.feedId
-        navigate(`/detailedfeed/${feedId}`, { replace: true })
-      })
-      .catch((err) => console.log(err))
+    return true
   }
 
   return (
@@ -210,6 +247,7 @@ function CreateFeedPage() {
                     type="file"
                     className="hidden"
                     accept="image/"
+                    required
                     multiple
                     onChange={(e) => {
                       setMultipartFiles(Array.from(e.target.files || []))
@@ -245,6 +283,7 @@ function CreateFeedPage() {
                       type="text"
                       placeholder="Title"
                       onChange={onChangeTitle}
+                      required
                     />
                   </div>
                 </div>
@@ -256,11 +295,17 @@ function CreateFeedPage() {
                     Content
                   </label>
                   <textarea
-                    className="w-full px-3 py-2 mb-3 text-sm leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+                    className="w-full px-3 py-2 mb-0.5 text-sm leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
                     id="feedContent"
+                    rows={4}
                     placeholder="Content"
                     onChange={onChangeContent}
+                    required
                   />
+                  {/* 글자수 확인 */}
+                  <div className="text-rose-400 text-sm text-right">
+                    {textCount} / 2048 자
+                  </div>
                 </div>
                 <div className="mb-4">
                   <label
