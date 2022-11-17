@@ -59,26 +59,10 @@ function DetailedFeedPage() {
   const [editComments, setEditComments] = useState("") // 코멘트 수정
   const [commentList, setCommentList] = useState([]) // 코멘트 리스트
   const [feedLike, setFeedLike] = useState(true) // 피드 좋아요
-  const [commentLike, setCommentLike] = useState(false) // 코멘트 좋아요
-  const [commentContents, setCommentContents] = useState([]) // 코멘트 내용
   const [userId, setUserId] = useState("") // 사용 중인 유저 ID
   const [follow, setFollow] = useState(false) // 팔로잉 여부
-
-  const getCommentLike = (props) => {
-    const newCommentLike = []
-    props.forEach((comment) => {
-      newCommentLike.push(comment.likeFeedComment)
-    })
-    setCommentLike([...commentLike, ...newCommentLike])
-  }
-
-  const getCommentContents = (props) => {
-    const newContents = []
-    props.forEach((content) => {
-      newContents.push(content.content)
-    })
-    setCommentContents([...commentContents, ...newContents])
-  }
+  const [commentLengthCount, setCommentLengthCount] = useState(0) // 코멘트 생성 글자 수
+  const [editCommentLengthCount, setEditCommentLengthCount] = useState(0) // 코멘트 수정 글자 수
 
   // 피드 좋아요
   const onChangeFeedLike = async () => {
@@ -174,21 +158,25 @@ function DetailedFeedPage() {
 
   // 피드 삭제
   const deleteFeed = async () => {
-    const token = await getUserToken()
+    const confirmed = window.confirm("피드를 삭제하시겠습니까?")
 
-    axios
-      .delete(`${DEFAULT_API}/api/v1/feeds/${feedId}`, {
-        headers: {
-          Authorization: token,
-          "Content-Type": "application/json",
-        },
-      })
-      .then(() => {
-        console.log("Delete feed success")
-        alert("피드를 성공적으로 삭제하였습니다")
-        navigate("/myFeedList")
-      })
-      .catch((err) => console.log(err))
+    if (confirmed) {
+      const token = await getUserToken()
+
+      axios
+        .delete(`${DEFAULT_API}/api/v1/feeds/${feedId}`, {
+          headers: {
+            Authorization: token,
+            "Content-Type": "application/json",
+          },
+        })
+        .then(() => {
+          console.log("Delete feed success")
+          alert("피드를 성공적으로 삭제하였습니다")
+          navigate("/myFeedList")
+        })
+        .catch((err) => console.log(err))
+    }
   }
 
   // get comment list
@@ -208,11 +196,10 @@ function DetailedFeedPage() {
       )
       console.log("[GET COMMENT LIST] : ", res)
       if (res.data.success) {
-        setComment(res.data.result)
         setCommentCount(res.data.result.totalElements)
         setCommentList(res.data.result.content)
-        getCommentLike(res.data.result.content)
-        getCommentContents(res.data.result.content)
+        // getCommentLike(res.data.result.content)
+        // getCommentContents(res.data.result.content)
       }
     } catch (error) {
       console.log(error)
@@ -279,17 +266,27 @@ function DetailedFeedPage() {
 
   // 코멘트 데이터 생성시
   const onChangeComment = (e) => {
-    setComment(e.target.value)
+    const text = e.target.value
+    setComment(text)
+    setCommentLengthCount(text.length)
   }
 
   // 코멘트 데이터 수정시
   const onChangeEditComment = (e) => {
     setEditComments(e.target.value)
+
+    const text = e.target.value
+    setEditCommentLengthCount(text.length)
   }
 
   // 코멘트 생성
   const postComment = async (e) => {
     e.preventDefault()
+
+    if (comment.length > 1000) {
+      alert("댓글은 최대 1000자까지 입력 가능합니다.")
+      return false
+    }
 
     const formData = new FormData()
     const variable = {
@@ -313,6 +310,8 @@ function DetailedFeedPage() {
         console.log("Post Comment Success!")
         getCommentList()
         commentTextareaRef.current.value = ""
+        setComment("")
+        setCommentLengthCount(0)
       })
       .catch((err) => console.log(err))
   }
@@ -353,25 +352,29 @@ function DetailedFeedPage() {
 
   // 코멘트 삭제
   const deleteComment = async (commentsId) => {
-    const token = getUserToken().then((token) => {
-      axios
-        .delete(
-          `${DEFAULT_API}/api/v1/feeds/${feedId}/comments/${commentsId}`,
-          {
-            headers: {
-              Authorization: token,
-              "Content-Type": "application/json",
+    const confirmed = window.confirm("댓글을 삭제하시겠습니까?")
+
+    if (confirmed) {
+      const token = getUserToken().then((token) => {
+        axios
+          .delete(
+            `${DEFAULT_API}/api/v1/feeds/${feedId}/comments/${commentsId}`,
+            {
+              headers: {
+                Authorization: token,
+                "Content-Type": "application/json",
+              },
             },
-          },
-        )
-        .then((res) => {
-          console.log(`Delete ${res.data.result.feedCommentId} comment`)
-          getCommentList()
-        })
-        .catch((err) => {
-          console.log(err)
-        })
-    })
+          )
+          .then((res) => {
+            console.log(`Delete ${res.data.result.feedCommentId} comment`)
+            getCommentList()
+          })
+          .catch((err) => {
+            console.log(err)
+          })
+      })
+    }
   }
 
   // 유저 팔로잉
@@ -542,52 +545,6 @@ function DetailedFeedPage() {
                   {index.nickname}
                 </span>
 
-                {/* 코멘트 수정 폼*/}
-                <form
-                  className="hidden comment-edit"
-                  onSubmit={(e) => {
-                    e.preventDefault()
-                    editComment(index.commentId)
-                    e.target
-                      .closest(".comment-wrap")
-                      .querySelector(".comment")
-                      .classList.remove("hidden")
-                    e.target
-                      .closest(".comment-wrap")
-                      .querySelector(".comment-edit")
-                      .classList.add("hidden")
-                    e.target
-                      .closest(".comment-wrap")
-                      .querySelector(".comment-button-wrap")
-                      .classList.remove("hidden")
-                  }}
-                >
-                  <div className="w-full rounded-lg flex p-1 items-center">
-                    <div className="mr-2 flex items-center border border-rose-400 rounded-lg overflow-hidden">
-                      <label htmlFor="comment" className="sr-only">
-                        Your comment
-                      </label>
-                      <textarea
-                        id="edit"
-                        rows="1"
-                        className="px-2 py-1 w-full text-sm text-gray-900 border-0 focus:ring-0 outline-0"
-                        placeholder="Write a comment..."
-                        required
-                        onChange={onChangeEditComment}
-                      ></textarea>
-                    </div>
-
-                    <div className="flex justify-between items-center">
-                      <button
-                        type="submit"
-                        className="inline-flex items-center py-1 px-2 text-sm font-medium text-center text-white bg-rose-300 rounded-lg focus:ring-4 focus:ring-blue-200 hover:bg-rose-500"
-                      >
-                        수정 완료
-                      </button>
-                    </div>
-                  </div>
-                </form>
-
                 <span className="shrink-0">
                   <CommentHeartButton
                     like={index.likeFeedComment}
@@ -619,6 +576,15 @@ function DetailedFeedPage() {
                           .closest(".comment-wrap")
                           .querySelector(".comment-button-wrap")
                           .classList.add("hidden")
+                        const currentComment = event.target
+                          .closest(".comment-wrap")
+                          .querySelector(".comment").innerText
+                        event.target
+                          .closest(".comment-wrap")
+                          .querySelector(".comment-edit-textarea").innerText =
+                          currentComment
+                        setEditComments(currentComment)
+                        setEditCommentLengthCount(currentComment.length)
                       }}
                     >
                       수정
@@ -634,8 +600,88 @@ function DetailedFeedPage() {
                   </span>
                 )}
               </div>
+
+              {/* 코멘트 수정 폼*/}
+              <form
+                className="hidden comment-edit"
+                onSubmit={(e) => {
+                  e.preventDefault()
+
+                  if (editComments.length > 1000) {
+                    alert("댓글은 최대 1000자까지 입력 가능합니다.")
+                    return false
+                  } else {
+                    editComment(index.commentId)
+
+                    e.target
+                      .closest(".comment-wrap")
+                      .querySelector(".comment")
+                      .classList.remove("hidden")
+                    e.target
+                      .closest(".comment-wrap")
+                      .querySelector(".comment-edit")
+                      .classList.add("hidden")
+                    e.target
+                      .closest(".comment-wrap")
+                      .querySelector(".comment-button-wrap")
+                      .classList.remove("hidden")
+                  }
+                }}
+              >
+                <div className="w-full rounded-lg flex p-1 items-center">
+                  <div className="mr-2 flex grow items-center border border-rose-400 rounded-lg overflow-hidden">
+                    <label htmlFor="comment" className="sr-only">
+                      Your comment
+                    </label>
+                    <textarea
+                      id="edit"
+                      rows="2"
+                      className="comment-edit-textarea px-2 py-1 w-full text-sm text-gray-900 border-0 focus:ring-0 outline-0"
+                      placeholder="Write a comment..."
+                      required
+                      onChange={onChangeEditComment}
+                    ></textarea>
+                  </div>
+
+                  <div className="flex justify-between items-center">
+                    {/* 글자수 확인 */}
+                    <div className="text-rose-400 text-sm text-right">
+                      {editCommentLengthCount} / 1000 자
+                    </div>
+                    <button
+                      type="submit"
+                      className="inline-flex items-center ml-1 py-1 px-2 text-sm font-medium text-center text-white bg-rose-300 rounded-lg focus:ring-4 focus:ring-blue-200 hover:bg-rose-500"
+                    >
+                      완료
+                    </button>
+                    <button
+                      type="button"
+                      className="inline-flex items-center ml-1 py-1 px-2 text-sm font-medium text-center text-white bg-rose-300 rounded-lg focus:ring-4 focus:ring-blue-200 hover:bg-rose-500"
+                      onClick={(e) => {
+                        e.target
+                          .closest(".comment-wrap")
+                          .querySelector(".comment")
+                          .classList.remove("hidden")
+                        e.target
+                          .closest(".comment-wrap")
+                          .querySelector(".comment-edit")
+                          .classList.add("hidden")
+                        e.target
+                          .closest(".comment-wrap")
+                          .querySelector(".comment-button-wrap")
+                          .classList.remove("hidden")
+                      }}
+                    >
+                      취소
+                    </button>
+                  </div>
+                </div>
+              </form>
+
               {/* 코멘트 내용 */}
-              <div className="comment text-sl mx-2 pb-2">{index.comment}</div>
+              <div className="comment text-sl mx-2 pb-2 whitespace-pre-line">
+                {index.comment}
+              </div>
             </div>
           ))}
 
@@ -678,6 +724,10 @@ function DetailedFeedPage() {
               >
                 Post comment
               </button>
+              {/* 글자수 확인 */}
+              <div className="text-rose-400 text-sm text-right">
+                {commentLengthCount} / 1000 자
+              </div>
             </div>
           </div>
         </form>
