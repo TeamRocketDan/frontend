@@ -63,6 +63,7 @@ function DetailedFeedPage() {
   const [commentContents, setCommentContents] = useState([]) // 코멘트 내용
   const [userId, setUserId] = useState("") // 사용 중인 유저 ID
   const [follow, setFollow] = useState(false) // 팔로잉 여부
+  const [commentLengthCount, setCommentLengthCount] = useState(0)
 
   const getCommentLike = (props) => {
     const newCommentLike = []
@@ -280,6 +281,9 @@ function DetailedFeedPage() {
   // 코멘트 데이터 생성시
   const onChangeComment = (e) => {
     setComment(e.target.value)
+
+    const text = e.target.value
+    setCommentLengthCount(text.length)
   }
 
   // 코멘트 데이터 수정시
@@ -290,6 +294,11 @@ function DetailedFeedPage() {
   // 코멘트 생성
   const postComment = async (e) => {
     e.preventDefault()
+
+    if (comment.length > 1000) {
+      alert("댓글은 최대 1000자까지 입력 가능합니다.")
+      return false
+    }
 
     const formData = new FormData()
     const variable = {
@@ -313,6 +322,8 @@ function DetailedFeedPage() {
         console.log("Post Comment Success!")
         getCommentList()
         commentTextareaRef.current.value = ""
+        setComment("")
+        setCommentLengthCount(0)
       })
       .catch((err) => console.log(err))
   }
@@ -678,6 +689,10 @@ function DetailedFeedPage() {
               >
                 Post comment
               </button>
+              {/* 글자수 확인 */}
+              <div className="text-rose-400 text-sm text-right">
+                {commentLengthCount} / 1000 자
+              </div>
             </div>
           </div>
         </form>
