@@ -216,7 +216,7 @@ function EditFeedPage() {
                   multipartFiles.map((image) => (
                     <li
                       key={image}
-                      className="w-1/2 h-40 block border-white border-2 bg-cover bg-center"
+                      className="w-1/2 h-40 block border-white border-2 bg-cover bg-no-repeat bg-center"
                       style={{
                         backgroundImage: `url(${image})`,
                       }}
@@ -224,7 +224,7 @@ function EditFeedPage() {
                   ))
                 ) : (
                   <li
-                    className="w-full h-80 bg-center bc-cover mt-12"
+                    className="w-full h-80 bg-center bc-cover bg-no-repeat mt-12"
                     style={{
                       backgroundImage: `url(${multipartFiles[0]})`,
                     }}
