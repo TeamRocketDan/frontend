@@ -187,11 +187,27 @@ function ChatRoom() {
   }, [token])
 
   // 채팅 연결 끊어질 때 chat-end 요청까지
-  function disConnect() {
+  async function disConnect() {
     if (stompClient && subscription) {
       stompClient.deactivate()
       subscription.unsubscribe()
       console.log("채팅 연결 끊어짐")
+
+      try {
+        const responseEnd = await axios.patch(
+          `${CHAT_API}/api/v1/chat/chat-end/${roomId}`,
+          null,
+          {
+            headers: {
+              Authorization: token,
+              "Content-Type": "application/json",
+            },
+          },
+        )
+        console.log("[CHAT END] : ", responseEnd)
+      } catch (error) {
+        console.log(error)
+      }
     }
   }
 
