@@ -690,7 +690,9 @@ function DetailedFeedPage() {
               </form>
 
               {/* 코멘트 내용 */}
-              <div className="comment text-sl mx-2 pb-2">{index.comment}</div>
+              <div className="comment text-sl mx-2 pb-2 whitespace-pre-line">
+                {index.comment}
+              </div>
             </div>
           ))}
 
