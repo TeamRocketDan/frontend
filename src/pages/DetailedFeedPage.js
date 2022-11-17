@@ -64,6 +64,22 @@ function DetailedFeedPage() {
   const [commentLengthCount, setCommentLengthCount] = useState(0) // 코멘트 생성 글자 수
   const [editCommentLengthCount, setEditCommentLengthCount] = useState(0) // 코멘트 수정 글자 수
 
+  // 삭제된 피드에 접근할 때 등 에러 메세지 alert
+  const handleErrorMessage = (error) => {
+    const message = error.response.data.errorMessage
+    alert(message)
+
+    // 없는 피드일 경우 메인으로
+    if (message === "피드를 찾을 수 없습니다.") {
+      navigate("/", { replace: true })
+    }
+
+    // 없는 댓글일 경우 댓글 다시 불러오기
+    if (message === "댓글을 찾을 수 없습니다.") {
+      getCommentList()
+    }
+  }
+
   // 피드 좋아요
   const onChangeFeedLike = async () => {
     const token = await getUserToken()
@@ -80,6 +96,7 @@ function DetailedFeedPage() {
         setFeedLike(true)
       })
       .catch((err) => {
+        handleErrorMessage(err)
         console.log(err)
       })
   }
@@ -100,6 +117,7 @@ function DetailedFeedPage() {
         setFeedLike(false)
       })
       .catch((err) => {
+        handleErrorMessage(err)
         console.log(err)
       })
   }
@@ -124,6 +142,7 @@ function DetailedFeedPage() {
         getCommentList()
       })
       .catch((err) => {
+        handleErrorMessage(err)
         console.log(err)
       })
   }
@@ -147,6 +166,7 @@ function DetailedFeedPage() {
         getCommentList()
       })
       .catch((err) => {
+        handleErrorMessage(err)
         console.log(err)
       })
   }
@@ -175,7 +195,10 @@ function DetailedFeedPage() {
           alert("피드를 성공적으로 삭제하였습니다")
           navigate("/myFeedList")
         })
-        .catch((err) => console.log(err))
+        .catch((err) => {
+          handleErrorMessage(err)
+          console.log(err)
+        })
     }
   }
 
@@ -202,6 +225,7 @@ function DetailedFeedPage() {
         // getCommentContents(res.data.result.content)
       }
     } catch (error) {
+      handleErrorMessage(error)
       console.log(error)
     }
   }
@@ -236,6 +260,7 @@ function DetailedFeedPage() {
             setUserId(res.data.result.userId)
           })
           .catch((err) => {
+            handleErrorMessage(err)
             console.log(err)
           })
       })
@@ -259,7 +284,10 @@ function DetailedFeedPage() {
             setFeedInfo(res.data.result)
             setFollow(res.data.result.follow)
           })
-          .catch((err) => console.log(err))
+          .catch((err) => {
+            handleErrorMessage(err)
+            console.log(err)
+          })
       })
     }
   }, [feedLike])
@@ -313,7 +341,10 @@ function DetailedFeedPage() {
         setComment("")
         setCommentLengthCount(0)
       })
-      .catch((err) => console.log(err))
+      .catch((err) => {
+        handleErrorMessage(err)
+        console.log(err)
+      })
   }
 
   // 코멘트 수정
@@ -346,6 +377,7 @@ function DetailedFeedPage() {
         getCommentList()
       })
       .catch((err) => {
+        handleErrorMessage(err)
         console.log(err)
       })
   }
@@ -371,6 +403,7 @@ function DetailedFeedPage() {
             getCommentList()
           })
           .catch((err) => {
+            handleErrorMessage(err)
             console.log(err)
           })
       })
