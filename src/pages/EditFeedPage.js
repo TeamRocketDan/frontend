@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom"
 import axios from "axios"
 
 import FormSearchModal from "../components/Search/FormSearchModal"
+import Container from "../components/Layout/Container"
 import { useRecoilState } from "recoil"
 import { cityData } from "../recoil/areaData"
 
@@ -199,12 +200,12 @@ function EditFeedPage() {
   return (
     <>
       {/* <!-- Container --> */}
-      <div className="container mx-auto">
+      <Container>
         <h3 className={titleClass}>
           피드 수정
           <FontAwesomeIcon icon={faMessage} className="ml-1" />
         </h3>
-        <div className="flex justify-center px-6 my-12">
+        <div className="flex justify-center px-6 mt-4 mb-12">
           {/* <!-- Row --> */}
           <div className="w-full xl:w-3/4 lg:w-11/12 flex flex-col sm:flex-row">
             {/* <!-- Col --> */}
@@ -213,22 +214,21 @@ function EditFeedPage() {
               <ul className="flex flex-wrap w-full">
                 {multipartFiles.length > 1 ? (
                   multipartFiles.map((image) => (
-                    <li key={image} className="w-1/2 h-1/2 block p-1">
-                      <img
-                        src={image}
-                        alt="피드 이미지"
-                        className="w-full h-full object-contain"
-                      />
-                    </li>
+                    <li
+                      key={image}
+                      className="w-1/2 h-40 block border-white border-2 bg-cover bg-center"
+                      style={{
+                        backgroundImage: `url(${image})`,
+                      }}
+                    ></li>
                   ))
                 ) : (
-                  <li className="w-full">
-                    <img
-                      src={multipartFiles[0]}
-                      alt="피드 이미지"
-                      className="w-full"
-                    />
-                  </li>
+                  <li
+                    className="w-full h-80 bg-center bc-cover mt-12"
+                    style={{
+                      backgroundImage: `url(${multipartFiles[0]})`,
+                    }}
+                  ></li>
                 )}
               </ul>
               {/* image input https://flowbite.com/docs/forms/file-input/ */}
@@ -359,7 +359,7 @@ function EditFeedPage() {
             </div>
           </div>
         </div>
-      </div>
+      </Container>
     </>
   )
 }
