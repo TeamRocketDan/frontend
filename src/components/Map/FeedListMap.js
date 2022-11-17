@@ -51,7 +51,6 @@ function FeedListMap({ positionData }) {
       // 지도의 현재 레벨을 얻어옵니다
       const level = map.getLevel()
 
-      console.log(level)
       if (level > 13) {
         map.setDraggable(false)
         map.setCenter(new kakao.maps.LatLng(35.5583, 127.6358))
