@@ -176,21 +176,25 @@ function DetailedFeedPage() {
 
   // 피드 삭제
   const deleteFeed = async () => {
-    const token = await getUserToken()
+    const confirmed = window.confirm("피드를 삭제하시겠습니까?")
 
-    axios
-      .delete(`${DEFAULT_API}/api/v1/feeds/${feedId}`, {
-        headers: {
-          Authorization: token,
-          "Content-Type": "application/json",
-        },
-      })
-      .then(() => {
-        console.log("Delete feed success")
-        alert("피드를 성공적으로 삭제하였습니다")
-        navigate("/myFeedList")
-      })
-      .catch((err) => console.log(err))
+    if (confirmed) {
+      const token = await getUserToken()
+
+      axios
+        .delete(`${DEFAULT_API}/api/v1/feeds/${feedId}`, {
+          headers: {
+            Authorization: token,
+            "Content-Type": "application/json",
+          },
+        })
+        .then(() => {
+          console.log("Delete feed success")
+          alert("피드를 성공적으로 삭제하였습니다")
+          navigate("/myFeedList")
+        })
+        .catch((err) => console.log(err))
+    }
   }
 
   // get comment list
@@ -367,25 +371,29 @@ function DetailedFeedPage() {
 
   // 코멘트 삭제
   const deleteComment = async (commentsId) => {
-    const token = getUserToken().then((token) => {
-      axios
-        .delete(
-          `${DEFAULT_API}/api/v1/feeds/${feedId}/comments/${commentsId}`,
-          {
-            headers: {
-              Authorization: token,
-              "Content-Type": "application/json",
+    const confirmed = window.confirm("댓글을 삭제하시겠습니까?")
+
+    if (confirmed) {
+      const token = getUserToken().then((token) => {
+        axios
+          .delete(
+            `${DEFAULT_API}/api/v1/feeds/${feedId}/comments/${commentsId}`,
+            {
+              headers: {
+                Authorization: token,
+                "Content-Type": "application/json",
+              },
             },
-          },
-        )
-        .then((res) => {
-          console.log(`Delete ${res.data.result.feedCommentId} comment`)
-          getCommentList()
-        })
-        .catch((err) => {
-          console.log(err)
-        })
-    })
+          )
+          .then((res) => {
+            console.log(`Delete ${res.data.result.feedCommentId} comment`)
+            getCommentList()
+          })
+          .catch((err) => {
+            console.log(err)
+          })
+      })
+    }
   }
 
   // 유저 팔로잉
