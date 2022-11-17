@@ -230,7 +230,12 @@ function ChatRoom() {
     })
 
     // 채팅창 스크롤 이동 (메세지 로딩중 요소 안보일 정도만)
-    messageListRef.current.scrollTo(0, 140)
+    // 첫 요청은 채팅방 들어갔을 때니까 가장 아래로
+    if (messagePage <= 1) {
+      messageListRef.current.scrollTo(0, messageListRef.current.scrollHeight)
+    } else {
+      messageListRef.current.scrollTo(0, 140)
+    }
 
     // 마지막 날, 마지막 페이지일 때 => 메세지 끝(더 이상 불러오지 않음)
     if (response.data.result.lastDay && response.data.result.lastPage) {
