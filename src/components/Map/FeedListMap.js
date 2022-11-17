@@ -42,7 +42,7 @@ function FeedListMap({ positionData }) {
 
   return (
     <div className="w-full py-4">
-      <div className="w-full h-72" ref={mapRef}></div>
+      <div className="w-full h-72 max-w-screen-lg mx-auto" ref={mapRef}></div>
     </div>
   )
 }
