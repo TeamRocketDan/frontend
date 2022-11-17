@@ -11,6 +11,7 @@ import "slick-carousel/slick/slick-theme.css"
 import Container from "../components/Layout/Container"
 import { faMap } from "@fortawesome/free-regular-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { FaCheck } from "react-icons/fa"
 import HeartButton from "../components/Feed/HeartButton"
 import CommentHeartButton from "../components/Feed/CommentHeartButton"
 
@@ -430,18 +431,20 @@ function DetailedFeedPage() {
   // 유저 팔로잉 취소
   const cancelFollowing = async () => {
     const token = await getUserToken()
-    axios
-      .delete(`${DEFAULT_API}/api/v1/users/${feedInfo.userId}/following`, {
-        headers: {
-          Authorization: token,
-          "Content-Type": "application/json",
-        },
-      })
-      .then((res) => {
-        console.log("팔로잉 취소")
-        setFollow(false)
-      })
-      .catch((err) => console.log(err))
+    if (window.confirm("팔로우를 취소하시겠습니까?")) {
+      axios
+        .delete(`${DEFAULT_API}/api/v1/users/${feedInfo.userId}/following`, {
+          headers: {
+            Authorization: token,
+            "Content-Type": "application/json",
+          },
+        })
+        .then((res) => {
+          console.log("팔로잉 취소")
+          setFollow(false)
+        })
+        .catch((err) => console.log(err))
+    }
   }
 
   return (
@@ -469,7 +472,7 @@ function DetailedFeedPage() {
                     cancelFollowing()
                   }}
                 >
-                  팔로잉
+                  <FaCheck className="mt-2 -ml-1" color="green" />
                 </button>
               ) : (
                 <button
