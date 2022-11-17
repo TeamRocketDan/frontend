@@ -113,10 +113,12 @@ function ChatRoom() {
       }
     } catch (error) {
       console.log(error.response.data.errorMessage)
+      const message = error.response.data.errorMessage
       if (
-        error.response.data.errorMessage === "정원을 넘어 들어갈 수 없습니다."
+        message === "방을 찾을 수 없습니다." ||
+        "정원을 넘어 들어갈 수 없습니다."
       ) {
-        window.alert("정원을 넘어 들어갈 수 없습니다.")
+        window.alert(message)
         navigate("/chatlist")
       }
     }
