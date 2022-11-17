@@ -11,7 +11,6 @@ import {
   faCrown,
 } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import win from "global"
 
 function ChatRoomHeader({
   roomId,
