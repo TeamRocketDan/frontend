@@ -319,6 +319,7 @@ function ChatRoom() {
         <ChatRoomHeader
           roomId={roomId}
           stompClient={stompClient}
+          userId={userId}
           userName={userName}
           disConnect={disConnect}
           participants={participants}

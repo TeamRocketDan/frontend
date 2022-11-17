@@ -15,6 +15,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 function ChatRoomHeader({
   roomId,
   stompClient,
+  userId,
   userName,
   disConnect,
   participants,
@@ -47,9 +48,14 @@ function ChatRoomHeader({
 
   // 채팅방 완전히 나가기
   async function handleLeaveRoom() {
-    const confirmed = window.confirm(
-      "방장이 채팅방을 나가면 채팅방이 삭제됩니다!",
+    const isOwner = participants.filter(
+      (participant) => participant.userId === userId && participant.owner,
     )
+
+    const confirmed =
+      isOwner.length > 0
+        ? window.confirm("방장이 채팅방을 나가면 채팅방이 삭제됩니다!")
+        : true
 
     if (confirmed) {
       const token = await getUserToken()
