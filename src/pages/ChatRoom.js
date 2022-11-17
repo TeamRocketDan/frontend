@@ -44,6 +44,9 @@ function ChatRoom() {
   const [isEnterSuccess, setIsEnterSuccess] = useState(false)
   const navigate = useNavigate()
 
+  // 채팅 헤더 높이
+  const [headerHeight, setHeaderHeight] = useState(0)
+
   // 로그인 안했으면 로그인 페이지로
   useCheckLogin()
 
@@ -320,13 +323,14 @@ function ChatRoom() {
           disConnect={disConnect}
           participants={participants}
           roomTitle={roomTitle}
+          setHeaderHeight={setHeaderHeight}
         />
 
         {/* 채팅 내용 나타나는 부분 */}
         <div
           className="w-full overflow-hidden relative"
           style={{
-            height: "calc(100vh - 92px)",
+            height: `calc(100vh - 51px - ${headerHeight}px)`,
           }}
         >
           <ul

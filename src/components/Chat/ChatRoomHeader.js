@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
+import { useEffect, useRef, useState } from "react"
+import { useNavigate } from "react-router-dom"
 import axios from "axios"
 import { CHAT_API } from "../../apis"
 import { getUserToken } from "../../utils/getUserToken"
@@ -19,9 +19,11 @@ function ChatRoomHeader({
   disConnect,
   participants,
   roomTitle,
+  setHeaderHeight,
 }) {
   const navigate = useNavigate()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const headerRef = useRef()
 
   // 퇴장 메세지 보내기
   async function sendLeaveMessage() {
@@ -108,8 +110,16 @@ function ChatRoomHeader({
     }
   }, [])
 
+  // 헤더 높이 구하기
+  useEffect(() => {
+    setHeaderHeight(headerRef.current.offsetHeight)
+  }, [roomTitle])
+
   return (
-    <div className="flex justify-between text-2xl text-rose-300 relative border-b">
+    <div
+      className="flex justify-between text-2xl text-rose-300 relative border-b"
+      ref={headerRef}
+    >
       {/* 채팅방 제목 */}
       <div className="py-1">{roomTitle}</div>
       {/* 메뉴 버튼 */}
