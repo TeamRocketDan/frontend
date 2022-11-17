@@ -132,7 +132,7 @@ function ChatRoom() {
   useEffect(() => {
     if (token !== "") {
       stompClient = new StompJs.Client({
-        brokerURL: "ws://52.78.188.101:61613/stomp/chat",
+        brokerURL: "ws://3.36.97.155:61613/stomp/chat",
         connectHeaders: {
           login: "user",
           passcode: "password",
@@ -157,7 +157,7 @@ function ChatRoom() {
         heartbeatOutgoing: 4000,
       })
       stompClient.webSocketFactory = function () {
-        return new SockJS("http://52.78.188.101:8080/stomp/chat")
+        return new SockJS("http://3.36.97.155:8080/stomp/chat")
       }
 
       stompClient.activate()
