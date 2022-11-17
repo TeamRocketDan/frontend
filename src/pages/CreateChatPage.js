@@ -113,8 +113,15 @@ function CreateChatPage() {
     const startDate = new Date(inputValues.startDate)
     const endDate = new Date(inputValues.endDate)
     const today = new Date()
+    const calculatedToday = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate(),
+      9,
+    )
 
-    if (startDate.getDate() < today.getDate()) {
+    console.log(startDate.getHours())
+    if (startDate < calculatedToday) {
       alert("여행 시작날짜는 오늘부터 선택할 수 있습니다.")
       return false
     }
