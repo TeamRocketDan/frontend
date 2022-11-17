@@ -11,6 +11,7 @@ import {
   faCrown,
 } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import win from "global"
 
 function ChatRoomHeader({
   roomId,
@@ -55,7 +56,7 @@ function ChatRoomHeader({
     const confirmed =
       isOwner.length > 0
         ? window.confirm("방장이 채팅방을 나가면 채팅방이 삭제됩니다!")
-        : true
+        : window.confirm("채팅방을 나가시겠습니까?")
 
     if (confirmed) {
       const token = await getUserToken()
