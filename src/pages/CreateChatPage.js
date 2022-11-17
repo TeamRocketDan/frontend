@@ -32,6 +32,9 @@ function CreateChatPage() {
   // 지역 선택
   const [depth01Data, setDepth01Data] = useRecoilState(cityData)
 
+  // 타이틀 텍스트 글자 수
+  const [textCount, setTextCount] = useState(0)
+
   const navigate = useNavigate()
 
   // 지역 인풋 직접 넣기
@@ -98,6 +101,10 @@ function CreateChatPage() {
       const { name, value } = event.target
       setInputValues({ ...inputValues, [name]: value })
     }
+
+    if (event.target.name === "title") {
+      setTextCount(event.target.value.length)
+    }
   }
 
   // 인풋 값 확인
@@ -127,6 +134,11 @@ function CreateChatPage() {
       return false
     }
 
+    if (inputValues.title.length > 50) {
+      alert("제목은 50자까지 입력해 주세요.")
+      return false
+    }
+
     return true
   }
 
@@ -149,6 +161,11 @@ function CreateChatPage() {
             onChange={onChange}
             required
           />
+
+          {/* 글자수 확인 */}
+          <span className="text-rose-400 text-sm ml-2">
+            {textCount} / 50 자
+          </span>
           <br />
           <label htmlFor="chatMax" className={forLabel}>
             최대 인원수
