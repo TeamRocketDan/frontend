@@ -213,7 +213,7 @@ function MyPage() {
             </div>
             <div className="font-semibold text-center mx-4">
               <p className="text-black">{userInfo.following}</p>
-              <span className="text-gray-400">Folowing</span>
+              <span className="text-gray-400">Following</span>
             </div>
 
             <Modal
