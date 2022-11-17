@@ -63,7 +63,8 @@ function DetailedFeedPage() {
   const [commentContents, setCommentContents] = useState([]) // 코멘트 내용
   const [userId, setUserId] = useState("") // 사용 중인 유저 ID
   const [follow, setFollow] = useState(false) // 팔로잉 여부
-  const [commentLengthCount, setCommentLengthCount] = useState(0)
+  const [commentLengthCount, setCommentLengthCount] = useState(0) // 코멘트 생성 글자 수
+  const [editCommentLengthCount, setEditCommentLengthCount] = useState(0) // 코멘트 수정 글자 수
 
   const getCommentLike = (props) => {
     const newCommentLike = []
@@ -280,15 +281,17 @@ function DetailedFeedPage() {
 
   // 코멘트 데이터 생성시
   const onChangeComment = (e) => {
-    setComment(e.target.value)
-
     const text = e.target.value
+    setComment(text)
     setCommentLengthCount(text.length)
   }
 
   // 코멘트 데이터 수정시
   const onChangeEditComment = (e) => {
     setEditComments(e.target.value)
+
+    const text = e.target.value
+    setEditCommentLengthCount(text.length)
   }
 
   // 코멘트 생성
@@ -553,52 +556,6 @@ function DetailedFeedPage() {
                   {index.nickname}
                 </span>
 
-                {/* 코멘트 수정 폼*/}
-                <form
-                  className="hidden comment-edit"
-                  onSubmit={(e) => {
-                    e.preventDefault()
-                    editComment(index.commentId)
-                    e.target
-                      .closest(".comment-wrap")
-                      .querySelector(".comment")
-                      .classList.remove("hidden")
-                    e.target
-                      .closest(".comment-wrap")
-                      .querySelector(".comment-edit")
-                      .classList.add("hidden")
-                    e.target
-                      .closest(".comment-wrap")
-                      .querySelector(".comment-button-wrap")
-                      .classList.remove("hidden")
-                  }}
-                >
-                  <div className="w-full rounded-lg flex p-1 items-center">
-                    <div className="mr-2 flex items-center border border-rose-400 rounded-lg overflow-hidden">
-                      <label htmlFor="comment" className="sr-only">
-                        Your comment
-                      </label>
-                      <textarea
-                        id="edit"
-                        rows="1"
-                        className="px-2 py-1 w-full text-sm text-gray-900 border-0 focus:ring-0 outline-0"
-                        placeholder="Write a comment..."
-                        required
-                        onChange={onChangeEditComment}
-                      ></textarea>
-                    </div>
-
-                    <div className="flex justify-between items-center">
-                      <button
-                        type="submit"
-                        className="inline-flex items-center py-1 px-2 text-sm font-medium text-center text-white bg-rose-300 rounded-lg focus:ring-4 focus:ring-blue-200 hover:bg-rose-500"
-                      >
-                        수정 완료
-                      </button>
-                    </div>
-                  </div>
-                </form>
-
                 <span className="shrink-0">
                   <CommentHeartButton
                     like={index.likeFeedComment}
@@ -630,6 +587,15 @@ function DetailedFeedPage() {
                           .closest(".comment-wrap")
                           .querySelector(".comment-button-wrap")
                           .classList.add("hidden")
+                        const currentComment = event.target
+                          .closest(".comment-wrap")
+                          .querySelector(".comment").innerText
+                        event.target
+                          .closest(".comment-wrap")
+                          .querySelector(".comment-edit-textarea").innerText =
+                          currentComment
+                        setEditComments(currentComment)
+                        setEditCommentLengthCount(currentComment.length)
                       }}
                     >
                       수정
@@ -645,6 +611,84 @@ function DetailedFeedPage() {
                   </span>
                 )}
               </div>
+
+              {/* 코멘트 수정 폼*/}
+              <form
+                className="hidden comment-edit"
+                onSubmit={(e) => {
+                  e.preventDefault()
+
+                  if (editComments.length > 1000) {
+                    alert("댓글은 최대 1000자까지 입력 가능합니다.")
+                    return false
+                  } else {
+                    editComment(index.commentId)
+
+                    e.target
+                      .closest(".comment-wrap")
+                      .querySelector(".comment")
+                      .classList.remove("hidden")
+                    e.target
+                      .closest(".comment-wrap")
+                      .querySelector(".comment-edit")
+                      .classList.add("hidden")
+                    e.target
+                      .closest(".comment-wrap")
+                      .querySelector(".comment-button-wrap")
+                      .classList.remove("hidden")
+                  }
+                }}
+              >
+                <div className="w-full rounded-lg flex p-1 items-center">
+                  <div className="mr-2 flex grow items-center border border-rose-400 rounded-lg overflow-hidden">
+                    <label htmlFor="comment" className="sr-only">
+                      Your comment
+                    </label>
+                    <textarea
+                      id="edit"
+                      rows="2"
+                      className="comment-edit-textarea px-2 py-1 w-full text-sm text-gray-900 border-0 focus:ring-0 outline-0"
+                      placeholder="Write a comment..."
+                      required
+                      onChange={onChangeEditComment}
+                    ></textarea>
+                  </div>
+
+                  <div className="flex justify-between items-center">
+                    {/* 글자수 확인 */}
+                    <div className="text-rose-400 text-sm text-right">
+                      {editCommentLengthCount} / 1000 자
+                    </div>
+                    <button
+                      type="submit"
+                      className="inline-flex items-center ml-1 py-1 px-2 text-sm font-medium text-center text-white bg-rose-300 rounded-lg focus:ring-4 focus:ring-blue-200 hover:bg-rose-500"
+                    >
+                      완료
+                    </button>
+                    <button
+                      type="button"
+                      className="inline-flex items-center ml-1 py-1 px-2 text-sm font-medium text-center text-white bg-rose-300 rounded-lg focus:ring-4 focus:ring-blue-200 hover:bg-rose-500"
+                      onClick={(e) => {
+                        e.target
+                          .closest(".comment-wrap")
+                          .querySelector(".comment")
+                          .classList.remove("hidden")
+                        e.target
+                          .closest(".comment-wrap")
+                          .querySelector(".comment-edit")
+                          .classList.add("hidden")
+                        e.target
+                          .closest(".comment-wrap")
+                          .querySelector(".comment-button-wrap")
+                          .classList.remove("hidden")
+                      }}
+                    >
+                      취소
+                    </button>
+                  </div>
+                </div>
+              </form>
+
               {/* 코멘트 내용 */}
               <div className="comment text-sl mx-2 pb-2">{index.comment}</div>
             </div>
