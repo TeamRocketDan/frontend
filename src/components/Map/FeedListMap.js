@@ -38,11 +38,36 @@ function FeedListMap({ positionData }) {
     })
 
     clusterer.addMarkers(markers)
+
+    // 지도 드래그
+    map.setDraggable(false)
+
+    // 지도 확대 축소를 제어할 수 있는  줌 컨트롤을 생성합니다
+    const zoomControl = new kakao.maps.ZoomControl()
+    map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT)
+
+    // 지도가 확대 또는 축소되면 마지막 파라미터로 넘어온 함수를 호출하도록 이벤트를 등록합니다
+    kakao.maps.event.addListener(map, "zoom_changed", function () {
+      // 지도의 현재 레벨을 얻어옵니다
+      const level = map.getLevel()
+
+      console.log(level)
+      if (level > 13) {
+        map.setDraggable(false)
+        map.setCenter(new kakao.maps.LatLng(35.5583, 127.6358))
+      } else {
+        map.setDraggable(true)
+      }
+    })
   }, [positionData])
 
   return (
     <div className="w-full py-4">
-      <div className="w-full h-72 max-w-screen-lg mx-auto" ref={mapRef}></div>
+      <div
+        className="w-full h-72 mx-auto relative"
+        style={{ maxWidth: "940px" }}
+        ref={mapRef}
+      ></div>
     </div>
   )
 }
