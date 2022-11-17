@@ -204,7 +204,12 @@ function MyPage() {
           </div>
           <div className="flex justify-center items-center gap-2 my-3">
             <div className="font-semibold text-center mx-4">
-              <p className="text-black">{userInfo.nickname}</p>
+              {userInfo.nickname ? (
+                <p className="text-black">{userInfo.nickname}</p>
+              ) : (
+                <p className="text-white pointer-events-none select-none">""</p> // 드래그 클릭 막아서 공백 처리
+              )}
+              {/* <p className="text-black">{userInfo.nickname}</p> */}
               <span className="text-gray-400">Nickname</span>
             </div>
             <div className="font-semibold text-center mx-4">
