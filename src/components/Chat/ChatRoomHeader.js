@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
+import { useEffect, useRef, useState } from "react"
+import { useNavigate } from "react-router-dom"
 import axios from "axios"
 import { CHAT_API } from "../../apis"
 import { getUserToken } from "../../utils/getUserToken"
@@ -15,13 +15,16 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 function ChatRoomHeader({
   roomId,
   stompClient,
+  userId,
   userName,
   disConnect,
   participants,
   roomTitle,
+  setHeaderHeight,
 }) {
   const navigate = useNavigate()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const headerRef = useRef()
 
   // 퇴장 메세지 보내기
   async function sendLeaveMessage() {
@@ -45,9 +48,14 @@ function ChatRoomHeader({
 
   // 채팅방 완전히 나가기
   async function handleLeaveRoom() {
-    const confirmed = window.confirm(
-      "방장이 채팅방을 나가면 채팅방이 삭제됩니다!",
+    const isOwner = participants.filter(
+      (participant) => participant.userId === userId && participant.owner,
     )
+
+    const confirmed =
+      isOwner.length > 0
+        ? window.confirm("방장이 채팅방을 나가면 채팅방이 삭제됩니다!")
+        : true
 
     if (confirmed) {
       const token = await getUserToken()
@@ -108,8 +116,16 @@ function ChatRoomHeader({
     }
   }, [])
 
+  // 헤더 높이 구하기
+  useEffect(() => {
+    setHeaderHeight(headerRef.current.offsetHeight)
+  }, [roomTitle])
+
   return (
-    <div className="flex justify-between text-2xl text-rose-300 relative border-b">
+    <div
+      className="flex justify-between text-2xl text-rose-300 relative border-b"
+      ref={headerRef}
+    >
       {/* 채팅방 제목 */}
       <div className="py-1">{roomTitle}</div>
       {/* 메뉴 버튼 */}

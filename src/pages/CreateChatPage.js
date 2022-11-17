@@ -32,6 +32,9 @@ function CreateChatPage() {
   // 지역 선택
   const [depth01Data, setDepth01Data] = useRecoilState(cityData)
 
+  // 타이틀 텍스트 글자 수
+  const [textCount, setTextCount] = useState(0)
+
   const navigate = useNavigate()
 
   // 지역 인풋 직접 넣기
@@ -98,6 +101,10 @@ function CreateChatPage() {
       const { name, value } = event.target
       setInputValues({ ...inputValues, [name]: value })
     }
+
+    if (event.target.name === "title") {
+      setTextCount(event.target.value.length)
+    }
   }
 
   // 인풋 값 확인
@@ -105,6 +112,18 @@ function CreateChatPage() {
     // 시작 날짜, 끝 날짜
     const startDate = new Date(inputValues.startDate)
     const endDate = new Date(inputValues.endDate)
+    const today = new Date()
+
+    if (startDate.getDate() < today.getDate()) {
+      alert("여행 시작날짜는 오늘부터 선택할 수 있습니다.")
+      return false
+    }
+
+    if (startDate.getFullYear() > 9999 || endDate.getFullYear() > 9999) {
+      alert("날짜 선택 연도를 4자리로 입력해 주세요.")
+      return false
+    }
+
     if (endDate - startDate < 0) {
       alert("끝 날짜는 시작 날짜 이후에 설정해주세요.")
       return false
@@ -112,6 +131,11 @@ function CreateChatPage() {
 
     if (depth01 === "" || depth02 === "") {
       alert("지역을 선택해주세요.")
+      return false
+    }
+
+    if (inputValues.title.length > 50) {
+      alert("제목은 50자까지 입력해 주세요.")
       return false
     }
 
@@ -137,6 +161,11 @@ function CreateChatPage() {
             onChange={onChange}
             required
           />
+
+          {/* 글자수 확인 */}
+          <span className="text-rose-400 text-sm ml-2">
+            {textCount} / 50 자
+          </span>
           <br />
           <label htmlFor="chatMax" className={forLabel}>
             최대 인원수
