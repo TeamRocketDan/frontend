@@ -113,10 +113,12 @@ function ChatRoom() {
       }
     } catch (error) {
       console.log(error.response.data.errorMessage)
+      const message = error.response.data.errorMessage
       if (
-        error.response.data.errorMessage === "정원을 넘어 들어갈 수 없습니다."
+        message === "방을 찾을 수 없습니다." ||
+        "정원을 넘어 들어갈 수 없습니다."
       ) {
-        window.alert("정원을 넘어 들어갈 수 없습니다.")
+        window.alert(message)
         navigate("/chatlist")
       }
     }
@@ -187,11 +189,27 @@ function ChatRoom() {
   }, [token])
 
   // 채팅 연결 끊어질 때 chat-end 요청까지
-  function disConnect() {
+  async function disConnect() {
     if (stompClient && subscription) {
       stompClient.deactivate()
       subscription.unsubscribe()
       console.log("채팅 연결 끊어짐")
+
+      try {
+        const responseEnd = await axios.patch(
+          `${CHAT_API}/api/v1/chat/chat-end/${roomId}`,
+          null,
+          {
+            headers: {
+              Authorization: token,
+              "Content-Type": "application/json",
+            },
+          },
+        )
+        console.log("[CHAT END] : ", responseEnd)
+      } catch (error) {
+        console.log(error)
+      }
     }
   }
 
