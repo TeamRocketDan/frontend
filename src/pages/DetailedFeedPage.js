@@ -59,28 +59,10 @@ function DetailedFeedPage() {
   const [editComments, setEditComments] = useState("") // 코멘트 수정
   const [commentList, setCommentList] = useState([]) // 코멘트 리스트
   const [feedLike, setFeedLike] = useState(true) // 피드 좋아요
-  const [commentLike, setCommentLike] = useState(false) // 코멘트 좋아요
-  const [commentContents, setCommentContents] = useState([]) // 코멘트 내용
   const [userId, setUserId] = useState("") // 사용 중인 유저 ID
   const [follow, setFollow] = useState(false) // 팔로잉 여부
   const [commentLengthCount, setCommentLengthCount] = useState(0) // 코멘트 생성 글자 수
   const [editCommentLengthCount, setEditCommentLengthCount] = useState(0) // 코멘트 수정 글자 수
-
-  const getCommentLike = (props) => {
-    const newCommentLike = []
-    props.forEach((comment) => {
-      newCommentLike.push(comment.likeFeedComment)
-    })
-    setCommentLike([...commentLike, ...newCommentLike])
-  }
-
-  const getCommentContents = (props) => {
-    const newContents = []
-    props.forEach((content) => {
-      newContents.push(content.content)
-    })
-    setCommentContents([...commentContents, ...newContents])
-  }
 
   // 피드 좋아요
   const onChangeFeedLike = async () => {
@@ -214,11 +196,10 @@ function DetailedFeedPage() {
       )
       console.log("[GET COMMENT LIST] : ", res)
       if (res.data.success) {
-        setComment(res.data.result)
         setCommentCount(res.data.result.totalElements)
         setCommentList(res.data.result.content)
-        getCommentLike(res.data.result.content)
-        getCommentContents(res.data.result.content)
+        // getCommentLike(res.data.result.content)
+        // getCommentContents(res.data.result.content)
       }
     } catch (error) {
       console.log(error)
