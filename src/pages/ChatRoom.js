@@ -47,6 +47,19 @@ function ChatRoom() {
   // 로그인 안했으면 로그인 페이지로
   useCheckLogin()
 
+  // IO 생성
+  function createIO() {
+    const io = new IntersectionObserver((entries, observer) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          updateMessagePage()
+          console.log("IntersectionObserver Detected")
+        }
+      })
+    }, {})
+    io.observe(scrollObserver.current)
+  }
+
   // 채팅방 구독
   function subscribe() {
     if (stompClient != null) {
@@ -229,6 +242,11 @@ function ChatRoom() {
       scrollObserver.current.after(bubble)
     })
 
+    // 처음 요청 후에 IO 생성
+    if (messagePage === 0) {
+      createIO()
+    }
+
     // 채팅창 스크롤 이동 (메세지 로딩중 요소 안보일 정도만)
     // 첫 요청은 채팅방 들어갔을 때니까 가장 아래로
     if (messagePage <= 1) {
@@ -280,16 +298,6 @@ function ChatRoom() {
   // IntersectionObserver 생성, token, room info 불러오기
   useEffect(() => {
     if (isEnterSuccess) {
-      const io = new IntersectionObserver((entries, observer) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            updateMessagePage()
-            console.log("detected!!!!")
-          }
-        })
-      }, {})
-      io.observe(scrollObserver.current)
-
       async function getToken() {
         const newToken = await getUserToken()
         setToken(newToken)
