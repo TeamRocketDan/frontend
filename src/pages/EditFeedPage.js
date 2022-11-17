@@ -36,6 +36,16 @@ function EditFeedPage() {
   const [latitude, setLatitude] = useState("")
   const [multipartFiles, setMultipartFiles] = useState([])
 
+  const [textCount, setTextCount] = useState(0)
+
+  // 지역 선택
+  const [depth01, setDepth01] = useState("")
+  const [depth02, setDepth02] = useState("")
+  const [depth01Data, setDepth01Data] = useRecoilState(cityData)
+
+  // 지역 인풋
+  const regionInputRef = useRef()
+
   function onChange(event) {
     const { name, value } = event.target
     setInputValues({ ...inputValues, [name]: value })
@@ -49,6 +59,9 @@ function EditFeedPage() {
   // 내용 추가
   const onChangeContent = (e) => {
     setContent(e.target.value)
+
+    const text = e.target.value
+    setTextCount(text.length)
   }
 
   // 이미지 경로 삽입
@@ -56,6 +69,7 @@ function EditFeedPage() {
     setMultipartFiles(Array.from(e.target.files || []))
   }
 
+  // 원래 피드 내용 불러오기
   useEffect(() => {
     const token = getUserToken().then((token) => {
       axios
@@ -66,21 +80,21 @@ function EditFeedPage() {
           },
         })
         .then((res) => {
-          setInfo(res.data.result)
-          setTitle(title)
-          setContent(content)
+          const feedInfo = res.data.result
+          setInfo(feedInfo)
+          setTitle(feedInfo.title)
+          setContent(feedInfo.content)
+
+          setDepth01(feedInfo.rcate1)
+          setDepth02(feedInfo.rcate2)
+
+          setMultipartFiles(feedInfo.feedImages)
+
+          setTextCount(feedInfo.content.length)
         })
         .catch((err) => console.log(err))
     })
   }, [])
-
-  // 지역 선택
-  const [depth01, setDepth01] = useState("")
-  const [depth02, setDepth02] = useState("")
-  const [depth01Data, setDepth01Data] = useRecoilState(cityData)
-
-  // 지역 인풋
-  const regionInputRef = useRef()
 
   // 지역 인풋 직접 넣기
   useEffect(() => {
@@ -115,49 +129,71 @@ function EditFeedPage() {
   // 피드 Post
   const postFeed = async (event) => {
     event.preventDefault()
+
+    if (validate()) {
+      // 이미지 수정 기능은 없으므로 미리보기로 대체할 것
+      const formData = new FormData()
+      const variables = {
+        title: title, // 제목
+        content: content, // 내용
+        rcate1: depth01, // 시도
+        rcate2: depth02, // 구
+        longitude: inputValues.longitude, // 경도
+        latitude: inputValues.latitude, // 위도
+      }
+
+      formData.append(
+        "feed",
+        new Blob([JSON.stringify(variables)], { type: "application/json" }),
+      )
+
+      multipartFiles.forEach((file) => {
+        // 사진 첨부(리스트형태)
+        formData.append("files", file)
+      })
+
+      const token = await getUserToken()
+
+      axios
+        .patch(`${DEFAULT_API}/api/v1/feeds/${feedId}`, formData, {
+          // 경로 수정 여부 확인
+          headers: {
+            Authorization: token,
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then((res) => {
+          console.log("[EDIT FEED] : ", res)
+          const feedId = res.data.result.feedId
+          navigate(`/detailedfeed/${feedId}`, { replace: true })
+        })
+        .catch((err) => console.log(err))
+    }
+  }
+
+  // 폼 입력값 검증
+  const validate = () => {
     if (depth01 === "" || depth02 === "") {
       alert("지역을 선택해주세요.")
       return false
     }
 
-    // 이미지 수정 기능은 없으므로 미리보기로 대체할 것
-    const formData = new FormData()
-    const variables = {
-      title: title, // 제목
-      content: content, // 내용
-      rcate1: depth01, // 시도
-      rcate2: depth02, // 구
-      longitude: inputValues.longitude, // 경도
-      latitude: inputValues.latitude, // 위도
+    if (title === "") {
+      alert("제목을 입력해 주세요.")
+      return false
     }
 
-    formData.append(
-      "feed",
-      new Blob([JSON.stringify(variables)], { type: "application/json" }),
-    )
+    if (content === "") {
+      alert("내용을 입력해 주세요.")
+      return false
+    }
 
-    multipartFiles.forEach((file) => {
-      // 사진 첨부(리스트형태)
-      formData.append("files", file)
-    })
+    if (content.length > 2048) {
+      alert("내용은 최대 2048자까지 입력 가능합니다.")
+      return false
+    }
 
-    const token = await getUserToken()
-
-    axios
-      .patch(`${DEFAULT_API}/api/v1/feeds/${feedId}`, formData, {
-        // 경로 수정 여부 확인
-        headers: {
-          Authorization: token,
-          "Content-Type": "multipart/form-data",
-        },
-      })
-      .then((res) => {
-        console.log("Edit Success!")
-        console.log(res)
-        const feedId = res.data.result.feedId
-        navigate(`/detailedfeed/${feedId}`, { replace: true })
-      })
-      .catch((err) => console.log(err))
+    return true
   }
 
   return (
@@ -170,11 +206,33 @@ function EditFeedPage() {
         </h3>
         <div className="flex justify-center px-6 my-12">
           {/* <!-- Row --> */}
-          <div className="w-full xl:w-3/4 lg:w-11/12 flex">
+          <div className="w-full xl:w-3/4 lg:w-11/12 flex flex-col sm:flex-row">
             {/* <!-- Col --> */}
-            <div>
+            <div className="sm:w-1/2 w-full">
+              {/* 이미지는 미리보기만 */}
+              <ul className="flex flex-wrap w-full">
+                {multipartFiles.length > 1 ? (
+                  multipartFiles.map((image) => (
+                    <li key={image} className="w-1/2 h-1/2 block p-1">
+                      <img
+                        src={image}
+                        alt="피드 이미지"
+                        className="w-full h-full object-contain"
+                      />
+                    </li>
+                  ))
+                ) : (
+                  <li className="w-full">
+                    <img
+                      src={multipartFiles[0]}
+                      alt="피드 이미지"
+                      className="w-full"
+                    />
+                  </li>
+                )}
+              </ul>
               {/* image input https://flowbite.com/docs/forms/file-input/ */}
-              <div className="flex justify-center items-center w-full mt-16">
+              {/* <div className="flex justify-center items-center w-full mt-16">
                 <label
                   htmlFor="dropzone-file"
                   className="flex flex-col justify-center items-center w-full h-64 bg-gray-50 rounded-lg border-2 border-gray-300 border-dashed cursor-pointer dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
@@ -211,10 +269,10 @@ function EditFeedPage() {
                     onChange={onChangeImage}
                   />
                 </label>
-              </div>
+              </div> */}
             </div>
             {/* <!-- Col --> */}
-            <div className="w-full lg:w-7/12 bg-white p-5 rounded-lg lg:rounded-l-none">
+            <div className="sm:w-1/2 w-full lg:w-7/12 bg-white p-5 rounded-lg lg:rounded-l-none">
               <form
                 className="px-8 pt-6 pb-8 mb-4 bg-white rounded"
                 onSubmit={postFeed}
@@ -231,7 +289,7 @@ function EditFeedPage() {
                       className="w-full px-3 py-2 text-sm leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
                       id="feedTitle"
                       type="text"
-                      defaultValue={userInfo.title}
+                      defaultValue={title}
                       onChange={onChangeTitle}
                     />
                   </div>
@@ -246,9 +304,13 @@ function EditFeedPage() {
                   <textarea
                     className="w-full px-3 py-2 mb-3 text-sm leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
                     id="feedContent"
-                    defaultValue={userInfo.content}
+                    defaultValue={content}
                     onChange={onChangeContent}
                   />
+                  {/* 글자수 확인 */}
+                  <div className="text-rose-400 text-sm text-right">
+                    {textCount} / 2048 자
+                  </div>
                 </div>
                 <div className="mb-4">
                   <label
