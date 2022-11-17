@@ -232,6 +232,10 @@ function DetailedFeedPage() {
   }
 
   useEffect(() => {
+    getCommentList()
+  }, commentCount)
+
+  useEffect(() => {
     if (isLoggedIn) {
       const token = getUserToken().then((token) => {
         axios
@@ -565,7 +569,8 @@ function DetailedFeedPage() {
             </div>
           </div>
           <div className="text-sm mb-2 text-gray-400 cursor-pointer font-medium">
-            {feedInfo.feedCommentCnt} comments
+            {/* {feedInfo.feedCommentCnt} comments */}
+            {commentCount} comments
           </div>
         </div>
 
