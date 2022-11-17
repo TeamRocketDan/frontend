@@ -22,13 +22,11 @@ export const getUserToken = async () => {
       })
       token = "Bearer " + response.data.result.token
       localStorage.setItem("token", token)
-      console.log("토큰 재발급 받음 " + token)
       return token
     } catch (error) {
       console.log(error)
     }
   } else {
-    console.log("만료되지 않은 토큰 " + token)
     return token
   }
 }
