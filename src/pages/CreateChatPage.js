@@ -105,6 +105,18 @@ function CreateChatPage() {
     // 시작 날짜, 끝 날짜
     const startDate = new Date(inputValues.startDate)
     const endDate = new Date(inputValues.endDate)
+    const today = new Date()
+
+    if (startDate.getDate() < today.getDate()) {
+      alert("여행 시작날짜는 오늘부터 선택할 수 있습니다.")
+      return false
+    }
+
+    if (startDate.getFullYear() > 9999 || endDate.getFullYear() > 9999) {
+      alert("날짜 선택 연도를 4자리로 입력해 주세요.")
+      return false
+    }
+
     if (endDate - startDate < 0) {
       alert("끝 날짜는 시작 날짜 이후에 설정해주세요.")
       return false
