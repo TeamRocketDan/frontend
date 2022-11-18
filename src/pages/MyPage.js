@@ -103,65 +103,101 @@ function MyPage() {
   // 로그인 안했으면 로그인 페이지로
   useCheckLogin()
 
-  useEffect(() => {
-    const token = getUserToken().then((token) => {
-      axios
-        .get(`${DEFAULT_API}/api/v1/users/mypage`, {
-          headers: {
-            Authorization: token,
-            "Content-Type": "application/json",
-          },
-        })
-        .then((res) => {
-          setInfo(res.data.result)
-        })
-        .catch((err) => console.log(err))
-    })
-
-    getFollowingList()
-    getFollowerList()
-  }, [userName, userProf])
-
-  // 개인정보 수정
-  const edit = async () => {
+  const getUserInfo = async () => {
     const token = await getUserToken()
 
+    try {
+      const response = await axios.get(`${DEFAULT_API}/api/v1/users/mypage`, {
+        headers: {
+          Authorization: token,
+          "Content-Type": "application/json",
+        },
+      })
+      console.log("[GET USER INFO] : ", response)
+      setInfo(response.data.result)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(() => {
+    getUserInfo()
+    getFollowingList()
+    getFollowerList()
+  }, [])
+
+  const patchProfImage = async () => {
+    if (multipartFiles.length === 0) {
+      return
+    }
+    const token = await getUserToken()
     const formData = new FormData()
     multipartFiles.forEach((file) => {
       formData.append("multipartFiles", file)
     })
 
-    if (multipartFiles.length !== 0) {
-      axios
-        .patch(`${DEFAULT_API}/api/v1/users/profileImage`, formData, {
+    try {
+      const response = await axios.patch(
+        `${DEFAULT_API}/api/v1/users/profileImage`,
+        formData,
+        {
           headers: {
             Authorization: token,
             "Content-Type": "multipart/form-data",
           },
-        })
-        .then((res) => {
-          console.log("Profile Image Changed successfully")
-          setUserProf(res.data.result.profileImagePath)
-          setMultipartFiles([])
-        })
-        .catch((err) => console.log(err))
-    }
+        },
+      )
 
-    if (nickname !== "") {
-      axios
-        .patch(`${DEFAULT_API}/api/v1/users/nickname`, nickname, {
+      console.log("Profile Image Changed successfully")
+      setUserProf(response.data.result.profileImagePath)
+      setMultipartFiles([])
+
+      return response
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const patchNickname = async () => {
+    if (nickname === "") {
+      return
+    }
+    const token = await getUserToken()
+    try {
+      const response = await axios.patch(
+        `${DEFAULT_API}/api/v1/users/nickname`,
+        nickname,
+        {
           headers: {
             Authorization: token,
             "Content-Type": "application/json",
           },
-        })
-        .then((res) => {
-          console.log("Nickname Changed successfully")
-          setUserName(res.data.result.nickname)
-          setNickname("")
-        })
-        .catch((err) => console.log(err))
+        },
+      )
+
+      console.log("Nickname Changed successfully")
+      setUserName(response.data.result.nickname)
+      setNickname("")
+
+      return response
+    } catch (error) {
+      const message = error.response.data.errorMessage
+      if (message === "이미 등록된 닉네임입니다.") {
+        alert(message)
+        return
+      }
+      console.log(error)
     }
+  }
+
+  // 개인정보 수정
+  const edit = async () => {
+    const profileResponse = await patchProfImage()
+    const nicknameResponse = await patchNickname()
+
+    console.log("[profileResponse] : ", profileResponse)
+    console.log("[nicknameResponse] : ", nicknameResponse)
+    await getUserInfo()
   }
 
   // 이미지 경로 삽입
@@ -186,7 +222,7 @@ function MyPage() {
         <div className="bg-white shadow rounded-lg p-10">
           <div className="flex flex-col gap-1 text-center items-center">
             <img
-              className="h-32 w-32 bg-white p-2 rounded-full shadow mb-4 object-contain"
+              className="h-32 w-32 bg-white p-2 rounded-full shadow mb-4 object-cover"
               src={userInfo.profileImagePath}
               alt="profile_image"
             />
@@ -255,7 +291,14 @@ function MyPage() {
               <h3 className="text-lg text-blue-300 font-semibold mb-2">
                 개인정보 수정
               </h3>
-              <form className="w-full max-w-sm mt-20">
+              <form
+                className="w-full max-w-sm mt-20"
+                onSubmit={(e) => {
+                  e.preventDefault()
+                  setModal(false)
+                  edit()
+                }}
+              >
                 <div className="md:flex md:items-center mb-6 mt-10">
                   <div className="md:w-1/3">
                     <label
@@ -299,11 +342,7 @@ function MyPage() {
                   <div className="md:w-2/3">
                     <button
                       className="shadow bg-purple-500 hover:bg-purple-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded ml-8"
-                      type="button"
-                      onClick={() => {
-                        setModal(false)
-                        edit()
-                      }}
+                      type="submit"
                     >
                       수정 완료
                     </button>
